@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_child"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#F0F0F0"
+    android:paddingBottom="3dp"
+    android:paddingLeft="15dip"
+    android:paddingTop="3dp" >
+    
+    <!-- Bottom 으로 정렬이 안되어서 LinearLayout을 씀 -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true" >
+        
+        <TextView
+            android:id="@+id/signal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:includeFontPadding="false"
+            android:text="상승주"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/signal_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:background="#EBB7B1"
+            android:includeFontPadding="false"
+            android:paddingBottom="0dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingTop="0dp"
+            android:text="전체"
+            android:textSize="12sp" />    
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/alarm"
+        android:includeFontPadding="false"
+        android:text="10/04 15:30:12"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@id/alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_action_flash_on" />
+
+</RelativeLayout>

@@ -1,11 +1,14 @@
 package com.example.product;
 
-import android.support.v4.app.FragmentManager;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 public class MainActivity extends FragmentActivity {
 	FragmentManager fm; //onCreate에서 초기화
@@ -17,9 +20,65 @@ public class MainActivity extends FragmentActivity {
 		
 		/* 프래그먼트 관리 */
 		fm = getSupportFragmentManager();
-		FragmentSignal fg_sg = new FragmentSignal();
+		/* 부모의 id로 fragment를 찾기, fragment가 없으면 추가 */
+		if(fm.findFragmentById(R.id.frame) == null) {
+			FragmentSignal fg_sg = new FragmentSignal();	
+			fm.beginTransaction().add(R.id.frame, fg_sg, "fragment_signal").commit();
+		}
 		
-		fm.beginTransaction().add(R.id.frame, fg_sg, "fragment_signal").commit();
+	}
+	
+	public void tabButtonOnClick(View view) {
+		
+		Fragment fragment = fm.findFragmentById(R.id.frame);
+		
+		//여기로 진입하면 에러임
+		if(fragment == null) {
+			FragmentSignal fg_sg = new FragmentSignal();	
+			fm.beginTransaction().add(R.id.frame, fg_sg, "fragment_signal").commit();
+			return;
+		}
+		switch(view.getId()) {
+			case R.id.signal_bt :
+				if(fragment.getTag() == "fragment_signal") {
+					//do nothing
+				}
+				else {
+					/*다른 fragment로 변환 */
+					/* fragment를 매번 새로 생성하는데 만들어놓고 Visible만 바꿔서 성능을 향상시키는 것도 고려 */
+					FragmentSignal fg_sg = new FragmentSignal();
+					fm.beginTransaction().replace(R.id.frame, fg_sg, "fragment_signal").commit();
+				}
+				
+				break;
+				
+				
+			/* 검색 activity를 띄우기 */
+			case R.id.search_bt :  
+				Intent intent = new Intent(this, SearchActivity.class);
+				startActivity(intent);
+				
+				
+				
+				break;
+			
+			case R.id.settings_bt :
+				if(fragment.getTag() == "fragment_settings") {
+					//do nothing
+				}
+				else {
+					/*다른 fragment로 변환 */
+					/* fragment를 매번 새로 생성하는데 만들어놓고 Visible만 바꿔서 성능을 향상시키는 것도 고려 */
+					FragmentSettings fg_st = new FragmentSettings();
+					fm.beginTransaction().replace(R.id.frame, fg_st, "fragment_settings").commit();
+
+				}
+				
+				
+				break;
+				
+		
+		}
 		
 	}
 	

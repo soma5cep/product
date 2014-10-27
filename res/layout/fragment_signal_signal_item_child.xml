@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list_item_child"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#F0F0F0"
+    android:paddingBottom="3dp"
+    android:paddingLeft="15dip"
+    android:paddingTop="3dp" >
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_centerVertical="true"  >
+        
+        <TextView
+            android:id="@+id/stock_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:includeFontPadding="false"
+            android:text="삼성전자"
+            android:textSize="15sp"
+            />
+
+        <!-- BOLD 고려 -->
+        <TextView
+            android:id="@+id/price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:includeFontPadding="false"
+            android:text="1,745,000"
+            android:textSize="15sp"
+            />
+
+        <TextView
+            android:id="@+id/price_diff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:includeFontPadding="false"
+            android:text="+1800"
+            android:textColor="#FF0000"
+            android:textSize="10sp" />
+
+        <TextView
+            android:id="@+id/price_diff_percent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:includeFontPadding="false"
+            android:text="+(4.52%)"
+            android:textColor="#FF0000"
+            android:textSize="10sp" />
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/alarm"
+        android:includeFontPadding="false"
+        android:text="10/04 15:30:12"
+        android:textSize="15sp" />
+
+    <ImageView
+        android:id="@id/alarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/ic_action_flash_on" />
+
+</RelativeLayout>

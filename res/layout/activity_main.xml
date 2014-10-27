@@ -16,28 +16,31 @@
     	android:background="#141414"
     	android:weightSum="3">
         <ImageButton
-            android:id="@+id/alarm"
+            android:id="@+id/signal_bt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_alarms_light"
             android:layout_weight="1"
             style="?android:attr/borderlessButtonStyle"
+            android:onClick="tabButtonOnClick"
             />
         <ImageButton
-            android:id="@+id/search"
+            android:id="@+id/search_bt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_search_light"
             android:layout_weight="1"
             style="?android:attr/borderlessButtonStyle"
+            android:onClick="tabButtonOnClick"
             />
         <ImageButton
-            android:id="@+id/settings"
+            android:id="@+id/settings_bt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_action_settings_light"
             android:layout_weight="1"
             style="?android:attr/borderlessButtonStyle"
+            android:onClick="tabButtonOnClick"
             />   
     </LinearLayout>
     
