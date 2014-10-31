@@ -22,7 +22,7 @@ public class MainActivity extends FragmentActivity {
 		fm = getSupportFragmentManager();
 		/* 부모의 id로 fragment를 찾기, fragment가 없으면 추가 */
 		if(fm.findFragmentById(R.id.frame) == null) {
-			FragmentSignal fg_sg = new FragmentSignal();	
+			FragmentSignal fg_sg = new FragmentSignal();
 			fm.beginTransaction().add(R.id.frame, fg_sg, "fragment_signal").commit();
 		}
 		
@@ -69,9 +69,9 @@ public class MainActivity extends FragmentActivity {
 				else {
 					/*다른 fragment로 변환 */
 					/* fragment를 매번 새로 생성하는데 만들어놓고 Visible만 바꿔서 성능을 향상시키는 것도 고려 */
+					
 					FragmentSettings fg_st = new FragmentSettings();
 					fm.beginTransaction().replace(R.id.frame, fg_st, "fragment_settings").commit();
-
 				}
 				
 				
@@ -85,8 +85,6 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.actionbarmenu, menu);
 		return true;
 	}
 
