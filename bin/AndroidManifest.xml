@@ -46,6 +46,14 @@
             android:screenOrientation="portrait" >
 
         </activity>
+        
+        <activity
+            android:name=".ActivityCondition"
+            android:label="ActivityCondition"
+            android:screenOrientation="portrait"
+            android:theme="@style/myTabStyle" >
+
+        </activity>
             
     </application>
 

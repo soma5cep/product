@@ -39,7 +39,7 @@ public class FragmentSignal extends Fragment {
 	private SignalPagerAdapter mPagerAdapter;
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.fragment_signal, container, false);
+		View root = inflater.inflate(R.layout.view_pager, container, false);
 		
 		mPager = (ViewPager)root.findViewById(R.id.pager);
 		mPagerAdapter = new SignalPagerAdapter(getChildFragmentManager());

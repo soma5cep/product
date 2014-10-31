@@ -1,6 +1,7 @@
 package com.example.product;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,9 +27,10 @@ public class ActivityStockDetailSettings extends Activity{
 		// as you specify a parent activity in AndroidManifest.xml.
 	
 		int id = item.getItemId();
-		if (id == R.id.action_add) {
-			
+		if (id == R.id.action_add) {			
 			// 추가함
+			Intent intent = new Intent(this, ActivityCondition.class);
+			startActivity(intent);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
