@@ -54,6 +54,14 @@
             android:theme="@style/myTabStyle" >
 
         </activity>
+        
+        <activity
+            android:name=".ActivitySignalDetail"
+            android:label="ActivitySignalDetail"
+            android:screenOrientation="portrait"
+             >
+
+        </activity>
             
     </application>
 

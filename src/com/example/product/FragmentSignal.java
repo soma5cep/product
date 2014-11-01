@@ -10,9 +10,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,8 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -669,6 +669,15 @@ public class FragmentSignal extends Fragment {
 			View root = inflater.inflate(R.layout.simple_expandablelistview, container, false);
 			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
 			mExpListView.setAdapter(new MyExpAdapter(getActivity()));
+			
+			/* 하단 메뉴 설정 */
+			FragmentManager fm=getChildFragmentManager();
+			if(fm.findFragmentById(R.id.bottom_menu) == null) {
+				BottomMenu.BottomMenu_1 bottom_menu = new BottomMenu.BottomMenu_1();
+				fm.beginTransaction().add(R.id.bottom_menu, bottom_menu, "bottom_menu").commit();
+			}
+			
+			
 			return root;			
 		}
 		
@@ -725,6 +734,14 @@ public class FragmentSignal extends Fragment {
 				
 				/*테스트용으로 그냥 groupview 레이아웃을 inflate 해서 출력 */
 				v =inflater.inflate(R.layout.fragment_signal_signal_item_parent, parent, false);
+				ImageButton bt = (ImageButton)v.findViewById(R.id.go_btn);
+				bt.setFocusable(false);
+				bt.setOnClickListener(new Button.OnClickListener() {
+					public void onClick(View v) {
+						Intent intent = new Intent(getActivity(), ActivitySignalDetail.class);
+						startActivity(intent);
+					}
+				});				
 				return v;
 			}
 			

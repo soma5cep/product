@@ -15,5 +15,12 @@ public class BottomMenu {
 			return root;			
 		}
 	}
+	
+	public static class BottomMenu_2 extends Fragment {
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			View root = inflater.inflate(R.layout.bottom_menu_2, container, false);
+			return root;			
+		}		
+	}
 
 }

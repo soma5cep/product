@@ -88,12 +88,14 @@
     <!-- Divider를 넣을지 말지 생각 -->
     
     <!-- 이미지 뷰로 넣었는데 화면에서 클릭을 가능하게 하려면 이미지 버튼으로 바꾸고 리스너 등록 -->
-    <ImageView
+    <ImageButton
         android:id="@id/go_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
        	android:src="@drawable/ic_action_next_item"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
+        style="?android:attr/borderlessButtonStyle"
+        android:adjustViewBounds="true"
         />    
 </RelativeLayout>
