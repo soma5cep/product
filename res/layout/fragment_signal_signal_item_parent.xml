@@ -21,6 +21,7 @@
         android:text="상승주"
         android:layout_marginRight="5dp"
         android:includeFontPadding="false"
+        android:typeface="monospace"
         />
 
     <!-- 전체신호 갯수 표시하는 ImageView 필요 -->
@@ -41,6 +42,7 @@
         android:textColor="#CCCCCC"
         android:layout_marginRight="5dp"
         android:includeFontPadding="false"
+        android:typeface="monospace"
         />
     
     
@@ -55,6 +57,7 @@
         android:text="삼성전자"
         android:layout_marginRight="5dp"
         android:includeFontPadding="false"
+        android:typeface="monospace"
         />
     
     <TextView
@@ -83,6 +86,7 @@
         android:includeFontPadding="false"
         android:layout_alignBaseline="@id/date"
         android:background="#FFCC00"
+        android:typeface="monospace"
         />    
     
     <!-- Divider를 넣을지 말지 생각 -->

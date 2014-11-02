@@ -65,7 +65,8 @@
         		android:text="고가"
         		android:textSize="14sp"
         		android:gravity="left"
-        		android:layout_weight="1"       		
+        		android:layout_weight="1"
+        		android:typeface="monospace"       		
         		/>
             <TextView
                 android:id="@+id/highest_price"
@@ -87,6 +88,7 @@
         		android:gravity="left"
         		android:layout_weight="1"
         		android:paddingLeft="20dp"
+        		android:typeface="monospace"
         		/>
             <TextView
                 android:id="@+id/lowest_price"
@@ -116,6 +118,7 @@
         		android:textSize="14sp"
         		android:gravity="left"
         		android:layout_weight="1"
+        		android:typeface="monospace"
         		/>
             <TextView
                 android:id="@+id/trade_volume"
@@ -137,6 +140,7 @@
         		android:gravity="left"
         		android:layout_weight="1"
         		android:paddingLeft="20dp"
+        		android:typeface="monospace"
         		/>
             <TextView
                 android:id="@+id/ltrade_volume_average"
@@ -167,6 +171,7 @@
             android:textColor="#FFFFFF"
             android:gravity="center"
             android:padding="6dp"
+            android:typeface="monospace"
             />
     
     <!-- 리스트 뷰 -->

@@ -25,6 +25,7 @@
             android:text="간단조건"
             android:textSize="17sp"
             android:textColor="#FFFFFF"
+            android:typeface="monospace"
             />
         <Button
             android:id="@+id/detail_condition_bt"
@@ -36,6 +37,7 @@
             android:text="일반조건"
             android:textSize="17sp"
             android:textColor="#FFFFFF"
+            android:typeface="monospace"
             />
     </LinearLayout>
     

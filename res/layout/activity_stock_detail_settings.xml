@@ -25,7 +25,8 @@
 	            android:text="전체신호"
 	            android:textColor="#FFFFFF"
 	            android:textSize="17sp"
-	            android:padding="5dp" />
+	            android:padding="5dp" 
+	            android:typeface="monospace"  />
 	    	<View
 	    	    android:layout_width="60dp"
 	    	    android:layout_height="36dp"
@@ -54,7 +55,8 @@
 	            android:text="개별신호"
 	            android:textColor="#FFFFFF"
 	            android:textSize="17sp"
-	            android:padding="5dp" />
+	            android:padding="5dp"
+	            android:typeface="monospace"  />
 	    	<View
 	    	    android:layout_width="60dp"
 	    	    android:layout_height="36dp"

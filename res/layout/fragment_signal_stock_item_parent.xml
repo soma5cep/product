@@ -18,6 +18,7 @@
         android:text="삼성전자"
         android:layout_marginRight="5dp"
         android:includeFontPadding="false"
+        android:typeface="monospace"
         />
     
     

@@ -1,5 +1,6 @@
 package com.example.product;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -8,12 +9,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 public class FragmentSettings extends Fragment {
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		View root = inflater.inflate(R.layout.fragment_settings, container, false);		
+		View root = inflater.inflate(R.layout.fragment_settings, container, false);
+		
+		Button bt = (Button)root.findViewById(R.id.show_my_stock_button);
+		bt.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				Intent intent = new Intent(getActivity(), ActivityMyStock.class);
+				startActivity(intent);				
+			}
+		});
 		return root;
 	}
 	/*

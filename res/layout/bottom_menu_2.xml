@@ -17,8 +17,9 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="ALL"
-        android:textSize="15sp" 
-        android:textColor="#FFFFFF"  />
+        android:textSize="17sp" 
+        android:textColor="#FFFFFF"
+        />
 
 
     <Button
@@ -28,7 +29,8 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:text="알람"
-        android:textSize="15sp"  
-        android:textColor="#FFFFFF"    />
+        android:textSize="17sp"  
+        android:textColor="#FFFFFF"
+        android:typeface="monospace"    />
 
 </LinearLayout>

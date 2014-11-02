@@ -39,6 +39,7 @@
         android:textSize="20sp"
         android:layout_toRightOf="@id/linear"
         android:layout_centerVertical="true"
+        android:typeface="monospace"
         />
     <ImageButton
         android:id="@+id/alarm_bt"
