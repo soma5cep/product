@@ -6,9 +6,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends FragmentActivity {
 	FragmentManager fm; //onCreate에서 초기화
@@ -18,6 +21,8 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);		
 		
+		MyDataBase.initialize(this);
+
 		/* 프래그먼트 관리 */
 		fm = getSupportFragmentManager();
 		/* 부모의 id로 fragment를 찾기, fragment가 없으면 추가 */

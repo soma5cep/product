@@ -8,12 +8,14 @@ import android.content.Context;
 import android.graphics.Typeface;
 
 public class MyApplication extends Application{
-	
+
 	@Override
 	public void onCreate() {
 		super.onCreate();
 		setDefaultFont(this, "MONOSPACE", "NanumBarunGothic.ttf");
+
 	}
+	
 	
 	
 	//전체적인 font 바꾸기

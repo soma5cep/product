@@ -23,7 +23,9 @@ import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -143,7 +145,11 @@ public class FragmentSignal extends Fragment {
 	public static class FragmentSignalTotal extends ListFragment {
 		private Menu myMenu;
 		private FragmentSignal parent;
+		private View root;		
 		
+		private ArrayList<ReceivedSignal> received_signal;
+		private MyArrayAdapter my_adapter;
+
 		@Override
 		public void onDestroy() {
 			super.onDestroy();
@@ -161,19 +167,59 @@ public class FragmentSignal extends Fragment {
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-			View root = inflater.inflate(R.layout.fragment_signal_total, container, false);
-			
-			/*Bottom Menu 에 대한 버튼 클릭 리스너를 등록하자. */
-			
+			root = inflater.inflate(R.layout.fragment_signal_total, container, false);
 			FragmentManager fm=getChildFragmentManager();
-			if(fm.findFragmentById(R.id.bottom_menu) == null) {
-				BottomMenu.BottomMenu_1 bottom_menu = new BottomMenu.BottomMenu_1();
+			BottomMenu.BottomMenu_1 bottom_menu;
+			if((bottom_menu = (BottomMenu.BottomMenu_1)fm.findFragmentById(R.id.bottom_menu)) == null) {
+				bottom_menu = new BottomMenu.BottomMenu_1();
 				fm.beginTransaction().add(R.id.bottom_menu, bottom_menu, "bottom_menu").commit();
 			}
-			
+
+			//클릭 리스너 등록		
+			Button.OnClickListener bt_listener = new Button.OnClickListener() {						
+				@Override
+				public void onClick(View v) {
+					switch(v.getId()) {
+					case R.id.all_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_all();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "all_btn clicked", 0).show();
+						break;
+					case R.id.total_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_total();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "total_btn clicked", 0).show();
+						break;
+					case R.id.indiv_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_indiv();
+						my_adapter.notifyDataSetChanged();
+						*/
+						Toast.makeText(getActivity(), "indiv_btn clicked", 0).show();
+						break;
+					case R.id.alarm_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_alarm();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "alarm_btn clicked", 0).show();
+						break;
+					default :
+						//do nothing
+						break;
+					}
+				}		
+			};
+			bottom_menu.setButtonClickListener(bt_listener);
 			return root;			
-		}
-		
+		}		
 		
 		/* Item 이 클릭되었을 때, 새로운 Activity를 띄운다(예정)
 		 * 이 동작을 Fragment에서 구현하지 않고 정석적인 방법으로 Activity에 Listener 구현을 강제하여 
@@ -233,37 +279,23 @@ public class FragmentSignal extends Fragment {
 			}
 		}
 		
-
-
-
-		
-		/* 이 WORLDS 배열은 테스트용 */
-		public static String[] WORDS = {
-			"boy", "girl", "school", "Hello", "go"
-		};
-		
-
 		
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
 			
 			/* test code */
 			
-			ArrayList<String> dd=new ArrayList<String>();
-			dd.add("aaa");
-			dd.add("bbb");
-			dd.add("ccc");
-			dd.add("d");
-			dd.add("e");
-			dd.add("f");
-			
+			if(received_signal == null) {
+				received_signal = MyDataBase.getReceivedSignalList_all();
 
-			setListAdapter(new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, dd));
+				setListAdapter(my_adapter = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, received_signal));
 			
-			ListView mListView = getListView();
-			mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-			mListView.setDivider(new ColorDrawable(Color.LTGRAY));
-			mListView.setDividerHeight(1);
+			
+				ListView mListView = getListView();
+				mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+				mListView.setDivider(new ColorDrawable(Color.LTGRAY));
+				mListView.setDividerHeight(1);
+			}
 			
 		}
 		
@@ -275,12 +307,12 @@ public class FragmentSignal extends Fragment {
 			//Toast.makeText(getActivity(), position+" is clicked", 0).show();
 		}
 		
-		class MyArrayAdapter extends ArrayAdapter<String> {
-			private ArrayList<String> items;
+		class MyArrayAdapter extends ArrayAdapter<ReceivedSignal> {
+			private ArrayList<ReceivedSignal> items;
 			private Context context;
 			private int resource;
 
-			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<String> items) {
+			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<ReceivedSignal> items) {
 				super(context, viewResourceId, items);
 				this.items = items;
 				this.context = context;
@@ -289,51 +321,91 @@ public class FragmentSignal extends Fragment {
 
 			@Override
 			public View getView(int position, View convertView, ViewGroup parent) {
-				/*
+				
 				RelativeLayout v = (RelativeLayout)convertView;
 				ViewHolder vh;
 				if (v == null) {
 					v = (RelativeLayout)View.inflate(context, resource, null);
+					ImageButton bt = (ImageButton)v.findViewById(R.id.alarm_bt);
+					bt.setFocusable(false);
 					vh = new ViewHolder();
 					
+					vh.image = (ImageView)v.findViewById(R.id.image);
+					vh.type_color = (View)v.findViewById(R.id.type_color);
+					vh.date = (TextView)v.findViewById(R.id.date);
+					vh.signal_type = (TextView)v.findViewById(R.id.signal_type);	
+					vh.new_tag = (TextView)v.findViewById(R.id.new_tag);	
 					vh.signal = (TextView)v.findViewById(R.id.signal);	
-					vh.inout = (TextView)v.findViewById(R.id.inout);
-					vh.stock_name = (TextView)v.findViewById(R.id.stock_name);
-					vh.market_type = (TextView)v.findViewById(R.id.market_type);
-					vh.time = (TextView)v.findViewById(R.id.time);
-					vh.price_diff_percent = (TextView)v.findViewById(R.id.price_diff_percent);
-					vh.price_diff = (TextView)v.findViewById(R.id.price_diff);
-					vh.trading_volume = (TextView)v.findViewById(R.id.trading_volume);
-					vh.stock_price = (TextView)v.findViewById(R.id.stock_price);
-					
+					vh.stock_name = (TextView)v.findViewById(R.id.stock_name);	
+
 					v.setTag(vh);
 				}
 				else {
 					vh = (ViewHolder)v.getTag();
 				}
-				RTSBox b = items.get(position);
-				if(b != null) {
-					ConvertRTSBox.convertBoxToRel(b, vh);
+				
+				
+				ReceivedSignal my_rsignal = items.get(position);
+				
+				
+				//아이템의 데이터에 맞게 뷰를 수정
+				if(my_rsignal != null) {
+					//change image
+					//vh.image settings code 필요
+					
+					//change type_color
+					if(my_rsignal.getCondition_type() == ReceivedSignal.EASY) {
+						vh.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
+					}
+					else if(my_rsignal.getCondition_type() == ReceivedSignal.HARD) {
+						vh.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));					
+					}
+					else if(my_rsignal.getCondition_type() == ReceivedSignal.CUSTOM) {
+						vh.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
+					}
+					
+					//change date
+					//나중에 시간 Format이 바뀐다면 여기서 적절히 수정.
+					
+					//change signal_type
+					if(my_rsignal.getSignal_type() == ReceivedSignal.TYPE_SIGNAL_TOTAL) {
+						vh.signal_type.setText("전체");
+						vh.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_total));
+					}
+					else if(my_rsignal.getSignal_type() == ReceivedSignal.TYPE_SIGNAL_INDIV) {
+						vh.signal_type.setText("개별");
+						vh.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_indiv));
+					}
+					
+					//change new_tag
+					if(my_rsignal.getIs_new() == ReceivedSignal.NEW) {
+						vh.new_tag.setVisibility(View.VISIBLE);
+					}
+					else if(my_rsignal.getIs_new() == ReceivedSignal.OLD) {
+						vh.new_tag.setVisibility(View.GONE);
+					}
+					
+					//change signal
+					vh.signal.setText(my_rsignal.getSignal_name());
+					
+					//change stock_name
+					vh.stock_name.setText(my_rsignal.getStock_name());	
 				}
-				return v;
-				*/
-				RelativeLayout v = (RelativeLayout)View.inflate(context, resource, null);
+				
 				return v;
 			}
 			
-			/*
-			public static class ViewHolder {		
+			
+			public class ViewHolder {
+				ImageView image;
+				View type_color;
+				TextView date;
+				TextView signal_type;
+				TextView new_tag;
 				TextView signal;
-				TextView inout;
 				TextView stock_name;
-				TextView market_type;
-				TextView time;
-				TextView price_diff_percent;
-				TextView price_diff;
-				TextView trading_volume;
-				TextView stock_price;		
 			}
-			*/
+		
 		}
 		
 	}
@@ -505,15 +577,40 @@ public class FragmentSignal extends Fragment {
 	public static class FragmentSignalStock extends Fragment {
 		private LayoutInflater inflater;
 		private ExpandableListView mExpListView;
-		private int GROUP_CNT = 3;
-		private int CHILD_CNT = 5;
 		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			this.inflater = inflater;
 			View root = inflater.inflate(R.layout.simple_expandablelistview, container, false);
 			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
-			mExpListView.setAdapter(new MyExpAdapter(getActivity()));
+			
+			
+			ArrayList<SignalSortByStock> list = new ArrayList<SignalSortByStock>();
+
+			/* 임시로 데이터 만들기 */
+			SignalSortByStock data_t = new SignalSortByStock();
+			
+			data_t.total_cnt = 33;
+			data_t.indiv_cnt = 12;
+			data_t.stock_name = "소마제철소";
+			data_t.price = "1,154,000";
+			data_t.price_diff = "-98711";
+			data_t.price_diff_percent="(-3.12%)";
+			data_t.list.add(new SignalOfStock());
+			data_t.list.add(new SignalOfStock());
+			data_t.list.add(new SignalOfStock());
+			
+			list.add(data_t);
+			list.add(data_t);
+			list.add(data_t);
+			
+			
+			
+			
+			
+			
+			
+			mExpListView.setAdapter(new MyExpAdapter(getActivity(), list));
 			
 			/* Test 용 임시 listener */
 			mExpListView.setOnChildClickListener(new OnChildClickListener() {
@@ -537,23 +634,74 @@ public class FragmentSignal extends Fragment {
 			
 			/* 하단 메뉴 설정 */
 			FragmentManager fm=getChildFragmentManager();
-			if(fm.findFragmentById(R.id.bottom_menu) == null) {
-				BottomMenu.BottomMenu_1 bottom_menu = new BottomMenu.BottomMenu_1();
+			BottomMenu.BottomMenu_1 bottom_menu;
+			if((bottom_menu = (BottomMenu.BottomMenu_1)fm.findFragmentById(R.id.bottom_menu)) == null) {
+				bottom_menu = new BottomMenu.BottomMenu_1();
 				fm.beginTransaction().add(R.id.bottom_menu, bottom_menu, "bottom_menu").commit();
 			}
-	
-			
+
+			//클릭 리스너 등록		
+			Button.OnClickListener bt_listener = new Button.OnClickListener() {						
+				@Override
+				public void onClick(View v) {
+					switch(v.getId()) {
+					case R.id.all_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_all();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "all_btn clicked", 0).show();
+						break;
+					case R.id.total_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_total();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "total_btn clicked", 0).show();
+						break;
+					case R.id.indiv_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_indiv();
+						my_adapter.notifyDataSetChanged();
+						*/
+						Toast.makeText(getActivity(), "indiv_btn clicked", 0).show();
+						break;
+					case R.id.alarm_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_alarm();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "alarm_btn clicked", 0).show();
+						break;
+					default :
+						//do nothing
+						break;
+					}
+				}		
+			};
+			bottom_menu.setButtonClickListener(bt_listener);
+
 			return root;			
 		}
 		
 		class MyExpAdapter extends BaseExpandableListAdapter {
+			//private int GROUP_CNT = 3;
+			//private int CHILD_CNT = 5;
+			private int CHILD_CNT_MAX = 5;
+			
 			Context context;
+			ArrayList<SignalSortByStock> list;
+			
 			/* 뷰홀더 코드 */
 			//private ViewHoler viewHolder = null;
 			
-			public MyExpAdapter(Context context) { //부모그룹이랑 차일드 그룹을 받아야 함.
+			public MyExpAdapter(Context context, ArrayList<SignalSortByStock> list) { //부모그룹이랑 차일드 그룹을 받아야 함.
 				super();
-				this.context = context;				
+				this.context = context;
+				this.list=list;
 			}
 			
 			@Override
@@ -563,7 +711,7 @@ public class FragmentSignal extends Fragment {
 			
 			@Override
 			public int getGroupCount() {
-				return GROUP_CNT;
+				return list.size();
 			}
 			
 			@Override
@@ -574,32 +722,84 @@ public class FragmentSignal extends Fragment {
 			@Override
 			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 				View v = convertView;
-				
-				/* View Holder Pattern 을 적용한 예시 */
-				/*
+				GroupViewHolder viewHolder;
 				if(v == null){
-		            viewHolder = new ViewHolder();
-		            v = inflater.inflate(R.layout.list_row, parent, false);
-		            viewHolder.tv_groupName = (TextView) v.findViewById(R.id.tv_group);
-		            viewHolder.iv_image = (ImageView) v.findViewById(R.id.iv_image);
+		            viewHolder = new GroupViewHolder();
+		            v = inflater.inflate(R.layout.fragment_signal_stock_item_parent, parent, false);
+		            
+		            /* inflate 한 View를 수정 */
+					ImageButton bt = (ImageButton)v.findViewById(R.id.go_btn);
+					bt.setFocusable(false);
+					bt.setOnClickListener(new Button.OnClickListener() {
+						public void onClick(View v) {
+							Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
+							startActivity(intent);
+						}
+					});			            
+		            
+		            viewHolder.stock_name = (TextView) v.findViewById(R.id.stock_name);
+		            viewHolder.total_cnt = (TextView)v.findViewById(R.id.total_cnt);         
+		            viewHolder.indiv_cnt = (TextView)v.findViewById(R.id.indiv_cnt);
+		            viewHolder.price = (TextView)v.findViewById(R.id.price);
+		            viewHolder.price_diff = (TextView)v.findViewById(R.id.diff);
+		            viewHolder.price_diff_percent = (TextView)v.findViewById(R.id.diff_percent);
+
 		            v.setTag(viewHolder);
 		        }else{
-		            viewHolder = (ViewHolder)v.getTag();
-		        }
-		         
-		        // 그룹을 펼칠때와 닫을때 아이콘을 변경해 준다.
-		        if(isExpanded){
-		            viewHolder.iv_image.setBackgroundColor(Color.GREEN);
-		        }else{
-		            viewHolder.iv_image.setBackgroundColor(Color.WHITE);
-		        }
-		         
-		        viewHolder.tv_groupName.setText(getGroup(groupPosition));
-		        */
+		            viewHolder = (GroupViewHolder)v.getTag();
+		        }								
+				SignalSortByStock groupData = list.get(groupPosition);
+				viewHolder.stock_name.setText(groupData.stock_name);
+				viewHolder.total_cnt.setText(""+groupData.total_cnt);
+				viewHolder.indiv_cnt.setText(""+groupData.indiv_cnt);
+				viewHolder.price.setText(groupData.price);
+				viewHolder.price_diff.setText(groupData.price_diff);
+				viewHolder.price_diff_percent.setText(groupData.price_diff_percent);
 				
-				/*테스트용으로 그냥 groupview 레이아웃을 inflate 해서 출력 */
-				v =inflater.inflate(R.layout.fragment_signal_stock_item_parent, parent, false);
+				/* 전일 종가 대비 변동량 색 변경 */
+				if(Integer.parseInt(groupData.price_diff) < 0) {
+					viewHolder.price_diff.setTextColor(getResources().getColor(R.color.blue));
+					viewHolder.price_diff_percent.setTextColor(getResources().getColor(R.color.blue));
+				}
+				else if(Integer.parseInt(groupData.price_diff) > 0) {
+					viewHolder.price_diff.setTextColor(getResources().getColor(R.color.red));
+					viewHolder.price_diff_percent.setTextColor(getResources().getColor(R.color.red));
+				}
+				else {
+					viewHolder.price_diff.setTextColor(getResources().getColor(R.color.black));
+					viewHolder.price_diff_percent.setTextColor(getResources().getColor(R.color.black));
+				}
+				
+				/* 숫자가 0보다 클때만 보이게 */
+				if(groupData.total_cnt > 0 ) {
+					viewHolder.total_cnt.setVisibility(View.VISIBLE);
+				}
+				else {
+					viewHolder.total_cnt.setVisibility(View.GONE);
+				}
+				if(groupData.indiv_cnt > 0 ) {
+					viewHolder.indiv_cnt.setVisibility(View.VISIBLE);
+				}
+				else {
+					viewHolder.indiv_cnt.setVisibility(View.GONE);
+				}
+				
+				
+				/* test 용 */
+				if(groupPosition == 2) {
+					v.findViewById(R.id.total_cnt).setVisibility(View.GONE);
+				}						
+
 				return v;
+			}
+			
+			public class GroupViewHolder {			
+				TextView stock_name;
+				TextView total_cnt;
+				TextView indiv_cnt;
+				TextView price;
+				TextView price_diff;
+				TextView price_diff_percent;
 			}
 			
 			@Override
@@ -609,7 +809,12 @@ public class FragmentSignal extends Fragment {
 			
 			@Override
 			public int getChildrenCount(int groupPosition) {
-		        return CHILD_CNT;
+				if(list.get(groupPosition).list.size() < CHILD_CNT_MAX) {
+					return list.get(groupPosition).list.size();
+				}
+				else {
+					return CHILD_CNT_MAX;
+				}
 		    }
 			
 			@Override
@@ -620,21 +825,78 @@ public class FragmentSignal extends Fragment {
 			@Override
 			public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 				View v = convertView;
-				/*뷰홀더패턴 코드*/
-				/*
+				ChildViewHolder childViewHolder;
+
 				if(v == null){
-		            viewHolder = new ViewHolder();
-		            v = inflater.inflate(R.layout.list_row, null);
-		            viewHolder.tv_childName = (TextView) v.findViewById(R.id.tv_child);
-		            v.setTag(viewHolder);
+		            childViewHolder = new ChildViewHolder();
+		            v = inflater.inflate(R.layout.fragment_signal_stock_item_child, null);
+		            childViewHolder.image = (ImageView)v.findViewById(R.id.image);
+		            childViewHolder.cond_type = (View)v.findViewById(R.id.type_color);
+		            childViewHolder.signal_name = (TextView)v.findViewById(R.id.signal);
+		            childViewHolder.signal_type = (TextView)v.findViewById(R.id.signal_type);
+		            childViewHolder.date = (TextView)v.findViewById(R.id.date);
+		            childViewHolder.alarm_bt = (ImageButton)v.findViewById(R.id.alarm_bt);
+		            v.setTag(childViewHolder);
+		            
+					ImageButton bt = (ImageButton)v.findViewById(R.id.alarm_bt);
+					bt.setFocusable(false);
+					/* 버튼 리스너 등록할 것 */
 		        }else{
-		            viewHolder = (ViewHolder)v.getTag();
+		            childViewHolder = (ChildViewHolder)v.getTag();
 		        }
-		         
-		        viewHolder.tv_childName.setText(getChild(groupPosition, childPosition));
-		        */
-				v =inflater.inflate(R.layout.fragment_signal_stock_item_child, null);
+				
+				SignalOfStock data = list.get(groupPosition).list.get(childPosition);
+				
+				
+				childViewHolder.signal_name.setText(data.signal_name);
+				/* 이미지 교체 작업 코드 작성할 것*/			
+				
+				
+				
+				//이미지 밑에 색을 변경
+				if(data.cond_type == SignalOfStock.EASY) {
+					childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
+				}
+				else if(data.cond_type == SignalOfStock.HARD) {
+					childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));
+				}
+				else if(data.cond_type == SignalOfStock.CUSTOM) {
+					childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
+				}
+				
+				//전체/개별 태그를 설정
+				if(data.signal_type == SignalOfStock.TOTAL) {
+					childViewHolder.signal_type.setText("전체");
+					childViewHolder.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_total));
+				}
+				else if(data.signal_type == SignalOfStock.INDIV) {
+					childViewHolder.signal_type.setText("개별");
+					childViewHolder.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_indiv));
+				}		
+				
+				//날짜를 설정
+				childViewHolder.date.setText(data.date);
+				
+				
+				//알람 설정
+				if(data.is_alarm == SignalOfStock.IS_ALARM) {
+					//알람 일때 설정코드
+				}
+				else if(data.is_alarm == SignalOfStock.IS_NOT_ALARM) {
+					//알람이 아닐때
+				}
+
+				
 				return v;
+			}
+			
+			public class ChildViewHolder {		
+				ImageView image;
+				TextView signal_name;
+				View cond_type;
+				TextView signal_type;
+				TextView date;
+				ImageButton alarm_bt;
 			}
 			
 			@Override
@@ -668,27 +930,91 @@ public class FragmentSignal extends Fragment {
 			this.inflater = inflater;
 			View root = inflater.inflate(R.layout.simple_expandablelistview, container, false);
 			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
-			mExpListView.setAdapter(new MyExpAdapter(getActivity()));
+			
+			/* test */
+			ArrayList<SignalSortBySignal> list = new ArrayList<SignalSortBySignal>();
+			SignalSortBySignal tt = new SignalSortBySignal();
+			tt.list.add(new SignalOfSignal());
+			tt.list.add(new SignalOfSignal());
+			tt.list.add(new SignalOfSignal());
+			list.add(tt);
+			list.add(tt);
+			list.add(tt);
+
+			
+			mExpListView.setAdapter(new MyExpAdapter(getActivity(), list));
 			
 			/* 하단 메뉴 설정 */
 			FragmentManager fm=getChildFragmentManager();
-			if(fm.findFragmentById(R.id.bottom_menu) == null) {
-				BottomMenu.BottomMenu_1 bottom_menu = new BottomMenu.BottomMenu_1();
+			BottomMenu.BottomMenu_1 bottom_menu;
+			if((bottom_menu = (BottomMenu.BottomMenu_1)fm.findFragmentById(R.id.bottom_menu)) == null) {
+				bottom_menu = new BottomMenu.BottomMenu_1();
 				fm.beginTransaction().add(R.id.bottom_menu, bottom_menu, "bottom_menu").commit();
 			}
+
+			//클릭 리스너 등록		
+			Button.OnClickListener bt_listener = new Button.OnClickListener() {						
+				@Override
+				public void onClick(View v) {
+					switch(v.getId()) {
+					case R.id.all_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_all();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "all_btn clicked", 0).show();
+						break;
+					case R.id.total_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_total();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "total_btn clicked", 0).show();
+						break;
+					case R.id.indiv_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_indiv();
+						my_adapter.notifyDataSetChanged();
+						*/
+						Toast.makeText(getActivity(), "indiv_btn clicked", 0).show();
+						break;
+					case R.id.alarm_btn :
+						/*
+						received_signal = MyDataBase.getReceivedSignalList_alarm();
+						my_adapter.notifyDataSetChanged();
+						*/
+						
+						Toast.makeText(getActivity(), "alarm_btn clicked", 0).show();
+						break;
+					default :
+						//do nothing
+						break;
+					}
+				}		
+			};
+			bottom_menu.setButtonClickListener(bt_listener);
 			
 			
 			return root;			
 		}
 		
 		class MyExpAdapter extends BaseExpandableListAdapter {
+			//private int GROUP_CNT = 3;
+			//private int CHILD_CNT = 5;
+			private int CHILD_CNT_MAX = 5;
+			
 			Context context;
+			ArrayList<SignalSortBySignal> list;
+			
 			/* 뷰홀더 코드 */
 			//private ViewHoler viewHolder = null;
 			
-			public MyExpAdapter(Context context) { //부모그룹이랑 차일드 그룹을 받아야 함.
+			public MyExpAdapter(Context context, ArrayList<SignalSortBySignal> list) { //부모그룹이랑 차일드 그룹을 받아야 함.
 				super();
-				this.context = context;				
+				this.context = context;
+				this.list=list;
 			}
 			
 			@Override
@@ -698,7 +1024,7 @@ public class FragmentSignal extends Fragment {
 			
 			@Override
 			public int getGroupCount() {
-				return GROUP_CNT;
+				return list.size();
 			}
 			
 			@Override
@@ -709,40 +1035,80 @@ public class FragmentSignal extends Fragment {
 			@Override
 			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 				View v = convertView;
-				
-				/* View Holder Pattern 을 적용한 예시 */
-				/*
+				GroupViewHolder viewHolder;
 				if(v == null){
-		            viewHolder = new ViewHolder();
-		            v = inflater.inflate(R.layout.list_row, parent, false);
-		            viewHolder.tv_groupName = (TextView) v.findViewById(R.id.tv_group);
-		            viewHolder.iv_image = (ImageView) v.findViewById(R.id.iv_image);
+		            viewHolder = new GroupViewHolder();
+		            v = inflater.inflate(R.layout.fragment_signal_signal_item_parent, parent, false);
+		            
+		            /* inflate 한 View를 수정 */
+					ImageButton bt = (ImageButton)v.findViewById(R.id.go_btn);
+					bt.setFocusable(false);
+					bt.setOnClickListener(new Button.OnClickListener() {
+						public void onClick(View v) {
+							Intent intent = new Intent(getActivity(), ActivitySignalDetail.class);
+							startActivity(intent);
+						}
+					});
+		            
+		            viewHolder.image = (ImageView) v.findViewById(R.id.image);
+		            viewHolder.type_color = (View)v.findViewById(R.id.type_color);         
+		            viewHolder.signal = (TextView)v.findViewById(R.id.signal);
+		            viewHolder.signal_cnt = (TextView)v.findViewById(R.id.signal_cnt);
+		            viewHolder.alarm = (ImageView)v.findViewById(R.id.alarm_image);
+
 		            v.setTag(viewHolder);
 		        }else{
-		            viewHolder = (ViewHolder)v.getTag();
-		        }
-		         
-		        // 그룹을 펼칠때와 닫을때 아이콘을 변경해 준다.
-		        if(isExpanded){
-		            viewHolder.iv_image.setBackgroundColor(Color.GREEN);
-		        }else{
-		            viewHolder.iv_image.setBackgroundColor(Color.WHITE);
-		        }
-		         
-		        viewHolder.tv_groupName.setText(getGroup(groupPosition));
-		        */
+		            viewHolder = (GroupViewHolder)v.getTag();
+		        }								
+				SignalSortBySignal groupData = list.get(groupPosition);
 				
-				/*테스트용으로 그냥 groupview 레이아웃을 inflate 해서 출력 */
-				v =inflater.inflate(R.layout.fragment_signal_signal_item_parent, parent, false);
-				ImageButton bt = (ImageButton)v.findViewById(R.id.go_btn);
-				bt.setFocusable(false);
-				bt.setOnClickListener(new Button.OnClickListener() {
-					public void onClick(View v) {
-						Intent intent = new Intent(getActivity(), ActivitySignalDetail.class);
-						startActivity(intent);
-					}
-				});				
+				
+				
+				/*이미지 변경 코드 작성할 것 */
+				
+				//이미지 밑에 색을 변경
+				if(groupData.cond_type == SignalSortBySignal.EASY) {
+					viewHolder.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
+				}
+				else if(groupData.cond_type == SignalSortBySignal.HARD) {
+					viewHolder.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));
+				}
+				else if(groupData.cond_type == SignalSortBySignal.CUSTOM) {
+					viewHolder.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
+				}
+				
+				
+				//시그널 명 설정
+				viewHolder.signal.setText(groupData.signal_name);
+				
+				//카운트 설정
+				if(groupData.signal_type == SignalSortBySignal.TOTAL) {
+					viewHolder.signal_cnt.setText(""+groupData.total_cnt);
+					viewHolder.signal_cnt.setBackgroundResource(R.drawable.total_cnt_oval);
+				}
+				else if(groupData.signal_type == SignalSortBySignal.INDIV) {
+					viewHolder.signal_cnt.setText(""+groupData.indiv_cnt);
+					viewHolder.signal_cnt.setBackgroundResource(R.drawable.indiv_cnt_oval);
+				}
+				
+				/*알람 뷰를 변경하는 코드를 작성할 것*/
+				//알람 설정
+				if(groupData.is_alarm == SignalSortBySignal.IS_ALARM) {
+					//알람 일때 설정코드
+				}
+				else if(groupData.is_alarm == SignalSortBySignal.IS_NOT_ALARM) {
+					//알람이 아닐때
+				}
+
 				return v;
+			}
+			
+			public class GroupViewHolder {	
+				ImageView image;
+				View type_color;
+				TextView signal;
+				TextView signal_cnt;
+				ImageView alarm;
 			}
 			
 			@Override
@@ -752,7 +1118,12 @@ public class FragmentSignal extends Fragment {
 			
 			@Override
 			public int getChildrenCount(int groupPosition) {
-		        return CHILD_CNT;
+				if(list.get(groupPosition).list.size() < CHILD_CNT_MAX) {
+					return list.get(groupPosition).list.size();
+				}
+				else {
+					return CHILD_CNT_MAX;
+				}
 		    }
 			
 			@Override
@@ -763,21 +1134,54 @@ public class FragmentSignal extends Fragment {
 			@Override
 			public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 				View v = convertView;
-				/*뷰홀더패턴 코드*/
-				/*
+				ChildViewHolder childViewHolder;
+
 				if(v == null){
-		            viewHolder = new ViewHolder();
-		            v = inflater.inflate(R.layout.list_row, null);
-		            viewHolder.tv_childName = (TextView) v.findViewById(R.id.tv_child);
-		            v.setTag(viewHolder);
+		            childViewHolder = new ChildViewHolder();
+		            v = inflater.inflate(R.layout.fragment_signal_signal_item_child, null);
+		            
+		            childViewHolder.stock_name = (TextView)v.findViewById(R.id.stock_name);
+		            childViewHolder.price = (TextView)v.findViewById(R.id.price);
+		            childViewHolder.date = (TextView)v.findViewById(R.id.date);
+		            childViewHolder.alarm_bt = (ImageButton)v.findViewById(R.id.alarm_bt);
+		            v.setTag(childViewHolder);
+		            
+					ImageButton bt = (ImageButton)v.findViewById(R.id.alarm_bt);
+					bt.setFocusable(false);
+					/* 버튼 리스너 등록할 것 */
 		        }else{
-		            viewHolder = (ViewHolder)v.getTag();
+		            childViewHolder = (ChildViewHolder)v.getTag();
 		        }
-		         
-		        viewHolder.tv_childName.setText(getChild(groupPosition, childPosition));
-		        */
-				v =inflater.inflate(R.layout.fragment_signal_signal_item_child, null);
+				
+				SignalOfSignal data = list.get(groupPosition).list.get(childPosition);
+				
+				
+				//주식명을 변경
+				childViewHolder.stock_name.setText(data.stock_name);
+				
+				//주식 가격을 변경
+				childViewHolder.price.setText(data.price);
+				
+				//날짜를 설정
+				childViewHolder.date.setText(data.date);
+				
+				
+				//알람 설정
+				if(data.is_alarm == SignalOfStock.IS_ALARM) {
+					//알람 일때 설정코드
+				}
+				else if(data.is_alarm == SignalOfStock.IS_NOT_ALARM) {
+					//알람이 아닐때
+				}
+				
 				return v;
+			}
+			
+			public class ChildViewHolder {
+				TextView stock_name;
+				TextView price;
+				TextView date;
+				ImageButton alarm_bt;
 			}
 			
 			@Override

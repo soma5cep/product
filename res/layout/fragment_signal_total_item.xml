@@ -5,10 +5,10 @@
     android:id="@+id/list_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingLeft="10dp"
-    android:paddingRight="10dp"
-    android:paddingTop="7dp"
-    android:paddingBottom="7dp"
+    android:paddingLeft="@dimen/item_parent_paddingLeft"
+    android:paddingRight="@dimen/item_parent_paddingRight"
+    android:paddingTop="@dimen/item_parent_paddingTop"
+    android:paddingBottom="@dimen/item_parent_paddingBottom"
     android:background="#FFFFFF" >
     
     <LinearLayout
@@ -33,7 +33,8 @@
 	        android:layout_height="8dp"
 	        android:background="#6A0808" />
     </LinearLayout>
-        
+    
+
     <TextView 
         android:id="@+id/date"
         android:layout_width="wrap_content"
@@ -52,17 +53,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@id/date"
-        android:layout_alignBaseline="@id/date"
-        android:textSize="14sp"
-        android:background="#EBB7B1"
+        android:layout_alignBottom="@id/date"
+        android:background="@color/signal_type_total"
         android:text="전체"
-        android:layout_marginRight="5dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        android:paddingLeft="3dp"
-        android:paddingRight="3dp"
-        android:includeFontPadding="false"
-        android:typeface="monospace"
+        style="@style/tagStyle"
         />
     
     
@@ -72,9 +66,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@id/signal_type"
-        android:layout_alignBaseline="@id/date"
+        android:layout_alignBottom="@id/date"
         android:textSize="14sp"
-        android:background="#FD6C28"
+        android:background="@color/new_signal_noti"
         android:text="N"
         android:textColor="#FFFFFF"
         android:layout_marginRight="5dp"
@@ -102,25 +96,35 @@
         android:id="@+id/stock_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@+id/alarm_icon"
+        android:layout_toLeftOf="@+id/linear_bt"
         android:layout_centerVertical="true"
         android:textSize="20sp"
         android:text="코카콜라"
-        android:layout_marginRight="5dp"
+        android:layout_marginRight="10dp"
         android:includeFontPadding="false"
         android:typeface="monospace"
         />
 
-    
-    <!-- 이미지 뷰로 넣었는데 화면에서 클릭을 가능하게 하려면 이미지 버튼으로 바꾸고 리스너 등록 -->
-    <ImageView
-        android:id="@id/alarm_icon"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@id/linear_bt"
         android:layout_height="wrap_content"
-       	android:src="@drawable/ic_action_flash_on"
-        android:layout_alignParentRight="true"
+        android:layout_width="wrap_content"
+        android:orientation="horizontal"
+        android:divider="@drawable/vertical_divider_light"
+        android:showDividers="beginning"
         android:layout_centerVertical="true"
-        />
+        android:layout_alignParentRight="true"
+        >
+	    <ImageButton
+	        android:id="@+id/alarm_bt"
+	        android:title="알람설정"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/ic_action_flash_on"
+	        style="?android:attr/borderlessButtonStyle"
+	        android:adjustViewBounds="true"
+	        />
+     </LinearLayout>
     
 </RelativeLayout>
     

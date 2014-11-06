@@ -2,6 +2,8 @@ package com.example.product;
 
 import java.util.ArrayList;
 
+import com.example.product.FragmentSignal.FragmentSignalStock.MyExpAdapter.ChildViewHolder;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -13,12 +15,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ActivityStockDetail extends FragmentActivity{
-	private ArrayList<String> items;
+	private ArrayList<SignalOfStock> items;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -26,18 +32,73 @@ public class ActivityStockDetail extends FragmentActivity{
 		setContentView(R.layout.activity_stock_detail);		
 		
 		ListView lv = (ListView)findViewById(R.id.list_view);
-		items = new ArrayList<String>();
-		items.add("!");
-		items.add("a");
-		items.add("b");
 		
-		lv.setAdapter(new MyAdapter(this, R.layout.fragment_signal_stock_item_child, items));
 		
-		FragmentManager fm=getSupportFragmentManager();		
-		if(fm.findFragmentById(R.id.bottom_menu) == null) {
-			BottomMenu.BottomMenu_1 bottom_menu = new BottomMenu.BottomMenu_1();
+		/*test */
+		items = new ArrayList<SignalOfStock>();
+		SignalOfStock tt = new SignalOfStock();		
+		items.add(tt);
+		items.add(tt);
+		items.add(tt);
+		
+		lv.setAdapter(new MyAdapter(this, R.layout.activity_stock_detail_item, items));
+		
+		/* 하단 메뉴 설정 */
+		FragmentManager fm=getSupportFragmentManager();
+		BottomMenu.BottomMenu_1 bottom_menu;
+		if((bottom_menu = (BottomMenu.BottomMenu_1)fm.findFragmentById(R.id.bottom_menu)) == null) {
+			bottom_menu = new BottomMenu.BottomMenu_1();
 			fm.beginTransaction().add(R.id.bottom_menu, bottom_menu, "bottom_menu").commit();
 		}
+		
+
+		//클릭 리스너 등록		
+		Button.OnClickListener bt_listener = new Button.OnClickListener() {						
+			@Override
+			public void onClick(View v) {
+				switch(v.getId()) {
+				case R.id.all_btn :
+					/*
+					received_signal = MyDataBase.getReceivedSignalList_all();
+					my_adapter.notifyDataSetChanged();
+					*/
+					
+					Toast.makeText(ActivityStockDetail.this, "all_btn clicked", 0).show();
+					break;
+				case R.id.total_btn :
+					/*
+					received_signal = MyDataBase.getReceivedSignalList_total();
+					my_adapter.notifyDataSetChanged();
+					*/
+					
+					Toast.makeText(ActivityStockDetail.this, "total_btn clicked", 0).show();
+					break;
+				case R.id.indiv_btn :
+					/*
+					received_signal = MyDataBase.getReceivedSignalList_indiv();
+					my_adapter.notifyDataSetChanged();
+					*/
+					Toast.makeText(ActivityStockDetail.this, "indiv_btn clicked", 0).show();
+					break;
+				case R.id.alarm_btn :
+					/*
+					received_signal = MyDataBase.getReceivedSignalList_alarm();
+					my_adapter.notifyDataSetChanged();
+					*/
+					
+					Toast.makeText(ActivityStockDetail.this, "alarm_btn clicked", 0).show();
+					break;
+				default :
+					//do nothing
+					break;
+				}
+			}		
+		};
+		bottom_menu.setButtonClickListener(bt_listener);
+		
+		
+		
+		/* 주식의 상세 정보를 출력하는 부분 하기 */
 		
 	}
 	
@@ -63,7 +124,7 @@ public class ActivityStockDetail extends FragmentActivity{
 		}
 		return super.onOptionsItemSelected(item);
 	}
-}
+
 
 
 /***************************************
@@ -73,60 +134,97 @@ public class ActivityStockDetail extends FragmentActivity{
  *
  ****************************************/
 
-class MyAdapter extends ArrayAdapter<String> {
-	private ArrayList<String> items;
-	private Context context;
-	private int resource;
-	
-	public MyAdapter(Context context, int viewResourceId, ArrayList<String> items) {
-		super(context, viewResourceId, items);
-		this.items = items;
-		this.context = context;
-		resource = viewResourceId;
-	}
 
-	@Override
-	public View getView(int position, View convertView, ViewGroup parent) {
-		/*
-		RelativeLayout v = (RelativeLayout)convertView;
-		ViewHolder vh;
-		if (v == null) {
-			v = (RelativeLayout)View.inflate(context, resource, null);
-			vh = new ViewHolder();
-			
-			vh.signal = (TextView)v.findViewById(R.id.signal);	
-			vh.inout = (TextView)v.findViewById(R.id.inout);
-			vh.stock_name = (TextView)v.findViewById(R.id.stock_name);
-			vh.market_type = (TextView)v.findViewById(R.id.market_type);
-			vh.time = (TextView)v.findViewById(R.id.time);
-			vh.price_diff_percent = (TextView)v.findViewById(R.id.price_diff_percent);
-			vh.price_diff = (TextView)v.findViewById(R.id.price_diff);
-			vh.trading_volume = (TextView)v.findViewById(R.id.trading_volume);
-			vh.stock_price = (TextView)v.findViewById(R.id.stock_price);
-			
-			v.setTag(vh);
+	/* FragmentSignal의 종목별 어댑터의 ChildView 하는 부분과 동일 따라서 복붙 */
+	class MyAdapter extends ArrayAdapter<SignalOfStock> {
+		private ArrayList<SignalOfStock> items;
+		private Context context;
+		private int resource;
+
+		public MyAdapter(Context context, int viewResourceId, ArrayList<SignalOfStock> items) {
+			super(context, viewResourceId, items);
+			this.items = items;
+			this.context = context;
+			resource = viewResourceId;
 		}
-		else {
-			vh = (ViewHolder)v.getTag();
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+
+			View v = convertView;
+			ChildViewHolder childViewHolder;
+			if (v == null) {
+				v = View.inflate(context, resource, null);
+				childViewHolder = new ChildViewHolder();
+
+
+				childViewHolder.image = (ImageView)v.findViewById(R.id.image);
+				childViewHolder.cond_type = (View)v.findViewById(R.id.type_color);
+				childViewHolder.signal_name = (TextView)v.findViewById(R.id.signal);
+				childViewHolder.signal_type = (TextView)v.findViewById(R.id.signal_type);
+				childViewHolder.date = (TextView)v.findViewById(R.id.date);
+				childViewHolder.alarm_bt = (ImageButton)v.findViewById(R.id.alarm_bt);
+				v.setTag(childViewHolder);
+
+				ImageButton bt = (ImageButton)v.findViewById(R.id.alarm_bt);
+				bt.setFocusable(false);
+				/* 버튼 리스너 등록할 것 */
+			}else{
+				childViewHolder = (ChildViewHolder)v.getTag();
+			}
+
+			SignalOfStock data = items.get(position);
+
+
+			childViewHolder.signal_name.setText(data.signal_name);
+			/* 이미지 교체 작업 코드 작성할 것*/			
+
+			//이미지 밑에 색을 변경
+			if(data.cond_type == SignalOfStock.EASY) {
+				childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
+			}
+			else if(data.cond_type == SignalOfStock.HARD) {
+				childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));
+			}
+			else if(data.cond_type == SignalOfStock.CUSTOM) {
+				childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
+			}
+
+			//전체/개별 태그를 설정
+			if(data.signal_type == SignalOfStock.TOTAL) {
+				childViewHolder.signal_type.setText("전체");
+				childViewHolder.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_total));
+			}
+			else if(data.signal_type == SignalOfStock.INDIV) {
+				childViewHolder.signal_type.setText("개별");
+				childViewHolder.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_indiv));
+			}		
+
+			//날짜를 설정
+			childViewHolder.date.setText(data.date);
+
+
+			//알람 설정
+			if(data.is_alarm == SignalOfStock.IS_ALARM) {
+				//알람 일때 설정코드
+			}
+			else if(data.is_alarm == SignalOfStock.IS_NOT_ALARM) {
+				//알람이 아닐때
+			}
+
+
+			return v;
+
 		}
-		RTSBox b = items.get(position);
-		if(b != null) {
-			ConvertRTSBox.convertBoxToRel(b, vh);
+
+
+		public class ChildViewHolder {		
+			ImageView image;
+			TextView signal_name;
+			View cond_type;
+			TextView signal_type;
+			TextView date;
+			ImageButton alarm_bt;
 		}
-		return v;
-		*/
-		return (RelativeLayout)View.inflate(context, resource, null);
-	}
-	
-	public static class ViewHolder {		
-		TextView signal;
-		TextView inout;
-		TextView stock_name;
-		TextView market_type;
-		TextView time;
-		TextView price_diff_percent;
-		TextView price_diff;
-		TextView trading_volume;
-		TextView stock_price;		
 	}
 }

@@ -6,7 +6,10 @@
     android:id="@+id/item_parent"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dip"
+    android:paddingLeft="@dimen/item_parent_paddingLeft"
+    android:paddingRight="@dimen/item_parent_paddingRight"
+    android:paddingTop="@dimen/item_parent_paddingTop"
+    android:paddingBottom="@dimen/item_parent_paddingBottom"
     android:background="#FFFFFF" >
         
     <TextView 
