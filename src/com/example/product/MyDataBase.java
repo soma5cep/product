@@ -134,7 +134,7 @@ class ReceivedSignal {
 	private int is_alarm;
 	private String signal_name;
 	private String in_out;
-	private String stock_name;
+	public String stock_name;
 	private String time;
 
 	//INFO 를 표현할 멤버들을 추가할 것.
@@ -306,7 +306,7 @@ class SignalOfStock {
 class DetailOfStock {
 	String price = "0";
 	String price_diff = "0";
-	String price_diff_precent = "0";
+	String price_diff_percent = "0";
 	String high_price = "0";
 	String low_price = "0";
 	String trading_volume="0";
@@ -343,3 +343,46 @@ class SignalOfSignal {
 	int is_alarm=IS_ALARM;
 }
 
+// 설정한 조건(신호) 정보
+class SettedCond {
+	static final int IS_ALARM = 1;
+	static final int IS_NOT_ALARM = 0;
+	static final int EASY = 0;
+	static final int HARD = 1;
+	static final int CUSTOM = 2;
+	static final int TOTAL = 0;
+	static final int INDIV = 1;
+	int signal_type=TOTAL;
+	int cond_type=EASY;
+	int is_alarm=IS_ALARM;
+	String cond_name="상승주_t";	
+}
+
+//조건 목록
+class ConditionGroup {
+	static final int EASY = 0;
+	static final int HARD = 1;
+	static final int JAEMU = 0;
+	static final int SISE = 1;
+	static final int KISOOL = 2;
+	static final int PATTERN = 3;
+	int cond_type = EASY;
+	int cond_hard_category = JAEMU;
+	public ArrayList<ConditionAbstract> list = new ArrayList<ConditionAbstract>();	
+}
+
+//조건 abstract
+class ConditionAbstract {
+	static final int EASY = 0;
+	static final int HARD = 1;
+	int cond_type = EASY;
+	String cond_name="낮은체결강도";
+	String cond_compose="주가등락률, 일반조건 A, 일반조건 B";
+	int user_cnt = 1;
+	int love_cnt = 2;
+}
+
+//조건
+class Condition {
+	//미정
+}

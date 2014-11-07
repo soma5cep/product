@@ -2,9 +2,8 @@ package com.example.product;
 
 import java.util.ArrayList;
 
-import com.example.product.ActivityStockDetail.MyAdapter.ChildViewHolder;
-
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -25,7 +24,8 @@ public class ActivitySignalDetail extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_signal_detail);		
+		setContentView(R.layout.activity_signal_detail);
+		
 		
 		ListView lv = (ListView)findViewById(R.id.list_view);
 		items = new ArrayList<String>();

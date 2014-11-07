@@ -31,6 +31,88 @@ public class ActivityStockDetail extends FragmentActivity{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_stock_detail);		
 		
+		
+		//타이틀 설정
+		Intent intent = getIntent();
+		String stock_name = intent.getStringExtra("stock_name");
+		if(stock_name != null) {
+			setTitle(stock_name);			
+		}
+		
+		
+		// 해당 주식 종목에 대해 정보를 받아옴
+		/* 서버에 리퀘스트를 보내는 코드 
+		 * 
+		 * 
+		 * 
+		 * */
+		
+		// 임시 test 코드 
+		DetailOfStock detail = new DetailOfStock();
+		detail.price = "150,000";
+		detail.price_diff = "-3500";
+		detail.price_diff_percent="(-12.5%)";
+		detail.high_price="170,000";
+		detail.low_price="145,000";
+		detail.trading_volume="48,000";
+		detail.trading_volume_avr="77,000";
+		
+		
+		
+		// 받아온 데이터를 화면에 띄움
+		
+		//가격 정보
+		TextView price = (TextView)findViewById(R.id.price);
+		price.setText(detail.price);
+		
+		
+		//price_diff 에 따라 값을 설정		
+		//price_diff 값에 쉼표가 들어가면  parse가 안된다. 주의!
+		TextView price_diff = (TextView)findViewById(R.id.price_diff);
+		TextView price_diff_percent = (TextView)findViewById(R.id.price_diff_percent);
+		if(Integer.parseInt(detail.price_diff) > 0) {
+			price_diff.setTextColor(getResources().getColor(R.color.red));
+			price_diff_percent.setTextColor(getResources().getColor(R.color.red));	
+		}
+		else if(Integer.parseInt(detail.price_diff) < 0) {
+			price_diff.setTextColor(getResources().getColor(R.color.blue));
+			price_diff_percent.setTextColor(getResources().getColor(R.color.blue));	
+		}
+		else {
+			price_diff.setTextColor(getResources().getColor(R.color.black));
+			price_diff_percent.setTextColor(getResources().getColor(R.color.black));	
+		}		
+		price_diff.setText(detail.price_diff);
+		price_diff_percent.setText(detail.price_diff_percent);
+		
+		//고가 저가 설정
+		TextView high_price = (TextView)findViewById(R.id.highest_price);
+		TextView low_price = (TextView)findViewById(R.id.lowest_price);
+		
+		if(detail.high_price == detail.low_price) {
+			high_price.setTextColor(getResources().getColor(R.color.black));
+			low_price.setTextColor(getResources().getColor(R.color.black));
+		}
+		else {
+			high_price.setTextColor(getResources().getColor(R.color.red));
+			low_price.setTextColor(getResources().getColor(R.color.blue));
+		}
+		high_price.setText(detail.high_price);
+		low_price.setText(detail.low_price);
+		
+		//거래량 설정		
+		TextView trading_volume = (TextView)findViewById(R.id.trade_volume);
+		TextView trading_volume_avr = (TextView)findViewById(R.id.trade_volume_average);
+		trading_volume.setText(detail.trading_volume);
+		trading_volume_avr.setText(detail.trading_volume_avr);
+		
+
+				
+		
+		
+		
+		
+
 		ListView lv = (ListView)findViewById(R.id.list_view);
 		
 		
@@ -117,9 +199,13 @@ public class ActivityStockDetail extends FragmentActivity{
 	
 		int id = item.getItemId();
 		if (id == R.id.action_my_settings) {
-			Intent intent = new Intent(this, ActivityStockDetailSettings.class);
-			startActivity(intent);
+			
+			Intent intent = new Intent(this, ActivityStockDetailSettings.class);		
+			//인텐트에 주식의 이름을 전달		
+			intent.putExtra("stock_name", getTitle());		
 			//설정 메뉴로 진입
+			startActivity(intent);
+			
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

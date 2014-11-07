@@ -291,6 +291,8 @@ public class FragmentSignal extends Fragment {
 				setListAdapter(my_adapter = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, received_signal));
 			
 			
+				// 기본적으로 divider를 지원하기 때문에 아래 코드가 무색하다.
+				// 일단 유지
 				ListView mListView = getListView();
 				mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 				mListView.setDivider(new ColorDrawable(Color.LTGRAY));
@@ -303,6 +305,10 @@ public class FragmentSignal extends Fragment {
 			//mHost.onItemChecked(position);
 			l.setItemChecked(position, true);
 			Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
+			
+			//인텐트에 클릭된 신호의 주식이름 정보를 전달
+			ReceivedSignal data = received_signal.get(position);			
+			intent.putExtra("stock_name", data.stock_name);
 			startActivity(intent);
 			//Toast.makeText(getActivity(), position+" is clicked", 0).show();
 		}
@@ -418,6 +424,7 @@ public class FragmentSignal extends Fragment {
 	public static class FragmentSignalTotalSettings extends ListFragment {
 		private Menu myMenu;
 		FragmentSignal parent;
+		static 	ArrayList<SettedCond> list;
 		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -477,17 +484,24 @@ public class FragmentSignal extends Fragment {
 			super.onActivityCreated(savedInstanceState);
 			
 			/* test code */
-			
-			ArrayList<String> dd=new ArrayList<String>();
-			dd.add("aaa");
-			dd.add("bbb");
-			dd.add("ccc");
-			dd.add("d");
-			dd.add("e");
-			dd.add("f");
+			if(list == null) {
+				list=new ArrayList<SettedCond>();
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+				list.add(new SettedCond());
+			}
+				
 			
 
-			setListAdapter(new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_settings_item, dd));
+			setListAdapter(new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_settings_item, list));
 			
 			
 			/*
@@ -501,12 +515,12 @@ public class FragmentSignal extends Fragment {
 		}
 		
 		
-		class MyArrayAdapter extends ArrayAdapter<String> {
-			private ArrayList<String> items;
+		class MyArrayAdapter extends ArrayAdapter<SettedCond> {
+			private ArrayList<SettedCond> items;
 			private Context context;
 			private int resource;
 
-			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<String> items) {
+			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<SettedCond> items) {
 				super(context, viewResourceId, items);
 				this.items = items;
 				this.context = context;
@@ -514,52 +528,81 @@ public class FragmentSignal extends Fragment {
 			}
 
 			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				/*
+			public View getView(final int position, View convertView, ViewGroup parent) {
+
 				RelativeLayout v = (RelativeLayout)convertView;
 				ViewHolder vh;
 				if (v == null) {
 					v = (RelativeLayout)View.inflate(context, resource, null);
 					vh = new ViewHolder();
 					
-					vh.signal = (TextView)v.findViewById(R.id.signal);	
-					vh.inout = (TextView)v.findViewById(R.id.inout);
-					vh.stock_name = (TextView)v.findViewById(R.id.stock_name);
-					vh.market_type = (TextView)v.findViewById(R.id.market_type);
-					vh.time = (TextView)v.findViewById(R.id.time);
-					vh.price_diff_percent = (TextView)v.findViewById(R.id.price_diff_percent);
-					vh.price_diff = (TextView)v.findViewById(R.id.price_diff);
-					vh.trading_volume = (TextView)v.findViewById(R.id.trading_volume);
-					vh.stock_price = (TextView)v.findViewById(R.id.stock_price);
+					vh.cond_name = (TextView)v.findViewById(R.id.signal);
+					vh.cond_type = (View)v.findViewById(R.id.type_color);	
+					vh.image = (ImageView)v.findViewById(R.id.image);	
+					vh.alarm_bt = (ImageButton)v.findViewById(R.id.alarm_bt);		
 					
+					vh.alarm_bt.setOnClickListener(new Button.OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							Toast.makeText(getActivity(), "알람버튼이 눌려졌을때 동작을 수행", 0).show();
+							/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
+						}						
+					});						
 					v.setTag(vh);
 				}
 				else {
 					vh = (ViewHolder)v.getTag();
 				}
-				RTSBox b = items.get(position);
-				if(b != null) {
-					ConvertRTSBox.convertBoxToRel(b, vh);
+				
+				SettedCond data = items.get(position);
+				
+				vh.cond_name.setText(data.cond_name);
+				/* cond_name 에 따라서 이미지를 변경하는 코드를 작성할 것. */
+				
+				
+				//이미지 아래 VIew 색을 변경
+				if(data.cond_type == SettedCond.EASY) {
+					vh.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
 				}
-				return v;
-				*/
-				RelativeLayout v = (RelativeLayout)View.inflate(context, resource, null);
+				else if(data.cond_type == SettedCond.HARD) {
+					vh.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));
+				}
+				else if(data.cond_type == SettedCond.CUSTOM) {
+					vh.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
+				}
+				
+				//알람 이미지를 변경
+				if(data.is_alarm == SettedCond.IS_ALARM) {
+					//알람 일때 설정코드
+				}
+				else if(data.is_alarm == SettedCond.IS_NOT_ALARM) {
+					//알람이 아닐때
+				}
+				
+				
+				/* 삭제 버튼 리스너를 등록 */
+				((ImageButton)v.findViewById(R.id.delete_bt)).setOnClickListener(new Button.OnClickListener() {
+					@Override
+					public void onClick(View v) {							
+						Toast.makeText(getActivity(), ""+position+" 번쨰 아이템을 삭제", 0).show();						
+						items.remove(position);
+						notifyDataSetChanged();
+						/* 삭제 헀다는 정보를 서버에 보내야 함 */
+					}
+				});
+				
+
 				return v;
 			}
 			
-			/*
-			public static class ViewHolder {		
-				TextView signal;
-				TextView inout;
-				TextView stock_name;
-				TextView market_type;
-				TextView time;
-				TextView price_diff_percent;
-				TextView price_diff;
-				TextView trading_volume;
-				TextView stock_price;		
+		
+			public class ViewHolder {
+				ImageView image;
+				TextView cond_name;
+				View cond_type;
+				ImageButton alarm_bt;
 			}
-			*/
+
 		}
 		
 
@@ -720,22 +763,12 @@ public class FragmentSignal extends Fragment {
 			}
 			
 			@Override
-			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+			public View getGroupView(final int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 				View v = convertView;
 				GroupViewHolder viewHolder;
 				if(v == null){
 		            viewHolder = new GroupViewHolder();
-		            v = inflater.inflate(R.layout.fragment_signal_stock_item_parent, parent, false);
-		            
-		            /* inflate 한 View를 수정 */
-					ImageButton bt = (ImageButton)v.findViewById(R.id.go_btn);
-					bt.setFocusable(false);
-					bt.setOnClickListener(new Button.OnClickListener() {
-						public void onClick(View v) {
-							Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
-							startActivity(intent);
-						}
-					});			            
+		            v = inflater.inflate(R.layout.fragment_signal_stock_item_parent, parent, false);		            
 		            
 		            viewHolder.stock_name = (TextView) v.findViewById(R.id.stock_name);
 		            viewHolder.total_cnt = (TextView)v.findViewById(R.id.total_cnt);         
@@ -755,6 +788,27 @@ public class FragmentSignal extends Fragment {
 				viewHolder.price.setText(groupData.price);
 				viewHolder.price_diff.setText(groupData.price_diff);
 				viewHolder.price_diff_percent.setText(groupData.price_diff_percent);
+				
+	            /* button에 listener를 등록
+	             * v == null 일때 뷰 홀더를 설정하는 부분에서 코드를 넣을 수도 있다.
+	             * 위 방법이 더 효율적이지만 일단 아래와 같이 구현.
+	             *  
+	             *  */		
+				ImageButton bt = (ImageButton)v.findViewById(R.id.go_btn);
+				bt.setFocusable(false);
+				bt.setOnClickListener(new Button.OnClickListener() {
+					public void onClick(View v) {							
+						Intent intent = new Intent(getActivity(), ActivityStockDetail.class);					
+						
+						//인텐트에 클릭된 신호의 주식이름 정보를 전달
+						SignalSortByStock groupdata = list.get(groupPosition);			
+						intent.putExtra("stock_name", groupdata.stock_name);						
+						
+						startActivity(intent);
+					}
+				});
+				
+				
 				
 				/* 전일 종가 대비 변동량 색 변경 */
 				if(Integer.parseInt(groupData.price_diff) < 0) {

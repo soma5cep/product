@@ -32,6 +32,7 @@
         		android:text="1,145,000"
         		android:textSize="30sp"
         		android:layout_marginRight="10dp"
+        		android:textStyle="bold"
         		/>
             <TextView
                 android:id="@+id/price_diff"
@@ -40,6 +41,7 @@
         		android:text="+10,500"
         		android:textSize="20sp"
         		android:textColor="#FF0000"
+        		android:layout_marginRight="5dp"
         		/>
             <TextView
                 android:id="@+id/price_diff_percent"
@@ -143,7 +145,7 @@
         		android:typeface="monospace"
         		/>
             <TextView
-                android:id="@+id/ltrade_volume_average"
+                android:id="@+id/trade_volume_average"
                 android:layout_width="0dp"
         		android:layout_height="wrap_content" 
         		android:text="290,000"
