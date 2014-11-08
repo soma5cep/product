@@ -5,7 +5,10 @@
     android:id="@+id/condition_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="10dip"
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip"
+    android:paddingTop="5dp"
+    android:paddingBottom="5dp"
     android:background="#FFFFFF" >
     
     <LinearLayout
@@ -30,50 +33,54 @@
 	        android:layout_height="8dp"
 	        android:background="#6A0808" />
     </LinearLayout>
-        
-    <TextView 
-        android:id="@+id/condition_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@id/linear"
-        android:textSize="20sp"
-        android:text="주가상승"
-        android:layout_marginRight="5dp"
-        android:includeFontPadding="false"
-        android:typeface="monospace"
-        />
     
-    <TextView
-        android:id="@+id/signal_type"
+    
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@id/condition_name"
-        android:textSize="12sp"
-        android:background="#EB7149"
-        android:text="1"
-        android:textColor="#FFFFFF"
-        android:layout_marginRight="5dp"
-        android:paddingTop="0dp"
-        android:paddingBottom="0dp"
-        android:paddingLeft="3dp"
-        android:paddingRight="3dp"
-        android:includeFontPadding="false"
-        />
-
-    <TextView
-        android:id="@+id/detail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
         android:layout_toRightOf="@id/linear"
-        android:layout_below="@id/condition_name"
-        android:textSize="12sp"
-        android:text="주가등락률"
-        android:layout_marginRight="5dp"
-        android:includeFontPadding="false"
-        android:typeface="monospace"
-        />
+        >
+	    <TextView
+            android:id="@+id/condition_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="5dp"
+            android:includeFontPadding="false"
+            android:text="주가상승"
+            android:textSize="20sp"
+            android:typeface="monospace" />
+
+        <TextView
+            android:id="@+id/rank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="5dp"
+            android:layout_toRightOf="@id/condition_name"
+            android:background="#EB7149"
+            android:includeFontPadding="false"
+            android:paddingBottom="0dp"
+            android:paddingLeft="3dp"
+            android:paddingRight="3dp"
+            android:paddingTop="0dp"
+            android:text="1"
+            android:textColor="#FFFFFF"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/detail"
+            android:layout_width="240dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/condition_name"
+            android:layout_marginRight="5dp"
+            android:includeFontPadding="false"
+            android:singleLine="true"
+            android:text="주가등락률"
+            android:textSize="12sp"
+            android:typeface="monospace" />
+	</RelativeLayout>
     
     <LinearLayout
         android:layout_height="wrap_content"
@@ -83,14 +90,14 @@
         android:layout_centerVertical="true">
 	    <RelativeLayout
 	        android:layout_width="60dp"
-	        android:layout_height="17dp"
+	        android:layout_height="22dp"
 	        >
 		    <ImageView
 		        android:id="@+id/people"
-		        android:layout_width="17dp"
+		        android:layout_width="22dp"
 		        android:layout_height="match_parent"
 		        android:scaleType="fitXY"
-		        android:src="@drawable/white_arrow_up"
+		        android:src="@drawable/ic_action_person"
 		        android:layout_alignParentLeft="true"
 		        android:layout_centerVertical="true"   />
 		    <TextView
@@ -106,16 +113,17 @@
 	    
 	    <RelativeLayout
 	        android:layout_width="60dp"
-	        android:layout_height="17dp"
+	        android:layout_height="22dp"
 	        >
 		    <ImageView
 		        android:id="@+id/love"
-		        android:layout_width="17dp"
+		        android:layout_width="22dp"
 		        android:layout_height="match_parent"
 		        android:scaleType="fitXY"
-		        android:src="@drawable/white_arrow_up"
+		        android:src="@drawable/ic_action_favorite"
 		        android:layout_alignParentLeft="true"
-		        android:layout_centerVertical="true"   />
+		        android:layout_centerVertical="true" 
+		        />
 		    <TextView
 		        android:id="@+id/love_cnt"
 		        android:layout_height="wrap_content"

@@ -424,6 +424,9 @@ public class FragmentSignal extends Fragment {
 	public static class FragmentSignalTotalSettings extends ListFragment {
 		private Menu myMenu;
 		FragmentSignal parent;
+		
+		//list 가 static으로 되어있다. 이 것을 잘 처리해야 하는데 나중에 처리하기가 힘들다고 한다면
+		//static으로 설정하지 말고 매번 서버에서 받아오게 바꾼다.
 		static 	ArrayList<SettedCond> list;
 		
 		@Override
@@ -628,7 +631,7 @@ public class FragmentSignal extends Fragment {
 			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
 			
 			
-			ArrayList<SignalSortByStock> list = new ArrayList<SignalSortByStock>();
+			final ArrayList<SignalSortByStock> list = new ArrayList<SignalSortByStock>();
 
 			/* 임시로 데이터 만들기 */
 			SignalSortByStock data_t = new SignalSortByStock();
@@ -659,6 +662,7 @@ public class FragmentSignal extends Fragment {
 			mExpListView.setOnChildClickListener(new OnChildClickListener() {
 				@Override
 				public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+					/*
 					TextView signal = (TextView)v.findViewById(R.id.signal);
 					TextView signal_type = (TextView)v.findViewById(R.id.signal_type);
 					
@@ -669,6 +673,14 @@ public class FragmentSignal extends Fragment {
 														"signal_type Top = " + signal_type.getTop() + "\n" +
 														"signal_type Bottom = " + signal_type.getBottom() + "\n" +
 														"signal_type Baseline = " + signal_type.getBaseline() + "\n", Toast.LENGTH_LONG).show();
+					*/
+					
+					Intent intent = new Intent(getActivity(), ActivitySignalDetail.class);
+					
+					//인텐트에 클릭된 신호의 주식이름 정보를 전달
+					SignalOfStock data = list.get(groupPosition).list.get(childPosition);
+					intent.putExtra("signal_name", data.signal_name);
+					startActivity(intent);					
 					
 					return false;
 				}
@@ -794,7 +806,9 @@ public class FragmentSignal extends Fragment {
 	             * 위 방법이 더 효율적이지만 일단 아래와 같이 구현.
 	             *  
 	             *  */		
-				ImageButton bt = (ImageButton)v.findViewById(R.id.go_btn);
+
+				ImageButton bt = (ImageButton)v.findViewById(R.id.go_bt);
+				
 				bt.setFocusable(false);
 				bt.setOnClickListener(new Button.OnClickListener() {
 					public void onClick(View v) {							
@@ -807,6 +821,7 @@ public class FragmentSignal extends Fragment {
 						startActivity(intent);
 					}
 				});
+
 				
 				
 				
@@ -986,7 +1001,7 @@ public class FragmentSignal extends Fragment {
 			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
 			
 			/* test */
-			ArrayList<SignalSortBySignal> list = new ArrayList<SignalSortBySignal>();
+			final ArrayList<SignalSortBySignal> list = new ArrayList<SignalSortBySignal>();
 			SignalSortBySignal tt = new SignalSortBySignal();
 			tt.list.add(new SignalOfSignal());
 			tt.list.add(new SignalOfSignal());
@@ -997,6 +1012,37 @@ public class FragmentSignal extends Fragment {
 
 			
 			mExpListView.setAdapter(new MyExpAdapter(getActivity(), list));
+			
+			
+			/* Test 용 임시 listener */
+			mExpListView.setOnChildClickListener(new OnChildClickListener() {
+				@Override
+				public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+					/*
+					TextView signal = (TextView)v.findViewById(R.id.signal);
+					TextView signal_type = (TextView)v.findViewById(R.id.signal_type);
+					
+					Toast.makeText(getActivity(), "chlid position = " + childPosition +"\n"+
+														"signal Top = " + signal.getTop() + "\n" +
+														"signal Bottom = " + signal.getBottom() + "\n" +
+														"signal Baseline = " + signal.getBaseline() + "\n" +
+														"signal_type Top = " + signal_type.getTop() + "\n" +
+														"signal_type Bottom = " + signal_type.getBottom() + "\n" +
+														"signal_type Baseline = " + signal_type.getBaseline() + "\n", Toast.LENGTH_LONG).show();
+					*/
+					
+					Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
+					
+					//인텐트에 클릭된 신호의 주식이름 정보를 전달
+					SignalOfSignal data = list.get(groupPosition).list.get(childPosition);
+					intent.putExtra("stock_name", data.stock_name);
+					startActivity(intent);					
+					
+					return false;
+				}
+			});
+			
+			
 			
 			/* 하단 메뉴 설정 */
 			FragmentManager fm=getChildFragmentManager();
@@ -1090,6 +1136,10 @@ public class FragmentSignal extends Fragment {
 			public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
 				View v = convertView;
 				GroupViewHolder viewHolder;
+				
+				final SignalSortBySignal groupData = list.get(groupPosition);
+				
+				
 				if(v == null){
 		            viewHolder = new GroupViewHolder();
 		            v = inflater.inflate(R.layout.fragment_signal_signal_item_parent, parent, false);
@@ -1100,6 +1150,9 @@ public class FragmentSignal extends Fragment {
 					bt.setOnClickListener(new Button.OnClickListener() {
 						public void onClick(View v) {
 							Intent intent = new Intent(getActivity(), ActivitySignalDetail.class);
+							
+							//인텐트에 클릭된 신호의 주식이름 정보를 전달		
+							intent.putExtra("signal_name", groupData.signal_name);
 							startActivity(intent);
 						}
 					});
@@ -1114,7 +1167,7 @@ public class FragmentSignal extends Fragment {
 		        }else{
 		            viewHolder = (GroupViewHolder)v.getTag();
 		        }								
-				SignalSortBySignal groupData = list.get(groupPosition);
+				
 				
 				
 				

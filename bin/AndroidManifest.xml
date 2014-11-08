@@ -28,7 +28,7 @@
         
         <activity
             android:name=".SearchActivity"
-            android:label="SearchActivity"
+            android:label="검색창"
             android:screenOrientation="portrait" >           
         </activity>
         
@@ -47,7 +47,7 @@
         
         <activity
             android:name=".ActivityCondition"
-            android:label="ActivityCondition"
+            android:label="조건"
             android:screenOrientation="portrait"
             android:theme="@style/myTabStyle" >
         </activity>
@@ -61,7 +61,7 @@
         
         <activity
             android:name=".ActivityMyStock"
-            android:label="ActivityMyStock"
+            android:label="내종목"
             android:screenOrientation="portrait"
              >
         </activity>

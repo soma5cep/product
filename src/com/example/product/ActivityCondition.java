@@ -18,13 +18,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.viewpagerindicator.TabPageIndicator;
 
 public class ActivityCondition extends FragmentActivity {
 	FragmentManager fm; //onCreate에서 초기화
+	
+	static ConditionGroup easy;
+	static ConditionGroup hard_jaemu;
+	static ConditionGroup hard_sise;
+	static ConditionGroup hard_kisool;
+	static ConditionGroup hard_pattern;
+
+	
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +51,47 @@ public class ActivityCondition extends FragmentActivity {
 			FragmentEasyCondition fg_easy = new FragmentEasyCondition();
 			fm.beginTransaction().add(R.id.frame, fg_easy, "fragment_easy_condition").commit();
 		}
+		
+		
+		// 조건 데이터 서버에서 받아옴
+		if(easy == null) {
+			//갱신
+			//test
+			easy = new ConditionGroup();
+			easy.list.add(new ConditionAbstract());			
+		}
+		if(hard_jaemu == null) {
+			//갱신
+			hard_jaemu = new ConditionGroup();
+			hard_jaemu.list.add(new ConditionAbstract());
+			hard_jaemu.list.add(new ConditionAbstract());		
+		}
+		if(hard_sise == null) {
+			//갱신
+			hard_sise = new ConditionGroup();
+			hard_sise.list.add(new ConditionAbstract());
+			hard_sise.list.add(new ConditionAbstract());
+			hard_sise.list.add(new ConditionAbstract());
+	
+		}
+		if(hard_kisool == null) {
+			//갱신
+			hard_kisool = new ConditionGroup();
+			hard_kisool.list.add(new ConditionAbstract());
+			hard_kisool.list.add(new ConditionAbstract());	
+			hard_kisool.list.add(new ConditionAbstract());	
+			hard_kisool.list.add(new ConditionAbstract());	
+		}
+		if(hard_pattern == null) {
+			//갱신
+			hard_pattern = new ConditionGroup();
+			hard_pattern.list.add(new ConditionAbstract());	
+			hard_pattern.list.add(new ConditionAbstract());
+			hard_pattern.list.add(new ConditionAbstract());
+			hard_pattern.list.add(new ConditionAbstract());
+			hard_pattern.list.add(new ConditionAbstract());
+		}
+		
 		
 	}
 	
@@ -102,6 +154,82 @@ public class ActivityCondition extends FragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	public static class MyArrayAdapter extends ArrayAdapter<ConditionAbstract> {
+		private ArrayList<ConditionAbstract> items;
+		private Context context;
+		private int resource;
+
+		public MyArrayAdapter(Context context, int viewResourceId, ArrayList<ConditionAbstract> items) {
+			super(context, viewResourceId, items);
+			this.items = items;
+			this.context = context;
+			resource = viewResourceId;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			
+			RelativeLayout v = (RelativeLayout)convertView;
+			ViewHolder vh;
+			if (v == null) {
+				v = (RelativeLayout)View.inflate(context, resource, null);
+				vh = new ViewHolder();
+				
+				vh.image= (ImageView)v.findViewById(R.id.image);	
+				vh.type_color = (View)v.findViewById(R.id.type_color);
+				vh.cond_name= (TextView)v.findViewById(R.id.condition_name);
+				vh.rank = (TextView)v.findViewById(R.id.rank);
+				vh.detail = (TextView)v.findViewById(R.id.detail);
+				vh.user_cnt = (TextView)v.findViewById(R.id.people_cnt);
+				vh.love_cnt = (TextView)v.findViewById(R.id.love_cnt);
+				
+				v.setTag(vh);
+			}
+			else {
+				vh = (ViewHolder)v.getTag();
+			}
+			ConditionAbstract data = items.get(position);
+			
+			/*이미지 변경 코드 작성할 것 */
+			
+			//이미지 밑에 색을 변경
+			if(data.cond_type == ConditionAbstract.EASY) {
+				vh.type_color.setBackgroundResource(R.color.condition_type_easy);
+			}
+			else if(data.cond_type == ConditionAbstract.HARD) {
+				vh.type_color.setBackgroundResource(R.color.condition_type_hard);
+			}
+			
+			// 조건 이름 설정
+			vh.cond_name.setText(data.cond_name);
+			
+			// 조건 구성 설정
+			vh.detail.setText(data.cond_compose);
+			
+			// 순위 설정
+			vh.rank.setText(Integer.toString(data.rank));
+			
+			// 사람 숫자 설정
+			vh.user_cnt.setText(Integer.toString(data.user_cnt));
+			
+			// 사랑 숫자 설정
+			vh.love_cnt.setText(Integer.toString(data.love_cnt));
+
+			
+			return v;
+		}
+		public class ViewHolder {		
+			ImageView image;
+			View type_color;
+			TextView cond_name;
+			TextView rank;
+			TextView detail;
+			TextView user_cnt;
+			TextView love_cnt;
+		}
+
+	}
+	
 	
 	
 	/***********************************************
@@ -140,29 +268,15 @@ public class ActivityCondition extends FragmentActivity {
 		}		
 		*/
 		
-		/* 이 WORLDS 배열은 테스트용 */
-		public static String[] WORDS = {
-			"boy", "girl", "school", "Hello", "go"
-		};
-		
 
 		
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
-			
-			/* test code */
-			
-			ArrayList<String> dd=new ArrayList<String>();
-			dd.add("aaa");
-			dd.add("bbb");
-			dd.add("ccc");
-			dd.add("d");
-			dd.add("e");
-			dd.add("f");
-			
 
-			setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, dd));
+
+			setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, easy.list));
 			
+			// divider 세팅 부분. 주석처리 가능
 			ListView mListView = getListView();
 			mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 			mListView.setDivider(new ColorDrawable(Color.LTGRAY));
@@ -176,71 +290,11 @@ public class ActivityCondition extends FragmentActivity {
 			Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
 			startActivity(intent);
 			*/
-			//Toast.makeText(getActivity(), position+" is clicked", 0).show();
+			Toast.makeText(getActivity(), position+" is clicked", 0).show();
 		}
 		
-		class MyArrayAdapter extends ArrayAdapter<String> {
-			private ArrayList<String> items;
-			private Context context;
-			private int resource;
-
-			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<String> items) {
-				super(context, viewResourceId, items);
-				this.items = items;
-				this.context = context;
-				resource = viewResourceId;
-			}
-
-			@Override
-			public View getView(int position, View convertView, ViewGroup parent) {
-				/*
-				RelativeLayout v = (RelativeLayout)convertView;
-				ViewHolder vh;
-				if (v == null) {
-					v = (RelativeLayout)View.inflate(context, resource, null);
-					vh = new ViewHolder();
-					
-					vh.signal = (TextView)v.findViewById(R.id.signal);	
-					vh.inout = (TextView)v.findViewById(R.id.inout);
-					vh.stock_name = (TextView)v.findViewById(R.id.stock_name);
-					vh.market_type = (TextView)v.findViewById(R.id.market_type);
-					vh.time = (TextView)v.findViewById(R.id.time);
-					vh.price_diff_percent = (TextView)v.findViewById(R.id.price_diff_percent);
-					vh.price_diff = (TextView)v.findViewById(R.id.price_diff);
-					vh.trading_volume = (TextView)v.findViewById(R.id.trading_volume);
-					vh.stock_price = (TextView)v.findViewById(R.id.stock_price);
-					
-					v.setTag(vh);
-				}
-				else {
-					vh = (ViewHolder)v.getTag();
-				}
-				RTSBox b = items.get(position);
-				if(b != null) {
-					ConvertRTSBox.convertBoxToRel(b, vh);
-				}
-				return v;
-				*/
-				RelativeLayout v = (RelativeLayout)View.inflate(context, resource, null);
-				return v;
-			}
-			
-			/*
-			public static class ViewHolder {		
-				TextView signal;
-				TextView inout;
-				TextView stock_name;
-				TextView market_type;
-				TextView time;
-				TextView price_diff_percent;
-				TextView price_diff;
-				TextView trading_volume;
-				TextView stock_price;		
-			}
-			*/
-		}
+		
 	}
-	
 	
 	
 	
@@ -292,13 +346,13 @@ public class ActivityCondition extends FragmentActivity {
 			public Fragment getItem(int position) {
 				switch(position) {
 					case 0 :
-						return new FragmentDetailConditionList();
+						return new FragmentDetailConditionList((String)getPageTitle(position));
 					case 1 :
-						return new FragmentDetailConditionList();
+						return new FragmentDetailConditionList((String)getPageTitle(position));
 					case 2 :
-						return new FragmentDetailConditionList();
+						return new FragmentDetailConditionList((String)getPageTitle(position));
 					case 3 :
-						return new FragmentDetailConditionList();					
+						return new FragmentDetailConditionList((String)getPageTitle(position));				
 					default :
 						return null;
 				}
@@ -329,6 +383,7 @@ public class ActivityCondition extends FragmentActivity {
 	*********************************************************************************************************************/	
 		/* 전체 */
 		public static class FragmentDetailConditionList extends ListFragment {
+			String myCategory;
 			
 			/* Item 이 클릭되었을 때, 새로운 Activity를 띄운다(예정)
 			 * 이 동작을 Fragment에서 구현하지 않고 정석적인 방법으로 Activity에 Listener 구현을 강제하여 
@@ -353,35 +408,42 @@ public class ActivityCondition extends FragmentActivity {
 				}
 			}		
 			*/
-
-			/* 이 WORLDS 배열은 테스트용 */
-			public static String[] WORDS = {
-				"boy", "girl", "school", "Hello", "go"
-			};
 			
-
+			public FragmentDetailConditionList() {
+				super();
+			}
+			
+			public FragmentDetailConditionList(String pageTitle) {
+				super();
+				myCategory = pageTitle;			
+			}
+			
 			
 			public void onActivityCreated(Bundle savedInstanceState) {
 				super.onActivityCreated(savedInstanceState);
 				
-				/* test code */
-				
-				ArrayList<String> dd=new ArrayList<String>();
-				dd.add("aaa");
-				dd.add("bbb");
-				dd.add("ccc");
-				dd.add("d");
-				dd.add("e");
-				dd.add("f");
-				
+				if(myCategory == "재무") {
+					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_jaemu.list));
+				}
+				else if(myCategory == "시세") {
+					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_sise.list));
+				}
+				else if(myCategory == "기술") {
+					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_kisool.list));
+				}
+				else if(myCategory == "패턴") {
+					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_pattern.list));
+				}
+				else {
+					//default
+					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_jaemu.list));
+				}
 
-				setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, dd));
-				
+				// divider 세팅 부분. 주석처리 가능
 				ListView mListView = getListView();
 				mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 				mListView.setDivider(new ColorDrawable(Color.LTGRAY));
-				mListView.setDividerHeight(1);
-				
+				mListView.setDividerHeight(1);		
 			}
 			
 			public void onListItemClick(ListView l, View v, int position, long id) {			
@@ -391,70 +453,8 @@ public class ActivityCondition extends FragmentActivity {
 				Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
 				startActivity(intent);
 				*/
-				//Toast.makeText(getActivity(), position+" is clicked", 0).show();
+				Toast.makeText(getActivity(), position+" is clicked", 0).show();
 			}
-			
-			class MyArrayAdapter extends ArrayAdapter<String> {
-				private ArrayList<String> items;
-				private Context context;
-				private int resource;
-
-				public MyArrayAdapter(Context context, int viewResourceId, ArrayList<String> items) {
-					super(context, viewResourceId, items);
-					this.items = items;
-					this.context = context;
-					resource = viewResourceId;
-				}
-
-				@Override
-				public View getView(int position, View convertView, ViewGroup parent) {
-					/*
-					RelativeLayout v = (RelativeLayout)convertView;
-					ViewHolder vh;
-					if (v == null) {
-						v = (RelativeLayout)View.inflate(context, resource, null);
-						vh = new ViewHolder();
-						
-						vh.signal = (TextView)v.findViewById(R.id.signal);	
-						vh.inout = (TextView)v.findViewById(R.id.inout);
-						vh.stock_name = (TextView)v.findViewById(R.id.stock_name);
-						vh.market_type = (TextView)v.findViewById(R.id.market_type);
-						vh.time = (TextView)v.findViewById(R.id.time);
-						vh.price_diff_percent = (TextView)v.findViewById(R.id.price_diff_percent);
-						vh.price_diff = (TextView)v.findViewById(R.id.price_diff);
-						vh.trading_volume = (TextView)v.findViewById(R.id.trading_volume);
-						vh.stock_price = (TextView)v.findViewById(R.id.stock_price);
-						
-						v.setTag(vh);
-					}
-					else {
-						vh = (ViewHolder)v.getTag();
-					}
-					RTSBox b = items.get(position);
-					if(b != null) {
-						ConvertRTSBox.convertBoxToRel(b, vh);
-					}
-					return v;
-					*/
-					RelativeLayout v = (RelativeLayout)View.inflate(context, resource, null);
-					return v;
-				}
-				
-				/*
-				public static class ViewHolder {		
-					TextView signal;
-					TextView inout;
-					TextView stock_name;
-					TextView market_type;
-					TextView time;
-					TextView price_diff_percent;
-					TextView price_diff;
-					TextView trading_volume;
-					TextView stock_price;		
-				}
-				*/
-			}
-			
 		}
 	}
 }

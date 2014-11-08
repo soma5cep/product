@@ -359,6 +359,7 @@ class SettedCond {
 }
 
 //조건 목록
+//초기 조건 받아올떄 쓰임
 class ConditionGroup {
 	static final int EASY = 0;
 	static final int HARD = 1;
@@ -377,12 +378,32 @@ class ConditionAbstract {
 	static final int HARD = 1;
 	int cond_type = EASY;
 	String cond_name="낮은체결강도";
-	String cond_compose="주가등락률, 일반조건 A, 일반조건 B";
+	String cond_compose="주가등락률, 일반조건 A, 일반조건 B, 일반조건 C, 일반조건 D, 일반조건 E";
 	int user_cnt = 1;
 	int love_cnt = 2;
+	int rank = 1;
 }
 
 //조건
 class Condition {
 	//미정
+	String cond_name;
+	String description;
+	String detail;
+	
+	//그 외 여러가지
+}
+
+//신호 상세
+class SignalDetail {
+	String signal_name = "상승주_t &amp; 신호설정주_t";
+	public ArrayList<SimpleCond> compose_signal = new ArrayList<SimpleCond>();
+}
+
+//신호상세에 들어가는 포함조건
+class SimpleCond {
+	static final int EASY = 0;
+	static final int HARD = 1;
+	int cond_type = EASY;
+	String cond_name = "상승주_t";
 }

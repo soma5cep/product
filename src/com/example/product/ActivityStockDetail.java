@@ -180,7 +180,6 @@ public class ActivityStockDetail extends FragmentActivity{
 		
 		
 		
-		/* 주식의 상세 정보를 출력하는 부분 하기 */
 		
 	}
 	

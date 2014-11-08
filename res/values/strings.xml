@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Product</string>
+    <string name="app_name">내가 찾던 바로 그 종목</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
 
