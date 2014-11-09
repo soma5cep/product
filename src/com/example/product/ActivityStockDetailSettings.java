@@ -30,7 +30,7 @@ public class ActivityStockDetailSettings extends Activity{
 		indiv_linear.removeAllViews();
 		
 		for(int i=0; i<list.size(); ++i) {
-			SettedCond data = list.get(i);
+			final SettedCond data = list.get(i);
 			RelativeLayout layout;
 			layout = (RelativeLayout)View.inflate(this, R.layout.activity_stock_detail_settings_item, null);
 			if(data.signal_type == SettedCond.TOTAL) {			
@@ -63,22 +63,32 @@ public class ActivityStockDetailSettings extends Activity{
 				cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
 			}
 		
-			//알람 이미지를 변경
-			if(data.is_alarm == SettedCond.IS_ALARM) {
-				//알람 일때 설정코드
+			//change alarm_bt image
+			if(data.is_alarm == Flag.IS_ALARM){
+				alarm_bt.setImageResource(R.drawable.push_alarm_clicked);
 			}
-			else if(data.is_alarm == SettedCond.IS_NOT_ALARM) {
-				//알람이 아닐때
+			else if(data.is_alarm == Flag.IS_NOT_ALARM){
+				alarm_bt.setImageResource(R.drawable.push_alarm);
 			}
-		
-		
-			alarm_bt.setOnClickListener(new Button.OnClickListener() {
+			
+			//리스너 등록은 if ( v== null) 에서 하는게 아니라 밖에서 함.
+			alarm_bt.setOnClickListener(new ImageButton.OnClickListener() {
 				@Override
 				public void onClick(View v) {
-					Toast.makeText(ActivityStockDetailSettings.this, "알람버튼이 눌려졌을때 동작을 수행", 0).show();
 					/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
+					if(data.is_alarm == Flag.IS_ALARM){
+						data.is_alarm = Flag.IS_NOT_ALARM;
+						((ImageView)v).setImageResource(R.drawable.push_alarm);
+					}
+					else if(data.is_alarm == Flag.IS_NOT_ALARM){
+						data.is_alarm = Flag.IS_ALARM;
+						((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
+					}
+					
+					// 서버에 알리는 코드를 작성
 				}						
-			});
+			});	
+
 			
 			final int position = i;
 		
@@ -115,11 +125,11 @@ public class ActivityStockDetailSettings extends Activity{
 			list.add(new SettedCond());
 			list.add(new SettedCond());
 			list.add(new SettedCond());
-			SettedCond data = new SettedCond();
-			data.signal_type = SettedCond.INDIV;
-			list.add(data);
-			list.add(data);
-			list.add(data);
+			for(int i=0; i<3; ++i) {
+				SettedCond data = new SettedCond();
+				data.signal_type = SettedCond.INDIV;
+				list.add(data);
+			}
 			
 		}
 		

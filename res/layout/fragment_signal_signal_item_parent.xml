@@ -67,15 +67,16 @@
         android:textColor="#FFFFFF"
         android:textSize="14sp" />
 
-    <ImageView
-        android:id="@+id/alarm_image"
+    <ImageButton
+        android:id="@+id/alarm_bt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@id/signal_cnt"
         android:adjustViewBounds="true"
-        android:src="@drawable/ic_action_flash_on"
+        android:src="@drawable/push_alarm"
         android:title="알람설정"
-        android:layout_centerVertical="true" />
+        android:layout_centerVertical="true"
+        style="?android:attr/borderlessButtonStyle" />
     
     
 <LinearLayout

@@ -81,7 +81,7 @@
             android:id="@+id/settings_bt"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_settings_light"
+            android:src="@drawable/menu_icon"
             android:layout_weight="1"
             style="?android:attr/borderlessButtonStyle"
             android:onClick="tabButtonOnClick"

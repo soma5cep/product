@@ -118,10 +118,10 @@ public class ActivityStockDetail extends FragmentActivity{
 		
 		/*test */
 		items = new ArrayList<SignalOfStock>();
-		SignalOfStock tt = new SignalOfStock();		
-		items.add(tt);
-		items.add(tt);
-		items.add(tt);
+		for(int i=0; i<3; ++i) {
+			SignalOfStock tt = new SignalOfStock();		
+			items.add(tt);
+		}
 		
 		lv.setAdapter(new MyAdapter(this, R.layout.activity_stock_detail_item, items));
 		
@@ -258,7 +258,25 @@ public class ActivityStockDetail extends FragmentActivity{
 				childViewHolder = (ChildViewHolder)v.getTag();
 			}
 
-			SignalOfStock data = items.get(position);
+			final SignalOfStock data = items.get(position);
+			
+			//리스너 등록은 if ( v== null) 에서 하는게 아니라 밖에서 함.
+			childViewHolder.alarm_bt.setOnClickListener(new ImageButton.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
+					if(data.is_alarm == Flag.IS_ALARM){
+						data.is_alarm = Flag.IS_NOT_ALARM;
+						((ImageView)v).setImageResource(R.drawable.push_alarm);
+					}
+					else if(data.is_alarm == Flag.IS_NOT_ALARM){
+						data.is_alarm = Flag.IS_ALARM;
+						((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
+					}
+					
+					// 서버에 알리는 코드를 작성
+				}						
+			});	
 
 
 			childViewHolder.signal_name.setText(data.signal_name);
@@ -289,13 +307,14 @@ public class ActivityStockDetail extends FragmentActivity{
 			childViewHolder.date.setText(data.date);
 
 
-			//알람 설정
-			if(data.is_alarm == SignalOfStock.IS_ALARM) {
-				//알람 일때 설정코드
+			//change alarm_bt image
+			if(data.is_alarm == Flag.IS_ALARM){
+				childViewHolder.alarm_bt.setImageResource(R.drawable.push_alarm_clicked);
 			}
-			else if(data.is_alarm == SignalOfStock.IS_NOT_ALARM) {
-				//알람이 아닐때
+			else if(data.is_alarm == Flag.IS_NOT_ALARM){
+				childViewHolder.alarm_bt.setImageResource(R.drawable.push_alarm);
 			}
+
 
 
 			return v;

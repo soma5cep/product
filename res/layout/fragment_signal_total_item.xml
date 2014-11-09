@@ -120,7 +120,7 @@
 	        android:title="알람설정"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-	        android:src="@drawable/ic_action_flash_on"
+	        android:src="@drawable/push_alarm"
 	        style="?android:attr/borderlessButtonStyle"
 	        android:adjustViewBounds="true"
 	        />

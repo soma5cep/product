@@ -131,11 +131,11 @@ class ReceivedSignal {
 	private int signal_type;
 	private int is_new;
 	private int condition_type;
-	private int is_alarm;
+	public int is_alarm = IS_NOT_ALARM;
 	private String signal_name;
 	private String in_out;
 	public String stock_name;
-	private String time;
+	public String time;
 
 	//INFO 를 표현할 멤버들을 추가할 것.
 
@@ -406,4 +406,32 @@ class SimpleCond {
 	static final int HARD = 1;
 	int cond_type = EASY;
 	String cond_name = "상승주_t";
+}
+
+class Flag {
+	//for type
+	static final int TYPE_SIGNAL = 0;
+	static final int TYPE_INFO = 1;
+	//for signal_type
+	static final int TYPE_SIGNAL_TOTAL = 0;
+	static final int TYPE_SIGNAL_INDIV = 1;
+	//for is_new;
+	static final int OLD = 0;
+	static final int NEW = 1;
+	//for condition_type
+	static final int EASY = 0;
+	static final int HARD = 1;
+	static final int CUSTOM = 2;
+	//for is_alarm
+	static final int IS_NOT_ALARM = 0;
+	static final int IS_ALARM = 1;
+	
+	static final int TOTAL = 0;
+	static final int INDIV = 1;
+	
+	static final int JAEMU = 0;
+	static final int SISE = 1;
+	static final int KISOOL = 2;
+	static final int PATTERN = 3;
+
 }
