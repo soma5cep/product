@@ -4,26 +4,27 @@ import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
 import android.widget.ExpandableListView.OnChildClickListener;
-import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -31,6 +32,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.product.j.SearchDetail;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.viewpagerindicator.TabPageIndicator;
 
 
@@ -142,10 +149,12 @@ public class FragmentSignal extends Fragment {
 //
 *********************************************************************************************************************/	
 	/* 전체 */
-	public static class FragmentSignalTotal extends ListFragment {
+	public static class FragmentSignalTotal extends Fragment {
 		private Menu myMenu;
 		private FragmentSignal parent;
-		private View root;		
+		private View root;
+		private PullToRefreshListView ptrlistview;
+		private ListView listview;
 		
 		private ArrayList<ReceivedSignal> received_signal;
 		private MyArrayAdapter my_adapter;
@@ -167,7 +176,13 @@ public class FragmentSignal extends Fragment {
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			
+			
 			root = inflater.inflate(R.layout.fragment_signal_total, container, false);
+			ptrlistview = (PullToRefreshListView)root.findViewById(R.id.ptr_list);
+			listview = ptrlistview.getRefreshableView();
+			
+			
 			FragmentManager fm=getChildFragmentManager();
 			BottomMenu.BottomMenu_1 bottom_menu;
 			if((bottom_menu = (BottomMenu.BottomMenu_1)fm.findFragmentById(R.id.bottom_menu)) == null) {
@@ -218,8 +233,86 @@ public class FragmentSignal extends Fragment {
 				}		
 			};
 			bottom_menu.setButtonClickListener(bt_listener);
+			
+			//리스트뷰 클릭할떄 리스너
+			listview.setOnItemClickListener(new OnItemClickListener() {
+				
+				@Override
+				public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+					//pull to refresh를 적용하면서 position이 안맞음 따라서 수정
+					position = position-1;
+					
+					
+					//mHost.onItemChecked(position);
+					listview.setItemChecked(position, true);
+					Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
+					
+					//인텐트에 클릭된 신호의 주식이름 정보를 전달
+					ReceivedSignal data = received_signal.get(position);			
+					intent.putExtra("stock_name", data.stock_name);
+					startActivity(intent);
+					//Toast.makeText(getActivity(), position+" is clicked", 0).show();				
+				}
+				
+			});
+			
+			// Set a listener to be invoked when the list should be refreshed.
+			ptrlistview.setOnRefreshListener(new OnRefreshListener<ListView>() {
+				@Override
+				public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+					String label = DateUtils.formatDateTime(getActivity().getApplicationContext(), System.currentTimeMillis(),
+							DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+
+					// Update the LastUpdatedLabel
+					refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+
+					// Do work to refresh the list here.
+					
+					new GetDataTask().execute();
+				}
+			});
+			
+			// Add an end-of-list listener
+			ptrlistview.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+
+				@Override
+				public void onLastItemVisible() {
+					Toast.makeText(getActivity(), "End of List!", Toast.LENGTH_SHORT).show();
+				}
+			});
+			
+			
+			
+			
+			
 			return root;			
 		}		
+		
+		//test용 데이터 받아오는 클래스
+		// 지금은 4초 딜레이만 있다. 
+		private class GetDataTask extends AsyncTask<Void, Void, Void> {
+
+			@Override
+			protected Void doInBackground(Void... params) {
+				// Simulates a background job.
+				try {
+					Thread.sleep(4000);
+				} catch (InterruptedException e) {
+				}
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(Void v) {
+				//mListItems.addFirst("Added after refresh...");
+				//mAdapter.notifyDataSetChanged();
+
+				// Call onRefreshComplete when the list has been refreshed.
+				ptrlistview.onRefreshComplete();
+
+				super.onPostExecute(v);
+			}
+		}
 		
 		/* Item 이 클릭되었을 때, 새로운 Activity를 띄운다(예정)
 		 * 이 동작을 Fragment에서 구현하지 않고 정석적인 방법으로 Activity에 Listener 구현을 강제하여 
@@ -263,7 +356,8 @@ public class FragmentSignal extends Fragment {
 		public boolean onOptionsItemSelected(MenuItem item) {
 			switch(item.getItemId()) {
 				case R.id.action_add_alarm :
-					Toast.makeText(getActivity(), "action_add_alarm을 클릭함", 0).show();
+					Intent intent = new Intent(getActivity(), SearchDetail.class);
+					startActivity(intent);
 					// 전체 신호 추가 Activity
 					/*
 					Intent intent = new Intent(getActivity(), StockDetail.class);
@@ -280,6 +374,7 @@ public class FragmentSignal extends Fragment {
 		}
 		
 		
+		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
 			
@@ -287,20 +382,22 @@ public class FragmentSignal extends Fragment {
 			
 			if(received_signal == null) {
 				received_signal = MyDataBase.getReceivedSignalList_all();
-
-				setListAdapter(my_adapter = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, received_signal));
-			
 			
 				// 기본적으로 divider를 지원하기 때문에 아래 코드가 무색하다.
 				// 일단 유지
-				ListView mListView = getListView();
-				mListView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-				mListView.setDivider(new ColorDrawable(Color.LTGRAY));
-				mListView.setDividerHeight(1);
+				/*
+				listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+				listview.setDivider(new ColorDrawable(Color.LTGRAY));
+				listview.setDividerHeight(1);
+				*/
 			}
+			
+			listview.setAdapter(my_adapter = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, received_signal));
 			
 		}
 		
+		/*
+		@Override
 		public void onListItemClick(ListView l, View v, int position, long id) {			
 			//mHost.onItemChecked(position);
 			l.setItemChecked(position, true);
@@ -312,6 +409,7 @@ public class FragmentSignal extends Fragment {
 			startActivity(intent);
 			//Toast.makeText(getActivity(), position+" is clicked", 0).show();
 		}
+		*/
 		
 		class MyArrayAdapter extends ArrayAdapter<ReceivedSignal> {
 			private ArrayList<ReceivedSignal> items;
@@ -503,6 +601,10 @@ public class FragmentSignal extends Fragment {
 					parent.change_frag_0(this);
 					return true;
 				case R.id.action_add :
+					
+					Intent intent = new Intent(getActivity(), SearchDetail.class);
+					intent.putExtra("type", "total");
+					startActivity(intent);
 					/*
 					Intent intent = new Intent(getActivity(), StockDetail.class);
 					startActivity(intent);
@@ -673,8 +775,9 @@ public class FragmentSignal extends Fragment {
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			this.inflater = inflater;
 			View root = inflater.inflate(R.layout.simple_expandablelistview, container, false);
-			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
 			
+			
+			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
 			
 			final ArrayList<SignalSortByStock> list = new ArrayList<SignalSortByStock>();
 

@@ -2,14 +2,13 @@ package com.example.product;
 
 import java.util.ArrayList;
 
-import com.example.product.FragmentSignal.FragmentSignalStock.MyExpAdapter.ChildViewHolder;
-
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,19 +18,26 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
+
 public class ActivityStockDetail extends FragmentActivity{
 	private ArrayList<SignalOfStock> items;
+	private PullToRefreshListView ptrlistview;
+	private ListView lv;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_stock_detail);		
-		
-		
+				
 		//타이틀 설정
 		Intent intent = getIntent();
 		String stock_name = intent.getStringExtra("stock_name");
@@ -108,20 +114,45 @@ public class ActivityStockDetail extends FragmentActivity{
 		
 
 				
+		// pull to refresh 등록
+		ptrlistview = (PullToRefreshListView)findViewById(R.id.ptr_list);
+		lv = ptrlistview.getRefreshableView();
 		
-		
-		
-		
+		// Set a listener to be invoked when the list should be refreshed.
+		ptrlistview.setOnRefreshListener(new OnRefreshListener<ListView>() {
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				String label = DateUtils.formatDateTime(ActivityStockDetail.this.getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
 
-		ListView lv = (ListView)findViewById(R.id.list_view);
+				// Update the LastUpdatedLabel
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+
+				// Do work to refresh the list here.
+				
+				new GetDataTask().execute();
+			}
+		});
+	
 		
+		// Add an end-of-list listener
+		ptrlistview.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+
+			@Override
+			public void onLastItemVisible() {
+				Toast.makeText(ActivityStockDetail.this, "End of List!", Toast.LENGTH_SHORT).show();
+			}
+		});
 		
 		/*test */
 		items = new ArrayList<SignalOfStock>();
-		for(int i=0; i<3; ++i) {
+		for(int i=0; i<15; ++i) {
 			SignalOfStock tt = new SignalOfStock();		
 			items.add(tt);
 		}
+		
+		
+		
 		
 		lv.setAdapter(new MyAdapter(this, R.layout.activity_stock_detail_item, items));
 		
@@ -181,6 +212,33 @@ public class ActivityStockDetail extends FragmentActivity{
 		
 		
 		
+	}
+	
+	
+	//test용 데이터 받아오는 클래스
+	// 지금은 4초 딜레이만 있다. 
+	private class GetDataTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// Simulates a background job.
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void v) {
+			//mListItems.addFirst("Added after refresh...");
+			//mAdapter.notifyDataSetChanged();
+
+			// Call onRefreshComplete when the list has been refreshed.
+			ptrlistview.onRefreshComplete();
+
+			super.onPostExecute(v);
+		}
 	}
 	
 	@Override

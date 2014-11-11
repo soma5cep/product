@@ -1,0 +1,125 @@
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="${relativePackage}.${activityClass}" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="10dp"
+        android:layout_weight="0.00"
+        android:orientation="horizontal"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp" >
+
+        <requestFocus />
+
+        <MultiAutoCompleteTextView
+            android:id="@+id/searchName"
+            android:layout_width="150dp"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:background="#555555"
+            android:ems="10"
+            android:enabled="false"
+            android:gravity="center_vertical|center_horizontal"
+            android:text="전체 종목"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="60dp"
+            android:layout_height="30dp"
+            android:layout_alignBaseline="@+id/searchName"
+            android:layout_alignBottom="@+id/searchName"
+            android:layout_toLeftOf="@+id/searchName"
+            android:gravity="center_horizontal|bottom"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="종목"
+            android:textSize="12sp" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="38dp"
+        android:background="#000000">
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center"
+            android:textColor="#FFFFFF"
+            android:textSize="16dp"
+            android:background="#555555"
+            android:text="신호 이름" />
+
+        <EditText
+            android:id="@+id/editText1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:textColor="#FFFFFF"
+            android:hint="신호 이름"
+            android:textSize="16dp"/>
+
+    </LinearLayout>
+
+    <ExpandableListView
+        android:id="@+id/optionList"
+        android:layout_width="match_parent"
+        android:layout_height="282dp"
+        android:dividerHeight="0dp"
+        android:divider="#FFFFFF"
+        android:groupIndicator="@android:color/transparent"
+        android:childDivider="@android:color/transparent"
+        android:layout_marginTop="0dp"
+        android:layout_weight="0.08" >
+    </ExpandableListView>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="15">
+
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_weight="5"
+            android:background="#000000"
+            android:textColor="#FFFFFF"
+            android:text="취소" />
+        
+        <Button
+            android:id="@+id/btnAdd"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_weight="5"
+            android:background="#000000"
+            android:text="조건 추가"
+            android:textColor="#FFFFFF" />
+
+        <Button
+            android:id="@+id/btnSubmit"
+            android:layout_width="match_parent"
+            android:layout_height="38dp"
+            android:layout_weight="5"
+            android:background="#000000"
+            android:text="저장"
+            android:textColor="#FFFFFF" />
+
+    </LinearLayout>
+
+</LinearLayout>

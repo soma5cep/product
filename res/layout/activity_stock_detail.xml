@@ -178,12 +178,15 @@
     
     <!-- 리스트 뷰 -->
     <!--  이 리스트 뷰에 저장되는 녀석은 fragment_singal_stock_item_child.xml 을 쓴다. -->
-    <ListView 
-        android:id="@+id/list_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        />
+
+     <com.handmark.pulltorefresh.library.PullToRefreshListView
+         xmlns:ptr="http://schemas.android.com/apk/res-auto"
+         android:id="@+id/ptr_list"
+         android:layout_width="match_parent"
+         android:layout_height="0dp"
+         android:layout_weight="1"
+         ptr:ptrHeaderBackground="#555555"
+         ptr:ptrHeaderTextColor="@android:color/white" />
     
     <FrameLayout
         android:id="@+id/bottom_menu"

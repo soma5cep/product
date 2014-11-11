@@ -13,7 +13,6 @@ public class MyApplication extends Application{
 	public void onCreate() {
 		super.onCreate();
 		setDefaultFont(this, "MONOSPACE", "NanumBarunGothic.ttf");
-
 	}
 	
 	

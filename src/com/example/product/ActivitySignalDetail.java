@@ -2,13 +2,18 @@ package com.example.product;
 
 import java.util.ArrayList;
 
-import com.example.product.FragmentSignal.FragmentSignalSignal.MyExpAdapter.ChildViewHolder;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
+import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +31,9 @@ import android.widget.Toast;
 public class ActivitySignalDetail extends FragmentActivity {
 	SignalDetail signaldetail;  //static 이면 안됨. 매번 새로운 정보를 받아야 한다.
 	ArrayList<SignalOfSignal> list;
+	
+	private PullToRefreshListView ptrlistview;
+	private ListView lv;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +58,45 @@ public class ActivitySignalDetail extends FragmentActivity {
 		
 		// 해당 조건에 대한 시그널을 서버에서 받아오기 
 		list = new ArrayList<SignalOfSignal>();
-		list.add(new SignalOfSignal());
-		list.add(new SignalOfSignal());
+		for(int i=0; i<11; ++i) {
+			list.add(new SignalOfSignal());
+		}
 
 		
 		ArrayList<SimpleCond> cps = signaldetail.compose_signal; // 포함조건
+		
+		// pull to refresh 등록
+		ptrlistview = (PullToRefreshListView)findViewById(R.id.ptr_list);
+		lv = ptrlistview.getRefreshableView();
+		
+		// Set a listener to be invoked when the list should be refreshed.
+		ptrlistview.setOnRefreshListener(new OnRefreshListener<ListView>() {
+			@Override
+			public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				String label = DateUtils.formatDateTime(ActivitySignalDetail.this.getApplicationContext(), System.currentTimeMillis(),
+						DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
+
+				// Update the LastUpdatedLabel
+				refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
+
+				// Do work to refresh the list here.
+				
+				new GetDataTask().execute();
+			}
+		});
+	
+		
+		// Add an end-of-list listener
+		ptrlistview.setOnLastItemVisibleListener(new OnLastItemVisibleListener() {
+
+			@Override
+			public void onLastItemVisible() {
+				Toast.makeText(ActivitySignalDetail.this, "End of List!", Toast.LENGTH_SHORT).show();
+			}
+		});
 
 		// MyAdapter는 ActivityStockDetail 에 있음
-		//어댑터 등록
-		ListView lv = (ListView)findViewById(R.id.list_view);		
+		//어댑터 등록		
 		lv.setAdapter(new MyAdapter(this, R.layout.activity_signal_detail_item, list));
 		
 		LinearLayout cond_linear = (LinearLayout)findViewById(R.id.cond_linear);
@@ -249,6 +287,32 @@ public class ActivitySignalDetail extends FragmentActivity {
 			TextView price;
 			TextView date;
 			ImageButton alarm_bt;
+		}
+	}
+	
+	//test용 데이터 받아오는 클래스
+	// 지금은 4초 딜레이만 있다. 
+	private class GetDataTask extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+			// Simulates a background job.
+			try {
+				Thread.sleep(4000);
+			} catch (InterruptedException e) {
+			}
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void v) {
+			//mListItems.addFirst("Added after refresh...");
+			//mAdapter.notifyDataSetChanged();
+
+			// Call onRefreshComplete when the list has been refreshed.
+			ptrlistview.onRefreshComplete();
+
+			super.onPostExecute(v);
 		}
 	}
 }

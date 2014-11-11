@@ -3,6 +3,7 @@ package com.example.product;
 import java.util.ArrayList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -24,6 +25,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.product.j.OptionDetail;
 import com.viewpagerindicator.TabPageIndicator;
 
 public class ActivityCondition extends FragmentActivity {
@@ -291,8 +293,19 @@ public class ActivityCondition extends FragmentActivity {
 			startActivity(intent);
 			*/
 			Toast.makeText(getActivity(), position+" is clicked", 0).show();
+			
+
+			Intent intent = new Intent(getActivity(), OptionDetail.class);
+			
+			//인텐트에 클릭된 신호의 조건이름 정보를 전달
+			
+			ConditionAbstract data = easy.list.get(position);
+			intent.putExtra("cond_name", data.cond_name);
+			startActivity(intent);
+			//Toast.makeText(getActivity(), position+" is clicked", 0).show();		
 		}
 		
+
 		
 	}
 	
@@ -453,7 +466,31 @@ public class ActivityCondition extends FragmentActivity {
 				Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
 				startActivity(intent);
 				*/
+				
 				Toast.makeText(getActivity(), position+" is clicked", 0).show();
+				
+
+				Intent intent = new Intent(getActivity(), OptionDetail.class);
+				
+				ConditionAbstract data;				
+				//인텐트에 클릭된 신호의 조건이름 정보를 전달
+				if(myCategory == "재무") {
+					data = hard_jaemu.list.get(position);
+				}
+				else if(myCategory == "시세") {
+					data = hard_sise.list.get(position);
+				}
+				else if(myCategory == "기술") {
+					data = hard_kisool.list.get(position);
+				}
+				else if(myCategory == "패턴") {
+					data = hard_pattern.list.get(position);
+				}
+				else {
+					data = hard_jaemu.list.get(position);
+				}
+				intent.putExtra("cond_name", data.cond_name);
+				startActivity(intent);
 			}
 		}
 	}

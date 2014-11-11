@@ -17,11 +17,40 @@ public class FragmentSettings extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.fragment_settings, container, false);
 		
-		Button bt = (Button)root.findViewById(R.id.show_my_stock_button);
-		bt.setOnClickListener(new Button.OnClickListener() {
+		Button my_stock_bt = (Button)root.findViewById(R.id.show_my_stock_button);
+		my_stock_bt.setOnClickListener(new Button.OnClickListener() {
 			public void onClick(View v) {
 				Intent intent = new Intent(getActivity(), ActivityMyStock.class);
 				startActivity(intent);				
+			}
+		});
+		
+		final Button push_bt = (Button)root.findViewById(R.id.set_push_button);
+		push_bt.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				/*서버에 신호를 보내기 */
+				if(push_bt.getText().equals("ON")) {
+					push_bt.setText("OFF");
+				}
+				else {
+					push_bt.setText("ON");
+				}
+			}
+		});
+		
+		final Button delete_bt = (Button)root.findViewById(R.id.delete_signal_button);
+		delete_bt.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				/*서버에 신호를 보내기 */
+				Toast.makeText(getActivity(), "삭제 완료!", 0).show();						
+			}
+		});
+		
+		final Button reset_bt = (Button)root.findViewById(R.id.reset_signal_setting_button);
+		reset_bt.setOnClickListener(new Button.OnClickListener() {
+			public void onClick(View v) {
+				/*서버에 신호를 보내기 */
+				Toast.makeText(getActivity(), "초기화 완료!", 0).show();						
 			}
 		});
 		return root;
