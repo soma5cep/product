@@ -1,7 +1,7 @@
 package com.example.product.j;
 
+import android.app.Activity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.product.R;
 
-public class OptionDetail extends ActionBarActivity {
+public class OptionDetail extends Activity {
 	ImageView imgLikeNum, imgLikePlus;
 	TextView txtOptionName, txtOptionIntroduct, txtOptionDetail, txtLikeNum, txtUseNum;
 	View informView;

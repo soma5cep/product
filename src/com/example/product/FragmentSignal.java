@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,11 +33,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.example.product.j.SearchDetail;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
-import com.handmark.pulltorefresh.library.PullToRefreshExpandableListView;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.viewpagerindicator.TabPageIndicator;
 
@@ -150,6 +152,20 @@ public class FragmentSignal extends Fragment {
 *********************************************************************************************************************/	
 	/* 전체 */
 	public static class FragmentSignalTotal extends Fragment {
+		// 받은 시그널 정보
+		static ArrayList<signal_result> signal_list_all;
+		static ArrayList<signal_result> signal_list_total;
+		static ArrayList<signal_result> signal_list_indiv;
+		static ArrayList<signal_result> signal_list_alarm;
+		
+		
+		MyArrayAdapter adapter_all;
+		MyArrayAdapter adapter_total;
+		MyArrayAdapter adapter_indiv;
+		MyArrayAdapter adapter_alarm;
+				
+		
+		
 		private Menu myMenu;
 		private FragmentSignal parent;
 		private View root;
@@ -158,6 +174,7 @@ public class FragmentSignal extends Fragment {
 		
 		private ArrayList<ReceivedSignal> received_signal;
 		private MyArrayAdapter my_adapter;
+
 
 		@Override
 		public void onDestroy() {
@@ -183,6 +200,20 @@ public class FragmentSignal extends Fragment {
 			listview = ptrlistview.getRefreshableView();
 			
 			
+			//static 변수들 초기화
+			if(signal_list_all == null) {
+				signal_list_all = new ArrayList<signal_result>();
+			}
+			if(signal_list_total == null) {
+				signal_list_total = new ArrayList<signal_result>();
+			}
+			if(signal_list_indiv == null) {
+				signal_list_indiv = new ArrayList<signal_result>();
+			}
+			if(signal_list_alarm == null) {
+				signal_list_alarm = new ArrayList<signal_result>();
+			}		
+			
 			FragmentManager fm=getChildFragmentManager();
 			BottomMenu.BottomMenu_1 bottom_menu;
 			if((bottom_menu = (BottomMenu.BottomMenu_1)fm.findFragmentById(R.id.bottom_menu)) == null) {
@@ -200,6 +231,8 @@ public class FragmentSignal extends Fragment {
 						received_signal = MyDataBase.getReceivedSignalList_all();
 						my_adapter.notifyDataSetChanged();
 						*/
+						
+						
 						
 						Toast.makeText(getActivity(), "all_btn clicked", 0).show();
 						break;
@@ -378,22 +411,14 @@ public class FragmentSignal extends Fragment {
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
 			
-			/* test code */
+			adapter_all = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, signal_list_all);
+			adapter_total = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, signal_list_total);
+			adapter_indiv = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, signal_list_indiv);
+			adapter_alarm = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, signal_list_alarm);
 			
-			if(received_signal == null) {
-				received_signal = MyDataBase.getReceivedSignalList_all();
-			
-				// 기본적으로 divider를 지원하기 때문에 아래 코드가 무색하다.
-				// 일단 유지
-				/*
-				listview.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-				listview.setDivider(new ColorDrawable(Color.LTGRAY));
-				listview.setDividerHeight(1);
-				*/
-			}
-			
-			listview.setAdapter(my_adapter = new MyArrayAdapter(getActivity(), R.layout.fragment_signal_total_item, received_signal));
-			
+			// 기본적으로 제일 처음에는 all 이 보여진다.
+			listview.setAdapter(adapter_all);
+
 		}
 		
 		/*
@@ -411,12 +436,12 @@ public class FragmentSignal extends Fragment {
 		}
 		*/
 		
-		class MyArrayAdapter extends ArrayAdapter<ReceivedSignal> {
-			private ArrayList<ReceivedSignal> items;
+		class MyArrayAdapter extends ArrayAdapter<signal_result> {
+			private ArrayList<signal_result> items;
 			private Context context;
 			private int resource;
 
-			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<ReceivedSignal> items) {
+			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<signal_result> items) {
 				super(context, viewResourceId, items);
 				this.items = items;
 				this.context = context;
@@ -450,15 +475,17 @@ public class FragmentSignal extends Fragment {
 				}
 				
 				
-				ReceivedSignal my_rsignal = items.get(position);
+				signal_result my_rsignal = items.get(position);
 				
 				
+				/*임시로 주석처리 코드를 돌리기 위해
+				 *
 				//리스너 등록은 if ( v== null) 에서 하는게 아니라 밖에서 함.
 				vh.alarm_bt.setOnClickListener(new ImageButton.OnClickListener() {
 					@Override
 					public void onClick(View v) {
-						/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
-						ReceivedSignal data = items.get(position);
+						// 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 
+						signal_result data = items.get(position);
 						if(data.is_alarm == ReceivedSignal.IS_ALARM){
 							data.is_alarm = ReceivedSignal.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
@@ -525,6 +552,7 @@ public class FragmentSignal extends Fragment {
 						vh.alarm_bt.setImageResource(R.drawable.push_alarm);
 					}
 				}
+				*/
 				
 				return v;
 			}

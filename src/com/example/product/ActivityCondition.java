@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,17 +26,34 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.example.product.j.OptionDetail;
 import com.viewpagerindicator.TabPageIndicator;
 
 public class ActivityCondition extends FragmentActivity {
 	FragmentManager fm; //onCreate에서 초기화
 	
+	/*
 	static ConditionGroup easy;
 	static ConditionGroup hard_jaemu;
 	static ConditionGroup hard_sise;
 	static ConditionGroup hard_kisool;
 	static ConditionGroup hard_pattern;
+	*/
+	
+	static ArrayList<predefined_condition_type> pred_cond_list;
+	static ArrayList<condition_type> cond_list;
+	static ArrayList<condition_type> cond_list_jaemu;
+	static ArrayList<condition_type> cond_list_sise;
+	static ArrayList<condition_type> cond_list_kisool;
+	static ArrayList<condition_type> cond_list_pattern;
+
+	static MyArrayAdapter_PRED_COND pred_cond_adapter;
+	static MyArrayAdapter_COND cond_adapter_jaemu;
+	static MyArrayAdapter_COND cond_adapter_sise;
+	static MyArrayAdapter_COND cond_adapter_kisool;
+	static MyArrayAdapter_COND cond_adapter_pattern;
 
 	
 
@@ -49,12 +67,92 @@ public class ActivityCondition extends FragmentActivity {
 		/* 프래그먼트 관리 */
 		fm = getSupportFragmentManager();
 		/* 부모의 id로 fragment를 찾기, fragment가 없으면 추가 */
+		
+		
 		if(fm.findFragmentById(R.id.frame) == null) {
 			FragmentEasyCondition fg_easy = new FragmentEasyCondition();
 			fm.beginTransaction().add(R.id.frame, fg_easy, "fragment_easy_condition").commit();
 		}
 		
 		
+
+		if(pred_cond_list == null) {
+			pred_cond_list = new ArrayList<predefined_condition_type>();
+			MyDataBase.getAvailable_predefined_conditions(
+					new Response.Listener<available_predefined_conditions>() {
+						@Override
+						public void onResponse(available_predefined_conditions response) {					
+							pred_cond_list.addAll(response.available_predefined_conditions);
+							if(pred_cond_adapter != null) {
+								pred_cond_adapter.notifyDataSetChanged();				
+							}
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", error.getMessage());
+						}
+					});
+		}
+		if(cond_list == null) {
+			cond_list = new ArrayList<condition_type>();
+			cond_list_jaemu = new ArrayList<condition_type>();
+			cond_list_sise = new ArrayList<condition_type>();
+			cond_list_kisool = new ArrayList<condition_type>();
+			cond_list_pattern = new ArrayList<condition_type>();
+
+			MyDataBase.getAvailable_conditions(
+					new Response.Listener<available_conditions>() {
+						@Override
+						public void onResponse(available_conditions response) {
+							cond_list.addAll(response.available_conditions);
+							Log.i("debug", "cond_list response success");
+							Log.i("debug", "cond_list size =" + cond_list.size());
+							for(int i=0; i<cond_list.size(); ++i) {							
+								condition_type data = cond_list.get(i);
+								Log.i("debug", "category =" +data.category);
+								if(data.category.equals("재무분석")) {
+									cond_list_jaemu.add(data);
+								}
+								else if(data.category.equals("시세분석")) {
+									cond_list_sise.add(data);
+								}
+								else if(data.category.equals("기술분석")) {
+									cond_list_kisool.add(data);
+								}
+								else if(data.category.equals("패턴분석")) {
+									cond_list_pattern.add(data);
+								}
+							}
+							if(cond_adapter_jaemu != null) {
+								cond_adapter_jaemu.notifyDataSetChanged();
+							}
+							if(cond_adapter_sise != null) {
+								cond_adapter_sise.notifyDataSetChanged();
+							}
+							if(cond_adapter_kisool != null) {
+								cond_adapter_kisool.notifyDataSetChanged();
+							}
+							if(cond_adapter_pattern != null) {
+								cond_adapter_pattern.notifyDataSetChanged();
+							}
+							Log.i("debug", "cond_list_jaemu size =" + cond_list_jaemu.size());
+							Log.i("debug", "cond_list_sise size =" + cond_list_sise.size());
+							Log.i("debug", "cond_list_kisool size =" + cond_list_kisool.size());
+							Log.i("debug", "cond_list_pattern size =" + cond_list_pattern.size());
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", error.getMessage());
+						}
+					});
+		}
+
+		
+		/*
 		// 조건 데이터 서버에서 받아옴
 		if(easy == null) {
 			//갱신
@@ -93,6 +191,7 @@ public class ActivityCondition extends FragmentActivity {
 			hard_pattern.list.add(new ConditionAbstract());
 			hard_pattern.list.add(new ConditionAbstract());
 		}
+		*/
 		
 		
 	}
@@ -156,12 +255,12 @@ public class ActivityCondition extends FragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 	
-	public static class MyArrayAdapter extends ArrayAdapter<ConditionAbstract> {
-		private ArrayList<ConditionAbstract> items;
+	public static class MyArrayAdapter_PRED_COND extends ArrayAdapter<predefined_condition_type> {
+		private ArrayList<predefined_condition_type> items;
 		private Context context;
 		private int resource;
 
-		public MyArrayAdapter(Context context, int viewResourceId, ArrayList<ConditionAbstract> items) {
+		public MyArrayAdapter_PRED_COND(Context context, int viewResourceId, ArrayList<predefined_condition_type> items) {
 			super(context, viewResourceId, items);
 			this.items = items;
 			this.context = context;
@@ -190,49 +289,132 @@ public class ActivityCondition extends FragmentActivity {
 			else {
 				vh = (ViewHolder)v.getTag();
 			}
-			ConditionAbstract data = items.get(position);
+			predefined_condition_type data = items.get(position);
 			
 			/*이미지 변경 코드 작성할 것 */
 			
 			//이미지 밑에 색을 변경
+			//pred_cond는 항상 condition_type_easy이다.
+			vh.type_color.setBackgroundResource(R.color.condition_type_easy);
+			/*
 			if(data.cond_type == ConditionAbstract.EASY) {
 				vh.type_color.setBackgroundResource(R.color.condition_type_easy);
 			}
 			else if(data.cond_type == ConditionAbstract.HARD) {
 				vh.type_color.setBackgroundResource(R.color.condition_type_hard);
 			}
+			*/
 			
 			// 조건 이름 설정
-			vh.cond_name.setText(data.cond_name);
+			vh.cond_name.setText(data.name);
 			
 			// 조건 구성 설정
-			vh.detail.setText(data.cond_compose);
+			String str = "";
+			ArrayList<predefined_condition_parameter_type> param_list = data.parameter_types;
+			for(int i=0; i<param_list.size(); ++i) {
+				if(i == param_list.size() - 1) {
+					str += param_list.get(i).name;
+				}
+				else {
+					str += param_list.get(i).name + ", ";
+				}
+			}
+			vh.detail.setText(str);
 			
 			// 순위 설정
-			vh.rank.setText(Integer.toString(data.rank));
+			vh.rank.setText(Integer.toString(position + 1));
 			
 			// 사람 숫자 설정
-			vh.user_cnt.setText(Integer.toString(data.user_cnt));
+			vh.user_cnt.setText(Integer.toString(data.number_of_users_add_me));
 			
 			// 사랑 숫자 설정
-			vh.love_cnt.setText(Integer.toString(data.love_cnt));
+			vh.love_cnt.setText(Integer.toString(data.number_of_users_like_me));
 
 			
 			return v;
 		}
-		public class ViewHolder {		
-			ImageView image;
-			View type_color;
-			TextView cond_name;
-			TextView rank;
-			TextView detail;
-			TextView user_cnt;
-			TextView love_cnt;
+	}
+
+	public static class MyArrayAdapter_COND extends ArrayAdapter<condition_type> {
+		private ArrayList<condition_type> items;
+		private Context context;
+		private int resource;
+
+		public MyArrayAdapter_COND(Context context, int viewResourceId, ArrayList<condition_type> items) {
+			super(context, viewResourceId, items);
+			this.items = items;
+			this.context = context;
+			resource = viewResourceId;
 		}
 
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+
+			RelativeLayout v = (RelativeLayout)convertView;
+			ViewHolder vh;
+			if (v == null) {
+				v = (RelativeLayout)View.inflate(context, resource, null);
+				vh = new ViewHolder();
+
+				vh.image= (ImageView)v.findViewById(R.id.image);	
+				vh.type_color = (View)v.findViewById(R.id.type_color);
+				vh.cond_name= (TextView)v.findViewById(R.id.condition_name);
+				vh.rank = (TextView)v.findViewById(R.id.rank);
+				vh.detail = (TextView)v.findViewById(R.id.detail);
+				vh.user_cnt = (TextView)v.findViewById(R.id.people_cnt);
+				vh.love_cnt = (TextView)v.findViewById(R.id.love_cnt);
+
+				v.setTag(vh);
+			}
+			else {
+				vh = (ViewHolder)v.getTag();
+			}
+			condition_type data = items.get(position);
+
+			/*이미지 변경 코드 작성할 것 */
+
+			//이미지 밑에 색을 변경
+			//pred_cond는 항상 condition_type_easy이다.
+			vh.type_color.setBackgroundResource(R.color.condition_type_easy);
+			/*
+				if(data.cond_type == ConditionAbstract.EASY) {
+					vh.type_color.setBackgroundResource(R.color.condition_type_easy);
+				}
+				else if(data.cond_type == ConditionAbstract.HARD) {
+					vh.type_color.setBackgroundResource(R.color.condition_type_hard);
+				}
+			 */
+
+			// 조건 이름 설정
+			vh.cond_name.setText(data.name);
+
+			// 조건 구성 설정
+			vh.detail.setText(data.description_of_parameters);
+
+			// 순위 설정
+			vh.rank.setText(Integer.toString(position + 1));
+
+			// 사람 숫자 설정
+			vh.user_cnt.setText(Integer.toString(data.number_of_users_add_me));
+
+			// 사랑 숫자 설정
+			vh.love_cnt.setText(Integer.toString(data.number_of_users_like_me));
+
+
+			return v;
+		}
 	}
 	
-	
+	public static class ViewHolder {		
+		ImageView image;
+		View type_color;
+		TextView cond_name;
+		TextView rank;
+		TextView detail;
+		TextView user_cnt;
+		TextView love_cnt;
+	}
+
 	
 	/***********************************************
 	 * 
@@ -276,7 +458,7 @@ public class ActivityCondition extends FragmentActivity {
 			super.onActivityCreated(savedInstanceState);
 
 
-			setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, easy.list));
+			setListAdapter(pred_cond_adapter = new MyArrayAdapter_PRED_COND(getActivity(), R.layout.activity_condition_item, pred_cond_list));
 			
 			// divider 세팅 부분. 주석처리 가능
 			ListView mListView = getListView();
@@ -299,14 +481,11 @@ public class ActivityCondition extends FragmentActivity {
 			
 			//인텐트에 클릭된 신호의 조건이름 정보를 전달
 			
-			ConditionAbstract data = easy.list.get(position);
-			intent.putExtra("cond_name", data.cond_name);
+			predefined_condition_type data = pred_cond_list.get(position);
+			intent.putExtra("cond_name", data.name);
 			startActivity(intent);
 			//Toast.makeText(getActivity(), position+" is clicked", 0).show();		
 		}
-		
-
-		
 	}
 	
 	
@@ -436,20 +615,20 @@ public class ActivityCondition extends FragmentActivity {
 				super.onActivityCreated(savedInstanceState);
 				
 				if(myCategory == "재무") {
-					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_jaemu.list));
+					setListAdapter(cond_adapter_jaemu = new MyArrayAdapter_COND(getActivity(), R.layout.activity_condition_item, cond_list_jaemu));
 				}
 				else if(myCategory == "시세") {
-					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_sise.list));
+					setListAdapter(cond_adapter_sise = new MyArrayAdapter_COND(getActivity(), R.layout.activity_condition_item, cond_list_sise));
 				}
 				else if(myCategory == "기술") {
-					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_kisool.list));
+					setListAdapter(cond_adapter_kisool = new MyArrayAdapter_COND(getActivity(), R.layout.activity_condition_item, cond_list_kisool));
 				}
 				else if(myCategory == "패턴") {
-					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_pattern.list));
+					setListAdapter(cond_adapter_pattern = new MyArrayAdapter_COND(getActivity(), R.layout.activity_condition_item, cond_list_pattern));
 				}
 				else {
 					//default
-					setListAdapter(new MyArrayAdapter(getActivity(), R.layout.activity_condition_item, hard_jaemu.list));
+					setListAdapter(cond_adapter_jaemu = new MyArrayAdapter_COND(getActivity(), R.layout.activity_condition_item, cond_list_jaemu));
 				}
 
 				// divider 세팅 부분. 주석처리 가능
@@ -472,24 +651,24 @@ public class ActivityCondition extends FragmentActivity {
 
 				Intent intent = new Intent(getActivity(), OptionDetail.class);
 				
-				ConditionAbstract data;				
+				condition_type data;				
 				//인텐트에 클릭된 신호의 조건이름 정보를 전달
 				if(myCategory == "재무") {
-					data = hard_jaemu.list.get(position);
+					data = cond_list_jaemu.get(position);
 				}
 				else if(myCategory == "시세") {
-					data = hard_sise.list.get(position);
+					data = cond_list_sise.get(position);
 				}
 				else if(myCategory == "기술") {
-					data = hard_kisool.list.get(position);
+					data = cond_list_kisool.get(position);
 				}
 				else if(myCategory == "패턴") {
-					data = hard_pattern.list.get(position);
+					data = cond_list_pattern.get(position);
 				}
 				else {
-					data = hard_jaemu.list.get(position);
+					data = cond_list_jaemu.get(position);
 				}
-				intent.putExtra("cond_name", data.cond_name);
+				intent.putExtra("cond_name", data.name);
 				startActivity(intent);
 			}
 		}
