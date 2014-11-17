@@ -28,12 +28,27 @@
         <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator</item>
     </style>
     
+    <style name="myTabStyle2" parent="@android:style/Theme.Holo.Light">
+        <item name="vpiTabPageIndicatorStyle">@style/CustomTabPageIndicator2</item>
+    </style>
+ 
     <style name="CustomTabPageIndicator" parent="Widget.TabPageIndicator">
         <item name="android:background">@drawable/custom_tab_indicator</item>
 		<item name="android:textColor">#000000</item>
 		<item name="android:textSize">15sp</item>
 		<item name="android:paddingTop">6dp</item>
 		<item name="android:paddingBottom">6dp</item>
+		<item name="android:paddingLeft">8dp</item>
+		<item name="android:paddingRight">8dp</item>
+		<item name="android:typeface">monospace</item>
+    </style>
+    
+    <style name="CustomTabPageIndicator2" parent="Widget.TabPageIndicator">
+        <item name="android:background">@drawable/custom_tab_indicator</item>
+		<item name="android:textColor">#000000</item>
+		<item name="android:textSize">17sp</item>
+		<item name="android:paddingTop">12dp</item>
+		<item name="android:paddingBottom">12dp</item>
 		<item name="android:paddingLeft">8dp</item>
 		<item name="android:paddingRight">8dp</item>
 		<item name="android:typeface">monospace</item>

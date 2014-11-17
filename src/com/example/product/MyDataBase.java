@@ -14,13 +14,14 @@ import com.android.volley.toolbox.Volley;
 
 // 데이터 베이스 코드는 전부 Static으로 선언하여 어디서든지 접근할 수 있게 한다.
 public class MyDataBase {
+/*
 	// 받은 시그널 정보
 	static ArrayList<signal_result> signal_list_all;
 	static ArrayList<signal_result> signal_list_total;
 	static ArrayList<signal_result> signal_list_indiv;
 	static ArrayList<signal_result> signal_list_alarm;
 	
-	// 받은 시그널 정보 종목별
+	// 받은 시그널 종목별
 	static ArrayList<signal_results_of_stock_item> signal_by_stock_list_all;
 	static ArrayList<signal_results_of_stock_item> signal_by_stock_list_total;
 	static ArrayList<signal_results_of_stock_item> signal_by_stock_list_indiv;
@@ -31,17 +32,21 @@ public class MyDataBase {
 	static ArrayList<signal_results_signal_condition> signal_by_cond_list_total;
 	static ArrayList<signal_results_signal_condition> signal_by_cond_list_indiv;
 	static ArrayList<signal_results_signal_condition> signal_by_cond_list_alarm;
+
+	*/
 	
 	//설정된 신호 목록 (전체)
 	static ArrayList<user_signal_condition> my_condition_total;
-	
+
 	//선택가능한 신호 목록
 	static ArrayList<predefined_condition_type> pred_cond_list;
 	static ArrayList<condition_type> cond_list;
 	
+	/*
 	//전체 종목 이름과 코드 정보 < 검색용 >
 	static ArrayList<stock_item> stock_item_list;
 	
+	*/
 	//내종목
 	
 	
@@ -55,6 +60,9 @@ public class MyDataBase {
 	static String users;
 
 	//이 코드는 Application 에서 onCreate할떄 실행
+	
+	
+	// 초기화
 	public static void initialize(Context context) {	
 		my_context = context;
 		queue = Volley.newRequestQueue(my_context);
@@ -63,6 +71,7 @@ public class MyDataBase {
 		users = "users/" + device_id +"/" ;
 	}
 	
+	// 전체 대상 시그널 리스트를 받아옴
 	public static void updateSignal_list(int group, int before_after, int last_position, 
 					Response.Listener<signal_results> resp_listener, 
 					Response.ErrorListener resp_error_listener) {		
@@ -71,7 +80,7 @@ public class MyDataBase {
 		my_url += users +"signal?first_filter=";
         String first_filter = "total";
         my_url += first_filter;
-        my_url +="?second_filter=";
+        my_url +="&second_filter=";
         String second_filter;
         switch(group) {
         	case 0 :
@@ -94,12 +103,15 @@ public class MyDataBase {
         my_url += second_filter;
 
         switch(before_after) {
-        case 0 : //before
-        	my_url += "&limit="+limit+"&before="+last_position;
-        	break;
-        case 1 : //after
-        	my_url += "&after="+last_position;
-        	break;
+	        case -1 : // default 첫 시작할 때 최신 갯수 받아올때,
+	        	my_url += "&limit="+limit;
+	        	break;
+	        case 0 : //before
+	        	my_url += "&limit="+limit+"&before="+last_position;
+	        	break;
+	        case 1 : //after
+	        	my_url += "&after="+last_position;
+	        	break;
         }
 
 
@@ -113,16 +125,16 @@ public class MyDataBase {
         queue.add(myReq);
 	}
 	
-	
-	public static void updateSignal_by_cond_list(int group, int before_after, int last_position, 
+	// 신호별 시그널 리스트를 받아옴
+	public static void updateSignal_by_cond_list(int group,
 			Response.Listener<signal_results_signal_conditions> resp_listener, 
 			Response.ErrorListener resp_error_listener) {		
 
 		String my_url = URL;	
 		my_url += users +"signal?first_filter=";
-		String first_filter = "total";
+		String first_filter = "signal";
 		my_url += first_filter;
-		my_url +="?second_filter=";
+		my_url +="&second_filter=";
 		String second_filter;
 		switch(group) {
 		case 0 :
@@ -155,16 +167,16 @@ public class MyDataBase {
 		queue.add(myReq);
 	}
 	
-	
-	public static void updateSignal_by_stock_list(int group, int before_after, int last_position, 
+	// 종목별 시그널 리스트를 받아옴
+	public static void updateSignal_by_stock_list(int group,
 			Response.Listener<signal_results_of_stock_items> resp_listener, 
 			Response.ErrorListener resp_error_listener) {		
 
 		String my_url = URL;	
 		my_url += users +"signal?first_filter=";
-		String first_filter = "total";
+		String first_filter = "stock_item";
 		my_url += first_filter;
-		my_url +="?second_filter=";
+		my_url +="&second_filter=";
 		String second_filter;
 		switch(group) {
 		case 0 :
@@ -197,6 +209,7 @@ public class MyDataBase {
 		queue.add(myReq);
 	}
 	
+	// 기본 조건들의 리스트를 받아옴
 	public static void getAvailable_predefined_conditions(
 			Response.Listener<available_predefined_conditions> resp_listener, 
 			Response.ErrorListener resp_error_listener) {
@@ -213,6 +226,7 @@ public class MyDataBase {
 		queue.add(myReq);
 	}
 	
+	// 고급 조건들의 리스트를 받아옴
 	public static void getAvailable_conditions(
 			Response.Listener<available_conditions> resp_listener, 
 			Response.ErrorListener resp_error_listener) {
@@ -228,24 +242,183 @@ public class MyDataBase {
 				);
 		queue.add(myReq);		
 	}
+	
+	
+	// 전체를 대상으로 설정한 조건들을 받아오기
+	public static void getSignal_conditions(
+			Response.Listener<signal_conditions> resp_listener, 
+			Response.ErrorListener resp_error_listener) 
+	{		
+		String my_url = URL+users+"conditions";
+		GsonRequest<signal_conditions> myReq = new GsonRequest<signal_conditions>(
+				my_url,
+				signal_conditions.class,
+				null,
+				resp_listener,
+				resp_error_listener
+				);
+		queue.add(myReq);			
+	}
+	
+	// 종목 상세 페이지 받아오기
+	public static void getStock_detail(int stock_item_id,
+			Response.Listener<stock_detail> resp_listener, 
+			Response.ErrorListener resp_error_listener) 
+	{
+		String my_url = URL+users+"stocks/"+stock_item_id;	
+		GsonRequest<stock_detail> myReq = new GsonRequest<stock_detail>(
+				my_url,
+				stock_detail.class,
+				null,
+				resp_listener,
+				resp_error_listener
+				);
+		queue.add(myReq);			
+	}
+	
+	// 신호 상세 페이지 받아오기
+	public static void getSignal_condition_detail(int user_signal_condition_id,
+			Response.Listener<signal_condition_detail> resp_listener, 
+			Response.ErrorListener resp_error_listener) 
+	{
+		String my_url = URL+users+"conditions/"+user_signal_condition_id;	
+		GsonRequest<signal_condition_detail> myReq = new GsonRequest<signal_condition_detail>(
+				my_url,
+				signal_condition_detail.class,
+				null,
+				resp_listener,
+				resp_error_listener
+				);
+		queue.add(myReq);			
+	}
+	
+	// 특정 종목 대상 시그널 리스트를 받아옴
+	public static void getStockSignal_list(int group, int before_after, int last_position, int id, 
+					Response.Listener<signal_results> resp_listener, 
+					Response.ErrorListener resp_error_listener) {		
+		
+		String my_url = URL;	
+		my_url += users +"signal?first_filter=";
+        String first_filter = "stock_item";
+        my_url += first_filter;
+        my_url +="&second_filter=";
+        String second_filter;
+        switch(group) {
+        	case 0 :
+        		second_filter = "total";
+        		break;
+        	case 1 :
+        		second_filter = "to_all_stock_items";
+        		break;
+        	case 2 :
+        		second_filter = "to_specific_stock_item";
+        		break;
+        	case 3 :
+        		second_filter = "alarm";
+        		break;
+        	default :
+        		second_filter = "total";
+        		Log.e("product", "method updateSignal_list parameter group has invalid value");
+        		break;        		
+        }    
+        my_url += second_filter;
+
+        switch(before_after) {
+	        case -1 : // default 첫 시작할 때 최신 갯수 받아올때,
+	        	my_url += "&limit="+limit;
+	        	break;
+	        case 0 : //before
+	        	my_url += "&limit="+limit+"&before="+last_position;
+	        	break;
+	        case 1 : //after
+	        	my_url += "&after="+last_position;
+	        	break;
+        }
+        my_url += "&id=" + id;
+
+        GsonRequest<signal_results> myReq = new GsonRequest<signal_results>(
+                my_url,
+                signal_results.class,
+                null,
+                resp_listener,
+                resp_error_listener
+                );
+        queue.add(myReq);
+	}
 
 	
+	// 특정 조건 대상 시그널 리스트를 받아옴
+	public static void getCondSignal_list(int group, int before_after, int last_position, int id, 
+					Response.Listener<signal_results> resp_listener, 
+					Response.ErrorListener resp_error_listener) {		
+		
+		String my_url = URL;	
+		my_url += users +"signal?first_filter=";
+        String first_filter = "stock_item";
+        my_url += first_filter;
+        my_url +="&second_filter=";
+        String second_filter;
+        switch(group) {
+        	case 0 :
+        		second_filter = "total";
+        		break;
+        	case 1 :
+        		second_filter = "to_all_stock_items";
+        		break;
+        	case 2 :
+        		second_filter = "to_specific_stock_item";
+        		break;
+        	case 3 :
+        		second_filter = "alarm";
+        		break;
+        	default :
+        		second_filter = "total";
+        		Log.e("product", "method updateSignal_list parameter group has invalid value");
+        		break;        		
+        }    
+        my_url += second_filter;
+
+        switch(before_after) {
+	        case -1 : // default 첫 시작할 때 최신 갯수 받아올때,
+	        	my_url += "&limit="+limit;
+	        	break;
+	        case 0 : //before
+	        	my_url += "&limit="+limit+"&before="+last_position;
+	        	break;
+	        case 1 : //after
+	        	my_url += "&after="+last_position;
+	        	break;
+        }
+        my_url += "&id=" + id;
+
+        GsonRequest<signal_results> myReq = new GsonRequest<signal_results>(
+                my_url,
+                signal_results.class,
+                null,
+                resp_listener,
+                resp_error_listener
+                );
+        queue.add(myReq);
+	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	// 내종목
+	public static void getMy_Stock(
+			Response.Listener<signal_results_of_stock_items> resp_listener, 
+			Response.ErrorListener resp_error_listener) {		
+
+		String my_url = URL;	
+		my_url += users +"signal?option=my_stocks";
+
+		GsonRequest<signal_results_of_stock_items> myReq = new GsonRequest<signal_results_of_stock_items>(
+				my_url,
+				signal_results_of_stock_items.class,
+				null,
+				resp_listener,
+				resp_error_listener
+				);
+		queue.add(myReq);
+	}
 	
 	
 	
@@ -255,7 +428,7 @@ public class MyDataBase {
 	
 
 	
-	
+	/*
 	private static ArrayList<ReceivedSignal> received_signal_list;
 	private static ArrayList<ReceivedSignal> result;
 	private static Context main_activity;
@@ -343,11 +516,15 @@ public class MyDataBase {
 		result.addAll(temp);
 		return result;
 	}
+	*/
+	
+	
 }
 
 
 
 
+/*
 
 // 서버로부터 받은 RAW_DATA 를 담는다.
 class ReceivedSignal {
@@ -441,8 +618,10 @@ class ReceivedSignal {
 		this.time = time;
 	}
 }
+*/
 
 // 임시 test 코드
+/*
 class ForTest {
 	public static ArrayList<ReceivedSignal> getRandReceivedSignal() {
 		ArrayList<ReceivedSignal> mList = new ArrayList<ReceivedSignal>();
@@ -486,7 +665,7 @@ class ForTest {
 	}
 }
 
-
+*/
 
 
 
@@ -515,6 +694,7 @@ class ForTest {
  ******************************/
 
 
+/*
 //종목별 정렬 데이터
 class SignalSortByStock {	
 	int total_cnt =0;
@@ -649,6 +829,25 @@ class SimpleCond {
 	int cond_type = EASY;
 	String cond_name = "상승주_t";
 }
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 class Flag {
 	//for type
@@ -661,8 +860,8 @@ class Flag {
 	static final int OLD = 0;
 	static final int NEW = 1;
 	//for condition_type
-	static final int EASY = 0;
-	static final int HARD = 1;
+	static final int EASY = 1;
+	static final int HARD = 0;
 	static final int CUSTOM = 2;
 	//for is_alarm
 	static final int IS_NOT_ALARM = 0;
@@ -675,10 +874,7 @@ class Flag {
 	static final int SISE = 1;
 	static final int KISOOL = 2;
 	static final int PATTERN = 3;
-
 }
-
-
 
 
 
@@ -693,10 +889,11 @@ class signal_results {
 
 // 하나의 시그널 결과 정보
 class signal_result {
-	String signal_id;
+	int signal_id;
 	String date;
 	int user_signal_condition_id;
 	String user_signal_condition_name;
+	int level; // 0 고급조건, 1 기본, 2 CUSTOM
 	int applicable_range; // 0 전체종목, 1 특정종목
 	int new_signal; // 0 과거 시그널 1 새로운 시그널
 	String stock_item_name;
@@ -704,14 +901,20 @@ class signal_result {
 	int price;
 	int entered; // 0 이탈 1 진입
 	int alarm; // 0 알람 OFF 1 알람 ON
-
 }
+
+//추가된 시그널 조건 목록 얻기
+class signal_conditions {
+	ArrayList<user_signal_condition> signal_conditions;
+}
+
 
 // 사용자가 추가한 시그널 조건 정보
 class user_signal_condition {
 	int id;
 	String name;
 	int alarm; // 0 알람 OFF 1 알람 ON
+	int level; // 0 고급조건, 1 기본조건, 2 CUSTOM
 }
 
 //first_filter 가 stock_item 인 경우.
@@ -725,7 +928,7 @@ class signal_results_of_stock_item {
 	String stock_item_name;
 	int price;
 	int price_gap_of_previous_closing_price;
-	int price_rate_of_previous_closing_price;
+	double price_rate_of_previous_closing_price;
 	int number_of_signals_to_all_stock_items;
 	int number_of_signals_to_specific_stock_item;
 	ArrayList<signal_result> signal_results;	
@@ -739,21 +942,19 @@ class signal_results_signal_conditions {
 //시그널 조건 별 시그널 결과 정보
 class signal_results_signal_condition {
 	int user_signal_condition_id;
+	String user_signal_condition_name;
 	int applicable_range; // 0 전체종목 1 특정 종목
 	int number_of_signals;
-	int alram; // 0 알람이 설정되지 않은 경우, 1 알람이 설정된 경우
+	int alarm; // 0 알람이 설정되지 않은 경우, 1 알람이 설정된 경우
+	int level;
 	ArrayList<signal_result> signal_results;
-}
-
-//추가된 시그널 조건 목록 얻기
-class signal_conditions {
-	ArrayList<user_signal_condition> signal_conditions;
 }
 
 //시그널 조건 상세
 class signal_condition_detail {
 	String user_signal_condition_name;
 	int level; // 0 일반조건 1 간단조건 2 조건 2개 이상
+	ArrayList<String> included_signal_condition_names;
 }
 
 //이용 가능한 기본 조건 list
@@ -803,11 +1004,22 @@ class condition_parameter_type {
 
 
 class stock_detail {
-	
+	String stock_item_name;
+	int price;
+	int price_gap_of_previous_closing_price;
+	double price_rate_of_previous_closing_price;
+	int high_price;
+	int low_price;
+	int volume;
+	int average_volume;
+	ArrayList<user_signal_condition> user_signal_conditions;
 }
 
 class stock_item {
-	
+	int id;
+	String name;
+	String code;
+	String short_code;
 }
 
 

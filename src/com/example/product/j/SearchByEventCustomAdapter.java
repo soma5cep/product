@@ -3,9 +3,12 @@ package com.example.product.j;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
@@ -14,13 +17,15 @@ import com.example.product.R;
 
 public class SearchByEventCustomAdapter extends BaseAdapter {
 	Context mContext;
+	Activity aActivity;
 	ArrayList<String> eventNum = new ArrayList<String>();
 	ArrayList<String> eventName = new ArrayList<String>();
 	ArrayList<String> resultEventNum;
 	ArrayList<String> resultEventName;
-	public SearchByEventCustomAdapter(Context context, ArrayList<String> eventNums, ArrayList<String> eventNames) {
+	public SearchByEventCustomAdapter(Activity activity, Context context, ArrayList<String> eventNums, ArrayList<String> eventNames) {
 		// TODO Auto-generated constructor stub
 		this.mContext = context;
+		this.aActivity = activity;
 		this.resultEventName = eventNames;
 		this.resultEventNum = eventNums;
 		for(int i=0;i<resultEventName.size();i++){
@@ -56,9 +61,20 @@ public class SearchByEventCustomAdapter extends BaseAdapter {
 			convertView = LayoutInflater.from(mContext).inflate(R.layout.item_list_search_by_event, null);
 		}
 		TextView txtEventNum = (TextView)convertView.findViewById(R.id.txtEventNum);
-		TextView txtEventName = (TextView)convertView.findViewById(R.id.txtEventName);
+		final TextView txtEventName = (TextView)convertView.findViewById(R.id.txtEventName);
 		txtEventNum.setText(resultEventNum.get(position).toString());
 		txtEventName.setText(resultEventName.get(position).toString());
+		convertView.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.putExtra("name", txtEventName.getText().toString());
+				aActivity.setResult(SearchItem.RESULT_OK, intent);
+				// TODO Auto-generated method stub
+				aActivity.finish();
+			}
+		});
 		return convertView;
 	}
 	

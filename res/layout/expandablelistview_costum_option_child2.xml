@@ -29,33 +29,7 @@
             android:singleLine="false"
             android:text="A 봉전 B 대비 C 봉전 D 등락률"
             android:textSize="12dp" />
-
-        <RadioGroup
-            android:layout_height="wrap_content"
-            android:layout_width="match_parent">
-            <RadioButton
-                android:id="@+id/radioButton1"
-                android:layout_width="wrap_content"
-                android:layout_height="23dp"
-                android:text="E % F"
-                android:textSize="12dp" />
-
-            <RadioButton
-                android:id="@+id/radioButton2"
-                android:layout_width="wrap_content"
-                android:layout_height="23dp"
-                android:layout_marginBottom="10dp"
-                android:text="G % ~ H % (범위)"
-                android:textSize="12dp" />
-        </RadioGroup>
     </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="#FF909090" />
 
     <LinearLayout
         android:id="@+id/llChild"

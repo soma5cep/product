@@ -1,5 +1,6 @@
 package com.example.product.j;
 
+import java.util.ArrayList;
 
 public class Option {
 	String name, body;

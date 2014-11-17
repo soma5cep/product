@@ -34,14 +34,6 @@ import com.viewpagerindicator.TabPageIndicator;
 public class ActivityCondition extends FragmentActivity {
 	FragmentManager fm; //onCreate에서 초기화
 	
-	/*
-	static ConditionGroup easy;
-	static ConditionGroup hard_jaemu;
-	static ConditionGroup hard_sise;
-	static ConditionGroup hard_kisool;
-	static ConditionGroup hard_pattern;
-	*/
-	
 	static ArrayList<predefined_condition_type> pred_cond_list;
 	static ArrayList<condition_type> cond_list;
 	static ArrayList<condition_type> cond_list_jaemu;
@@ -77,122 +69,86 @@ public class ActivityCondition extends FragmentActivity {
 		
 
 		if(pred_cond_list == null) {
-			pred_cond_list = new ArrayList<predefined_condition_type>();
-			MyDataBase.getAvailable_predefined_conditions(
-					new Response.Listener<available_predefined_conditions>() {
-						@Override
-						public void onResponse(available_predefined_conditions response) {					
-							pred_cond_list.addAll(response.available_predefined_conditions);
-							if(pred_cond_adapter != null) {
-								pred_cond_adapter.notifyDataSetChanged();				
+			if(MyDataBase.pred_cond_list != null) {
+				pred_cond_list = MyDataBase.pred_cond_list;
+			}
+			else {
+				pred_cond_list = new ArrayList<predefined_condition_type>();
+				MyDataBase.getAvailable_predefined_conditions(
+						new Response.Listener<available_predefined_conditions>() {
+							@Override
+							public void onResponse(available_predefined_conditions response) {
+								pred_cond_list.addAll(response.available_predefined_conditions);
+								// 데이터 베이스에 있는 자료도 업데이트
+								MyDataBase.pred_cond_list = pred_cond_list;
+								if(pred_cond_adapter != null) {
+									pred_cond_adapter.notifyDataSetChanged();				
+								}
 							}
-						}
-					}, 
-					new Response.ErrorListener() {
-						@Override
-						public void onErrorResponse(VolleyError error) {
-							Log.e("product", error.getMessage());
-						}
-					});
+						}, 
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								Log.e("product", "error!" + error.getMessage());
+							}
+						});
+			}
 		}
 		if(cond_list == null) {
-			cond_list = new ArrayList<condition_type>();
+			if(MyDataBase.cond_list != null) {
+				cond_list = MyDataBase.cond_list;
+			}
+			else {
+				cond_list = new ArrayList<condition_type>();
+				MyDataBase.getAvailable_conditions(
+						new Response.Listener<available_conditions>() {
+							@Override
+							public void onResponse(available_conditions response) {
+								cond_list.addAll(response.available_conditions);
+								// 데이터 베이스에 있는 자료도 업데이트
+								MyDataBase.cond_list = cond_list;
+							}
+						}, 
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								Log.e("product", "error!" + error.getMessage());
+							}
+						});
+			}
 			cond_list_jaemu = new ArrayList<condition_type>();
 			cond_list_sise = new ArrayList<condition_type>();
 			cond_list_kisool = new ArrayList<condition_type>();
 			cond_list_pattern = new ArrayList<condition_type>();
-
-			MyDataBase.getAvailable_conditions(
-					new Response.Listener<available_conditions>() {
-						@Override
-						public void onResponse(available_conditions response) {
-							cond_list.addAll(response.available_conditions);
-							Log.i("debug", "cond_list response success");
-							Log.i("debug", "cond_list size =" + cond_list.size());
-							for(int i=0; i<cond_list.size(); ++i) {							
-								condition_type data = cond_list.get(i);
-								Log.i("debug", "category =" +data.category);
-								if(data.category.equals("재무분석")) {
-									cond_list_jaemu.add(data);
-								}
-								else if(data.category.equals("시세분석")) {
-									cond_list_sise.add(data);
-								}
-								else if(data.category.equals("기술분석")) {
-									cond_list_kisool.add(data);
-								}
-								else if(data.category.equals("패턴분석")) {
-									cond_list_pattern.add(data);
-								}
-							}
-							if(cond_adapter_jaemu != null) {
-								cond_adapter_jaemu.notifyDataSetChanged();
-							}
-							if(cond_adapter_sise != null) {
-								cond_adapter_sise.notifyDataSetChanged();
-							}
-							if(cond_adapter_kisool != null) {
-								cond_adapter_kisool.notifyDataSetChanged();
-							}
-							if(cond_adapter_pattern != null) {
-								cond_adapter_pattern.notifyDataSetChanged();
-							}
-							Log.i("debug", "cond_list_jaemu size =" + cond_list_jaemu.size());
-							Log.i("debug", "cond_list_sise size =" + cond_list_sise.size());
-							Log.i("debug", "cond_list_kisool size =" + cond_list_kisool.size());
-							Log.i("debug", "cond_list_pattern size =" + cond_list_pattern.size());
-						}
-					}, 
-					new Response.ErrorListener() {
-						@Override
-						public void onErrorResponse(VolleyError error) {
-							Log.e("product", error.getMessage());
-						}
-					});
+			
+			for(int i=0; i<cond_list.size(); ++i) {							
+				condition_type data = cond_list.get(i);
+				if(data.category.equals("재무분석")) {
+					cond_list_jaemu.add(data);
+				}
+				else if(data.category.equals("시세분석")) {
+					cond_list_sise.add(data);
+				}
+				else if(data.category.equals("기술분석")) {
+					cond_list_kisool.add(data);
+				}
+				else if(data.category.equals("패턴분석")) {
+					cond_list_pattern.add(data);
+				}
+			}
+			if(cond_adapter_jaemu != null) {
+				cond_adapter_jaemu.notifyDataSetChanged();
+			}
+			if(cond_adapter_sise != null) {
+				cond_adapter_sise.notifyDataSetChanged();
+			}
+			if(cond_adapter_kisool != null) {
+				cond_adapter_kisool.notifyDataSetChanged();
+			}
+			if(cond_adapter_pattern != null) {
+				cond_adapter_pattern.notifyDataSetChanged();
+			}	
 		}
-
-		
-		/*
-		// 조건 데이터 서버에서 받아옴
-		if(easy == null) {
-			//갱신
-			//test
-			easy = new ConditionGroup();
-			easy.list.add(new ConditionAbstract());			
-		}
-		if(hard_jaemu == null) {
-			//갱신
-			hard_jaemu = new ConditionGroup();
-			hard_jaemu.list.add(new ConditionAbstract());
-			hard_jaemu.list.add(new ConditionAbstract());		
-		}
-		if(hard_sise == null) {
-			//갱신
-			hard_sise = new ConditionGroup();
-			hard_sise.list.add(new ConditionAbstract());
-			hard_sise.list.add(new ConditionAbstract());
-			hard_sise.list.add(new ConditionAbstract());
-	
-		}
-		if(hard_kisool == null) {
-			//갱신
-			hard_kisool = new ConditionGroup();
-			hard_kisool.list.add(new ConditionAbstract());
-			hard_kisool.list.add(new ConditionAbstract());	
-			hard_kisool.list.add(new ConditionAbstract());	
-			hard_kisool.list.add(new ConditionAbstract());	
-		}
-		if(hard_pattern == null) {
-			//갱신
-			hard_pattern = new ConditionGroup();
-			hard_pattern.list.add(new ConditionAbstract());	
-			hard_pattern.list.add(new ConditionAbstract());
-			hard_pattern.list.add(new ConditionAbstract());
-			hard_pattern.list.add(new ConditionAbstract());
-			hard_pattern.list.add(new ConditionAbstract());
-		}
-		*/
-		
 		
 	}
 	
@@ -374,8 +330,8 @@ public class ActivityCondition extends FragmentActivity {
 			/*이미지 변경 코드 작성할 것 */
 
 			//이미지 밑에 색을 변경
-			//pred_cond는 항상 condition_type_easy이다.
-			vh.type_color.setBackgroundResource(R.color.condition_type_easy);
+			//cond는 항상 condition_type_hard이다.
+			vh.type_color.setBackgroundResource(R.color.condition_type_hard);
 			/*
 				if(data.cond_type == ConditionAbstract.EASY) {
 					vh.type_color.setBackgroundResource(R.color.condition_type_easy);

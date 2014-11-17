@@ -26,14 +26,14 @@
                 <TextView
                     android:id="@+id/txtOptionName"
                     android:layout_width="match_parent"
-                    android:layout_height="20dp"
+                    android:layout_height="36dp"
                     android:background="#008000"
                     android:gravity="center"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
                     android:text="성장주"
                     android:textColor="#FFFFFF"
-                    android:textSize="14dp" />
+                    android:textSize="17dp" />
 
                 <TextView
                     android:id="@+id/txtInform"
@@ -45,7 +45,7 @@
                     android:paddingRight="10dp"
                     android:singleLine="false"
                     android:text="성장주는 기업의 수익구조가 지속적으로 향상되고 있어 장기간에 걸쳐 주가가 큰 폭으로 상승하고 있는 주식입니다."
-                    android:textSize="12dp" />
+                    android:textSize="15sp" />
 
                 <View
                     android:layout_width="match_parent"
@@ -64,7 +64,7 @@
                     android:paddingRight="10dp"
                     android:singleLine="false"
                     android:text="매출액 증가율\n\t최근 3년 평균 증감율 50% 이상\n매출액\n\t최근 결산 400억원 이상\n영업이익 증가율\n\t최근 3년 평균 증감율 50% 이"
-                    android:textSize="12dp" />
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <RelativeLayout

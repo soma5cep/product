@@ -8,47 +8,17 @@
         android:id="@+id/optionList"
         android:layout_width="match_parent"
         android:layout_height="282dp"
-        android:dividerHeight="0dp"
-        android:divider="#FFFFFF"
         android:layout_marginTop="10dp"
-        android:groupIndicator="@android:color/transparent"
+        android:layout_weight="0.08"
         android:childDivider="@android:color/transparent"
-        android:layout_weight="0.08" >
+        android:divider="#FFFFFF"
+        android:dividerHeight="0dp"
+        android:groupIndicator="@android:color/transparent" >
     </ExpandableListView>
 
-    <LinearLayout
-        android:orientation="horizontal"
+    <FrameLayout
+        android:id="@+id/bottom_menu"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:weightSum="15">
-
-        <Button
-            android:id="@+id/btnCancel"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:layout_weight="5"
-            android:background="#000000"
-            android:textColor="#FFFFFF"
-            android:text="취소" />
-        
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:layout_weight="5"
-            android:background="#000000"
-            android:text="조건 추가"
-            android:textColor="#FFFFFF" />
-
-        <Button
-            android:id="@+id/btnSubmit"
-            android:layout_width="match_parent"
-            android:layout_height="38dp"
-            android:layout_weight="5"
-            android:background="#000000"
-            android:text="저장"
-            android:textColor="#FFFFFF" />
-
-</LinearLayout>
+        android:layout_height="wrap_content" />
 
 </LinearLayout>

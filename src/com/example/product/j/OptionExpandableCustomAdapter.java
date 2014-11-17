@@ -3,8 +3,12 @@ package com.example.product.j;
 import java.util.ArrayList;
 
 import android.R.drawable;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +24,13 @@ import com.example.product.R;
 public class OptionExpandableCustomAdapter extends BaseExpandableListAdapter {
 	Context context;
 	ArrayList<Option> option;
+	ArrayList<OptionData> data;
 
 	public OptionExpandableCustomAdapter(Context contexts,
-			ArrayList<Option> options) {
+			ArrayList<Option> options, ArrayList<OptionData> datas) {
 		context = contexts;
 		option = options;
+		data = datas;
 		// TODO Auto-generated constructor stub
 	}
 
@@ -111,6 +117,7 @@ public class OptionExpandableCustomAdapter extends BaseExpandableListAdapter {
 			public void onClick(View v) {
 				int now = (Integer) v.getTag();
 				option.remove(now);
+				data.remove(now);
 				OptionExpandableCustomAdapter.this.notifyDataSetChanged();
 				// TODO Auto-generated method stub
 			}
@@ -135,7 +142,7 @@ public class OptionExpandableCustomAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public View getChildView(int groupPosition, int childPosition,
+	public View getChildView(final int groupPosition, int childPosition,
 			boolean isLastChild, View convertView, ViewGroup parent) {
 
 		LayoutInflater infalInflater = (LayoutInflater) context
@@ -156,12 +163,67 @@ public class OptionExpandableCustomAdapter extends BaseExpandableListAdapter {
 			LinearLayout inLayout = (LinearLayout) convertView
 					.findViewById(R.id.llChild);
 			for (int i = 0; i < 2; i++) {
+				final int x = i;
 				LinearLayout route = (LinearLayout) infalInflater.inflate(
 						R.layout.expandablelistview_child2_child, null);
-				EditText txtParamName1 = (EditText) route.findViewById(R.id.txtParamName1);
-				EditText txtParamName2 = (EditText) route.findViewById(R.id.txtParamName2);
-				txtParamName1.setText("A");
-				txtParamName2.setText("B");
+				final EditText txtParamName1 = (EditText) route
+						.findViewById(R.id.txtParamName1);
+				final EditText txtParamName2 = (EditText) route
+						.findViewById(R.id.txtParamName2);
+				TextView txtParam1 = (TextView) route
+						.findViewById(R.id.txtParam1);
+				TextView txtParam2 = (TextView) route
+						.findViewById(R.id.txtParam2);
+				txtParam1.setText((char) ('A' + 2 * i) + "");
+				txtParam2.setText((char) ('A' + 2 * i + 1) + "");
+				txtParamName1.setText(data.get(groupPosition).getParam(2 * i));
+				txtParamName2.setText(data.get(groupPosition).getParam(
+						2 * i + 1));
+				txtParamName1.setHint("인자" + (char) ('A' + 2 * i));
+				txtParamName2.setHint("인자" + (char) ('A' + 2 * i + 1));
+				txtParamName1.setEnabled(true);
+				txtParamName2.setEnabled(true);
+
+				txtParamName1.addTextChangedListener(new TextWatcher() {
+
+					@Override
+					public void onTextChanged(CharSequence s, int start,
+							int before, int count) {
+						// TODO Auto-generated method stub
+						data.get(groupPosition).setParam(x * 2, txtParamName1.getText().toString());
+					}
+
+					@Override
+					public void beforeTextChanged(CharSequence s, int start,
+							int count, int after) {
+						// TODO Auto-generated method stub
+					}
+
+					@Override
+					public void afterTextChanged(Editable s) {
+						// TODO Auto-generated method stub
+					}
+				});
+				txtParamName2.addTextChangedListener(new TextWatcher() {
+
+					@Override
+					public void onTextChanged(CharSequence s, int start,
+							int before, int count) {
+						// TODO Auto-generated method stub
+						data.get(groupPosition).setParam(x * 2 + 1, txtParamName2.getText().toString());
+					}
+
+					@Override
+					public void beforeTextChanged(CharSequence s, int start,
+							int count, int after) {
+						// TODO Auto-generated method stub
+					}
+
+					@Override
+					public void afterTextChanged(Editable s) {
+						// TODO Auto-generated method stub
+					}
+				});
 				inLayout.addView(route);
 			}
 		}

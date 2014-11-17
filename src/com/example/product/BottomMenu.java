@@ -58,5 +58,30 @@ public class BottomMenu {
 			this.listener = listener;			
 		}
 	}
+	
+	//ALL, 알람 2개 버튼만 있음
+	public static class BottomMenu_3 extends Fragment {
+		
+		Button.OnClickListener listener;
+		
+		
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+			View root = inflater.inflate(R.layout.bottom_menu_3, container, false);
+			
+			if(listener != null) {
+				((Button)root.findViewById(R.id.cancle_btn)).setOnClickListener(listener);
+				((Button)root.findViewById(R.id.admit_btn)).setOnClickListener(listener);
+			}
+			
+			return root;			
+		}
+		
+		
+		
+		public void setButtonClickListener(Button.OnClickListener listener) {
+			this.listener = listener;			
+		}
+	}
 
 }

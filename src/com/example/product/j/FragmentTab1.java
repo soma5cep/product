@@ -3,7 +3,10 @@ package com.example.product.j;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,11 +19,24 @@ import android.widget.ListView;
 import com.example.product.R;
 
 public class FragmentTab1 extends Fragment {
-
+	//Context mContext;
+	//Activity aActivity;
 	ListView lvSearchByEvent;
 	EditText txtSearchEventName;
 	ArrayList<String> eventName = new ArrayList<String>();
 	ArrayList<String> eventNum = new ArrayList<String>();
+	
+	
+	
+	//context와 activity를 받을 필요는 없다.
+	//기본 생성자를 사용하기 위해 주석처리
+	/*
+	public FragmentTab1(Context context,Activity activity) {
+		mContext = context;
+		aActivity = activity;
+		// TODO Auto-generated constructor stub
+	}
+	*/
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -30,19 +46,27 @@ public class FragmentTab1 extends Fragment {
 		eventName.clear();
 
 
-		eventName.add("A1111");
-		eventName.add("A1112");
-		eventName.add("A1113");
-		eventNum.add("Samsung");
-		eventNum.add("Sambo");
-		eventNum.add("Apple");
+		eventNum.add("A1111");
+		eventNum.add("A1112");
+		eventNum.add("A1113");
+		eventName.add("Samsung");
+		eventName.add("Sambo");
+		eventName.add("Apple");
 		
 
-		final SearchByEventCustomAdapter adapter = new SearchByEventCustomAdapter(container.getContext(), eventNum, eventName);
+		final SearchByEventCustomAdapter adapter = new SearchByEventCustomAdapter(getActivity(), container.getContext(), eventNum, eventName);
 		
 		lvSearchByEvent = (ListView) rootView
 				.findViewById(R.id.lvSearchByEvent);
 		lvSearchByEvent.setAdapter(adapter);
+		
+		
+		//divder가 위아래 에도 표시되게 하기 위해 빈 header와 footer를 삽입
+		
+		lvSearchByEvent.addFooterView(new View(getActivity()), null, true);
+		lvSearchByEvent.addHeaderView(new View(getActivity()), null, true);
+		
+		
 
 		txtSearchEventName = (EditText) rootView
 				.findViewById(R.id.txtSearchByEvent);

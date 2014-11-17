@@ -19,7 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import com.example.product.j.SearchItem;
+import com.example.product.j.SearchItem2;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -241,28 +241,7 @@ public class MainActivity extends FragmentActivity {
 	    editor.commit();
 	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 	public void tabButtonOnClick(View view) {
 		
@@ -291,11 +270,10 @@ public class MainActivity extends FragmentActivity {
 				
 			/* 검색 activity를 띄우기 */
 			case R.id.search_bt :  
-				Intent intent = new Intent(this, SearchItem.class);
+				Intent intent = new Intent(this, SearchItem2.class);
 				startActivity(intent);
 				
-				
-				
+
 				break;
 			
 			case R.id.settings_bt :

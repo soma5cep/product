@@ -1,10 +1,10 @@
 package com.example.product;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -31,7 +31,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -41,7 +41,6 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleLis
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.viewpagerindicator.TabPageIndicator;
-
 
 
 
@@ -159,10 +158,11 @@ public class FragmentSignal extends Fragment {
 		static ArrayList<signal_result> signal_list_alarm;
 		
 		
-		MyArrayAdapter adapter_all;
-		MyArrayAdapter adapter_total;
-		MyArrayAdapter adapter_indiv;
-		MyArrayAdapter adapter_alarm;
+		static MyArrayAdapter adapter_all;
+		static MyArrayAdapter adapter_total;
+		static MyArrayAdapter adapter_indiv;
+		static MyArrayAdapter adapter_alarm;
+		static MyArrayAdapter current_adapter;
 				
 		
 		
@@ -171,9 +171,6 @@ public class FragmentSignal extends Fragment {
 		private View root;
 		private PullToRefreshListView ptrlistview;
 		private ListView listview;
-		
-		private ArrayList<ReceivedSignal> received_signal;
-		private MyArrayAdapter my_adapter;
 
 
 		@Override
@@ -200,18 +197,82 @@ public class FragmentSignal extends Fragment {
 			listview = ptrlistview.getRefreshableView();
 			
 			
-			//static 변수들 초기화
+			//static 변수들 초기화 하고 데이터 받아오기.
 			if(signal_list_all == null) {
 				signal_list_all = new ArrayList<signal_result>();
+				MyDataBase.updateSignal_list(0, -1, -1, 
+						new Response.Listener<signal_results>() {
+							@Override
+							public void onResponse(signal_results response) {
+								signal_list_all.addAll(response.signal_results);
+								if(adapter_all != null) {
+									adapter_all.notifyDataSetChanged();				
+								}
+							}
+						}, 
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								Log.e("product", "error!" + error.getMessage());
+							}
+						});
 			}
 			if(signal_list_total == null) {
 				signal_list_total = new ArrayList<signal_result>();
+				MyDataBase.updateSignal_list(1, -1, -1, 
+						new Response.Listener<signal_results>() {
+							@Override
+							public void onResponse(signal_results response) {
+								signal_list_total.addAll(response.signal_results);
+								if(adapter_total != null) {
+									adapter_total.notifyDataSetChanged();				
+								}
+							}
+						}, 
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								Log.e("product", "error!" + error.getMessage());
+							}
+						});
 			}
 			if(signal_list_indiv == null) {
 				signal_list_indiv = new ArrayList<signal_result>();
+				MyDataBase.updateSignal_list(2, -1, -1, 
+						new Response.Listener<signal_results>() {
+							@Override
+							public void onResponse(signal_results response) {
+								signal_list_indiv.addAll(response.signal_results);
+								if(adapter_indiv != null) {
+									adapter_all.notifyDataSetChanged();				
+								}
+							}
+						}, 
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								Log.e("product", "error!" + error.getMessage());
+							}
+						});
 			}
 			if(signal_list_alarm == null) {
 				signal_list_alarm = new ArrayList<signal_result>();
+				MyDataBase.updateSignal_list(3, -1, -1, 
+						new Response.Listener<signal_results>() {
+							@Override
+							public void onResponse(signal_results response) {
+								signal_list_alarm.addAll(response.signal_results);
+								if(adapter_alarm != null) {
+									adapter_alarm.notifyDataSetChanged();				
+								}
+							}
+						}, 
+						new Response.ErrorListener() {
+							@Override
+							public void onErrorResponse(VolleyError error) {
+								Log.e("product", "error!" + error.getMessage());
+							}
+						});
 			}		
 			
 			FragmentManager fm=getChildFragmentManager();
@@ -233,8 +294,9 @@ public class FragmentSignal extends Fragment {
 						*/
 						
 						
-						
-						Toast.makeText(getActivity(), "all_btn clicked", 0).show();
+						//어댑터를 변경 
+						listview.setAdapter(adapter_all);
+						current_adapter = adapter_all;
 						break;
 					case R.id.total_btn :
 						/*
@@ -242,14 +304,19 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						Toast.makeText(getActivity(), "total_btn clicked", 0).show();
+						//어댑터를 변경 
+						listview.setAdapter(adapter_total);
+						current_adapter = adapter_total;
 						break;
 					case R.id.indiv_btn :
 						/*
 						received_signal = MyDataBase.getReceivedSignalList_indiv();
 						my_adapter.notifyDataSetChanged();
 						*/
-						Toast.makeText(getActivity(), "indiv_btn clicked", 0).show();
+						
+						//어댑터를 변경 
+						listview.setAdapter(adapter_indiv);
+						current_adapter = adapter_indiv;
 						break;
 					case R.id.alarm_btn :
 						/*
@@ -257,7 +324,10 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						Toast.makeText(getActivity(), "alarm_btn clicked", 0).show();
+						
+						//어댑터를 변경 
+						listview.setAdapter(adapter_alarm);
+						current_adapter = adapter_alarm;
 						break;
 					default :
 						//do nothing
@@ -272,8 +342,12 @@ public class FragmentSignal extends Fragment {
 				
 				@Override
 				public void onItemClick(AdapterView<?> adapter, View v, int position, long id) {
+					
+					
 					//pull to refresh를 적용하면서 position이 안맞음 따라서 수정
-					position = position-1;
+					//data에 직접 접근하기 위해 position을 조정했었다.
+					//하지만 지금은 data에 직접접근을 하지 않기 때문에 필요없다.
+					//position = position-1;
 					
 					
 					//mHost.onItemChecked(position);
@@ -281,8 +355,8 @@ public class FragmentSignal extends Fragment {
 					Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
 					
 					//인텐트에 클릭된 신호의 주식이름 정보를 전달
-					ReceivedSignal data = received_signal.get(position);			
-					intent.putExtra("stock_name", data.stock_name);
+					TextView tv = (TextView)v.findViewById(R.id.stock_name);		
+					intent.putExtra("stock_name", tv.getText());
 					startActivity(intent);
 					//Toast.makeText(getActivity(), position+" is clicked", 0).show();				
 				}
@@ -292,7 +366,7 @@ public class FragmentSignal extends Fragment {
 			// Set a listener to be invoked when the list should be refreshed.
 			ptrlistview.setOnRefreshListener(new OnRefreshListener<ListView>() {
 				@Override
-				public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+				public void onRefresh(final PullToRefreshBase<ListView> refreshView) {
 					String label = DateUtils.formatDateTime(getActivity().getApplicationContext(), System.currentTimeMillis(),
 							DateUtils.FORMAT_SHOW_TIME | DateUtils.FORMAT_SHOW_DATE | DateUtils.FORMAT_ABBREV_ALL);
 
@@ -300,8 +374,184 @@ public class FragmentSignal extends Fragment {
 					refreshView.getLoadingLayoutProxy().setLastUpdatedLabel(label);
 
 					// Do work to refresh the list here.
-					
-					new GetDataTask().execute();
+
+					if(current_adapter == adapter_all) {
+						if(signal_list_all.isEmpty()) {
+							MyDataBase.updateSignal_list(0, -1, -1, 
+									new Response.Listener<signal_results>() {
+										@Override
+										public void onResponse(signal_results response) {
+											signal_list_all.addAll(response.signal_results);
+											if(adapter_all != null) {
+												adapter_all.notifyDataSetChanged();		
+												refreshView.onRefreshComplete();
+											}
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+											refreshView.onRefreshComplete();
+										}
+									});
+						}
+						else {
+							int pos = signal_list_all.get(0).signal_id;
+							MyDataBase.updateSignal_list(0, 1, pos, //all, after, pos 
+									new Response.Listener<signal_results>() {
+										@Override
+										public void onResponse(signal_results response) {
+											signal_list_all.addAll(0, response.signal_results);
+											if(adapter_all != null) {
+												adapter_all.notifyDataSetChanged();				
+											}
+											// Call onRefreshComplete when the list has been refreshed.
+											refreshView.onRefreshComplete();
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+											refreshView.onRefreshComplete();
+										}
+									});
+						}
+					}
+					else if(current_adapter == adapter_total) {
+						if(signal_list_total.isEmpty()) {
+							MyDataBase.updateSignal_list(1, -1, -1, 
+									new Response.Listener<signal_results>() {
+										@Override
+										public void onResponse(signal_results response) {
+											signal_list_total.addAll(response.signal_results);
+											if(adapter_total != null) {
+												adapter_total.notifyDataSetChanged();	
+											}
+											refreshView.onRefreshComplete();
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+											refreshView.onRefreshComplete();
+										}
+									});			
+						}
+						else {
+							int pos = signal_list_total.get(0).signal_id;
+							MyDataBase.updateSignal_list(1, 1, pos, //total, after, pos 
+									new Response.Listener<signal_results>() {
+										@Override
+										public void onResponse(signal_results response) {
+											signal_list_total.addAll(0, response.signal_results);
+											if(adapter_total != null) {
+												adapter_total.notifyDataSetChanged();				
+											}
+											// Call onRefreshComplete when the list has been refreshed.
+											refreshView.onRefreshComplete();
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+											refreshView.onRefreshComplete();
+										}
+									});
+						}
+					}
+					else if(current_adapter == adapter_indiv) {
+						if(signal_list_indiv.isEmpty()) {
+							MyDataBase.updateSignal_list(2, -1, -1, 
+									new Response.Listener<signal_results>() {
+										@Override
+										public void onResponse(signal_results response) {
+											signal_list_indiv.addAll(response.signal_results);
+											if(adapter_indiv != null) {
+												adapter_all.notifyDataSetChanged();				
+											}
+											refreshView.onRefreshComplete();
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+											refreshView.onRefreshComplete();}
+									});
+						}
+						else {
+							int pos = signal_list_indiv.get(0).signal_id;
+							MyDataBase.updateSignal_list(2, 1, pos, //indiv, after, pos 
+									new Response.Listener<signal_results>() {
+										@Override
+										public void onResponse(signal_results response) {
+											signal_list_indiv.addAll(0, response.signal_results);
+											if(adapter_indiv != null) {
+												adapter_indiv.notifyDataSetChanged();				
+											}
+											// Call onRefreshComplete when the list has been refreshed.
+											refreshView.onRefreshComplete();
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+											refreshView.onRefreshComplete();
+										}
+									});
+						}
+					}
+					else if(current_adapter == adapter_alarm) {
+						if(signal_list_alarm.isEmpty()) {
+							MyDataBase.updateSignal_list(3, -1, -1, 
+									new Response.Listener<signal_results>() {
+										@Override
+										public void onResponse(signal_results response) {
+											signal_list_alarm.addAll(response.signal_results);
+											if(adapter_alarm != null) {
+												adapter_alarm.notifyDataSetChanged();				
+											}
+											refreshView.onRefreshComplete();
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+											refreshView.onRefreshComplete();
+										}
+									});
+							
+						}
+						else {
+							int pos = signal_list_alarm.get(0).signal_id;
+							MyDataBase.updateSignal_list(3, 1, pos, //alarm, after, pos 
+									new Response.Listener<signal_results>() {
+										@Override
+										public void onResponse(signal_results response) {
+											signal_list_alarm.addAll(0, response.signal_results);
+											if(adapter_alarm != null) {
+												adapter_alarm.notifyDataSetChanged();				
+											}
+											// Call onRefreshComplete when the list has been refreshed.
+											refreshView.onRefreshComplete();
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+											refreshView.onRefreshComplete();
+										}
+									});
+						}
+					}
+					//new GetDataTask().execute();
 				}
 			});
 			
@@ -310,19 +560,101 @@ public class FragmentSignal extends Fragment {
 
 				@Override
 				public void onLastItemVisible() {
-					Toast.makeText(getActivity(), "End of List!", Toast.LENGTH_SHORT).show();
+					//Toast.makeText(getActivity(), "End of List!", Toast.LENGTH_SHORT).show();
+					
+					if(current_adapter == adapter_all) {
+						final int last_idx = signal_list_all.size()-1;
+						int pos = signal_list_all.get(last_idx).signal_id;
+						MyDataBase.updateSignal_list(0, 0, pos, //all, before, pos 
+								new Response.Listener<signal_results>() {
+									@Override
+									public void onResponse(signal_results response) {
+										signal_list_all.addAll(response.signal_results);
+										if(adapter_all != null) {
+											adapter_all.notifyDataSetChanged();				
+										}
+										// Call onRefreshComplete when the list has been refreshed.
+									}
+								}, 
+								new Response.ErrorListener() {
+									@Override
+									public void onErrorResponse(VolleyError error) {
+										Log.e("product", "error!" + error.getMessage());
+									}
+								});
+					}
+					else if(current_adapter == adapter_total) {
+						final int last_idx = signal_list_total.size()-1;
+						int pos = signal_list_total.get(last_idx).signal_id;
+						MyDataBase.updateSignal_list(1, 0, pos, //total, before, pos 
+								new Response.Listener<signal_results>() {
+									@Override
+									public void onResponse(signal_results response) {
+										signal_list_total.addAll(response.signal_results);
+										if(adapter_total != null) {
+											adapter_total.notifyDataSetChanged();				
+										}
+										// Call onRefreshComplete when the list has been refreshed.
+									}
+								}, 
+								new Response.ErrorListener() {
+									@Override
+									public void onErrorResponse(VolleyError error) {
+										Log.e("product", "error!" + error.getMessage());
+									}
+								});
+					}
+					else if(current_adapter == adapter_indiv) {
+						final int last_idx = signal_list_indiv.size()-1;
+						int pos = signal_list_indiv.get(last_idx).signal_id;
+						MyDataBase.updateSignal_list(2, 0, pos, //indiv, before, pos 
+								new Response.Listener<signal_results>() {
+									@Override
+									public void onResponse(signal_results response) {
+										signal_list_indiv.addAll(response.signal_results);
+										if(adapter_indiv != null) {
+											adapter_indiv.notifyDataSetChanged();				
+										}
+										// Call onRefreshComplete when the list has been refreshed.
+									}
+								}, 
+								new Response.ErrorListener() {
+									@Override
+									public void onErrorResponse(VolleyError error) {
+										Log.e("product", "error!" + error.getMessage());
+									}
+								});
+					}
+					else if(current_adapter == adapter_alarm) {
+						final int last_idx = signal_list_alarm.size()-1;
+						int pos = signal_list_alarm.get(last_idx).signal_id;
+						MyDataBase.updateSignal_list(3, 0, pos, //alarm, before, pos 
+								new Response.Listener<signal_results>() {
+									@Override
+									public void onResponse(signal_results response) {
+										signal_list_alarm.addAll(response.signal_results);
+										if(adapter_alarm != null) {
+											adapter_alarm.notifyDataSetChanged();				
+										}
+										// Call onRefreshComplete when the list has been refreshed.
+									}
+								}, 
+								new Response.ErrorListener() {
+									@Override
+									public void onErrorResponse(VolleyError error) {
+										Log.e("product", "error!" + error.getMessage());
+									}
+								});
+					}					
 				}
 			});
-			
-			
-			
-			
-			
+
 			return root;			
 		}		
 		
 		//test용 데이터 받아오는 클래스
 		// 지금은 4초 딜레이만 있다. 
+		/*
 		private class GetDataTask extends AsyncTask<Void, Void, Void> {
 
 			@Override
@@ -346,6 +678,7 @@ public class FragmentSignal extends Fragment {
 				super.onPostExecute(v);
 			}
 		}
+		*/
 		
 		/* Item 이 클릭되었을 때, 새로운 Activity를 띄운다(예정)
 		 * 이 동작을 Fragment에서 구현하지 않고 정석적인 방법으로 Activity에 Listener 구현을 강제하여 
@@ -418,7 +751,7 @@ public class FragmentSignal extends Fragment {
 			
 			// 기본적으로 제일 처음에는 all 이 보여진다.
 			listview.setAdapter(adapter_all);
-
+			current_adapter = adapter_all;
 		}
 		
 		/*
@@ -478,20 +811,19 @@ public class FragmentSignal extends Fragment {
 				signal_result my_rsignal = items.get(position);
 				
 				
-				/*임시로 주석처리 코드를 돌리기 위해
-				 *
+
 				//리스너 등록은 if ( v== null) 에서 하는게 아니라 밖에서 함.
 				vh.alarm_bt.setOnClickListener(new ImageButton.OnClickListener() {
 					@Override
 					public void onClick(View v) {
 						// 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 
 						signal_result data = items.get(position);
-						if(data.is_alarm == ReceivedSignal.IS_ALARM){
-							data.is_alarm = ReceivedSignal.IS_NOT_ALARM;
+						if(data.alarm == Flag.IS_ALARM){
+							data.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
 						}
-						else if(data.is_alarm == ReceivedSignal.IS_NOT_ALARM){
-							data.is_alarm = ReceivedSignal.IS_ALARM;
+						else if(data.alarm == Flag.IS_NOT_ALARM){
+							data.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
 						}
 						
@@ -506,54 +838,55 @@ public class FragmentSignal extends Fragment {
 					//vh.image settings code 필요
 					
 					//change type_color
-					if(my_rsignal.getCondition_type() == ReceivedSignal.EASY) {
+
+					if(my_rsignal.level == Flag.EASY) {
 						vh.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
 					}
-					else if(my_rsignal.getCondition_type() == ReceivedSignal.HARD) {
+					else if(my_rsignal.level == Flag.HARD) {
 						vh.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));					
 					}
-					else if(my_rsignal.getCondition_type() == ReceivedSignal.CUSTOM) {
+					else if(my_rsignal.level == Flag.CUSTOM) {
 						vh.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
 					}
+
 					
 					//change date					
 					//나중에 시간 Format이 바뀐다면 여기서 적절히 수정.
-					vh.date.setText(my_rsignal.time);
+					vh.date.setText(my_rsignal.date);
 					
 					//change signal_type
-					if(my_rsignal.getSignal_type() == ReceivedSignal.TYPE_SIGNAL_TOTAL) {
+					if(my_rsignal.applicable_range == Flag.TYPE_SIGNAL_TOTAL) {
 						vh.signal_type.setText("전체");
 						vh.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_total));
 					}
-					else if(my_rsignal.getSignal_type() == ReceivedSignal.TYPE_SIGNAL_INDIV) {
+					else if(my_rsignal.applicable_range == Flag.TYPE_SIGNAL_INDIV) {
 						vh.signal_type.setText("개별");
 						vh.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_indiv));
 					}
 					
 					//change new_tag
-					if(my_rsignal.getIs_new() == ReceivedSignal.NEW) {
+					if(my_rsignal.new_signal == Flag.NEW) {
 						vh.new_tag.setVisibility(View.VISIBLE);
 					}
-					else if(my_rsignal.getIs_new() == ReceivedSignal.OLD) {
+					else if(my_rsignal.new_signal == Flag.OLD) {
 						vh.new_tag.setVisibility(View.GONE);
 					}
 					
 					//change signal
-					vh.signal.setText(my_rsignal.getSignal_name());
+					vh.signal.setText(my_rsignal.user_signal_condition_name);
 					
 					//change stock_name
-					vh.stock_name.setText(my_rsignal.getStock_name());						
+					vh.stock_name.setText(my_rsignal.stock_item_name);						
 					
 					//change alarm_bt image
-					if(my_rsignal.is_alarm == ReceivedSignal.IS_ALARM){
+					if(my_rsignal.alarm == Flag.IS_ALARM){
 						vh.alarm_bt.setImageResource(R.drawable.push_alarm_clicked);
 					}
-					else if(my_rsignal.is_alarm == ReceivedSignal.IS_NOT_ALARM){
+					else if(my_rsignal.alarm == Flag.IS_NOT_ALARM){
 						vh.alarm_bt.setImageResource(R.drawable.push_alarm);
 					}
 				}
-				*/
-				
+
 				return v;
 			}
 			
@@ -581,14 +914,43 @@ public class FragmentSignal extends Fragment {
 	public static class FragmentSignalTotalSettings extends ListFragment {
 		private Menu myMenu;
 		FragmentSignal parent;
+
 		
 		//list 가 static으로 되어있다. 이 것을 잘 처리해야 하는데 나중에 처리하기가 힘들다고 한다면
 		//static으로 설정하지 말고 매번 서버에서 받아오게 바꾼다.
-		static 	ArrayList<SettedCond> list;
+		static ArrayList<user_signal_condition> list;
+		static MyArrayAdapter adapter;
+
 		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 			View root = inflater.inflate(R.layout.fragment_signal_total_settings, container, false);
+			
+			if(list == null) {
+				list = new ArrayList<user_signal_condition>();
+				if(MyDataBase.my_condition_total != null) {
+					list = MyDataBase.my_condition_total;
+				}
+				else {
+					MyDataBase.getSignal_conditions(	
+							new Response.Listener<signal_conditions>() {
+								@Override
+								public void onResponse(signal_conditions response) {
+									list.addAll(response.signal_conditions);
+									MyDataBase.my_condition_total = response.signal_conditions;
+									if(adapter != null) {
+										adapter.notifyDataSetChanged();				
+									}
+								}
+							}, 
+							new Response.ErrorListener() {
+								@Override
+								public void onErrorResponse(VolleyError error) {
+									Log.e("product", "error!" + error.getMessage());
+								}
+							});
+				}
+			}
 			return root;			
 		}
 		
@@ -648,6 +1010,7 @@ public class FragmentSignal extends Fragment {
 			super.onActivityCreated(savedInstanceState);
 			
 			/* test code */
+			/*
 			if(list == null) {
 				list=new ArrayList<SettedCond>();
 				list.add(new SettedCond());
@@ -662,6 +1025,7 @@ public class FragmentSignal extends Fragment {
 				list.add(new SettedCond());
 				list.add(new SettedCond());
 			}
+			*/
 				
 			
 
@@ -679,12 +1043,12 @@ public class FragmentSignal extends Fragment {
 		}
 		
 		
-		class MyArrayAdapter extends ArrayAdapter<SettedCond> {
-			private ArrayList<SettedCond> items;
+		class MyArrayAdapter extends ArrayAdapter<user_signal_condition> {
+			private ArrayList<user_signal_condition> items;
 			private Context context;
 			private int resource;
 
-			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<SettedCond> items) {
+			public MyArrayAdapter(Context context, int viewResourceId, ArrayList<user_signal_condition> items) {
 				super(context, viewResourceId, items);
 				this.items = items;
 				this.context = context;
@@ -711,28 +1075,28 @@ public class FragmentSignal extends Fragment {
 					vh = (ViewHolder)v.getTag();
 				}
 				
-				SettedCond data = items.get(position);
+				user_signal_condition data = items.get(position);
 				
-				vh.cond_name.setText(data.cond_name);
+				vh.cond_name.setText(data.name);
 				/* cond_name 에 따라서 이미지를 변경하는 코드를 작성할 것. */
 				
 				
 				//이미지 아래 VIew 색을 변경
-				if(data.cond_type == SettedCond.EASY) {
+				if(data.level == Flag.EASY) {
 					vh.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
 				}
-				else if(data.cond_type == SettedCond.HARD) {
+				else if(data.level == Flag.HARD) {
 					vh.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));
 				}
-				else if(data.cond_type == SettedCond.CUSTOM) {
+				else if(data.level == Flag.CUSTOM) {
 					vh.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
 				}
 					
 				//change alarm_bt image
-				if(data.is_alarm == SettedCond.IS_ALARM){
+				if(data.alarm == Flag.IS_ALARM){
 					vh.alarm_bt.setImageResource(R.drawable.push_alarm_clicked);
 				}
-				else if(data.is_alarm == SettedCond.IS_NOT_ALARM){
+				else if(data.alarm == Flag.IS_NOT_ALARM){
 					vh.alarm_bt.setImageResource(R.drawable.push_alarm);
 				}
 				
@@ -742,13 +1106,13 @@ public class FragmentSignal extends Fragment {
 					@Override
 					public void onClick(View v) {
 						/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
-						SettedCond data = items.get(position);
-						if(data.is_alarm == SettedCond.IS_ALARM){
-							data.is_alarm = SettedCond.IS_NOT_ALARM;
+						user_signal_condition data = items.get(position);
+						if(data.alarm == Flag.IS_ALARM){
+							data.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
 						}
-						else if(data.is_alarm == SettedCond.IS_NOT_ALARM){
-							data.is_alarm = SettedCond.IS_ALARM;
+						else if(data.alarm == Flag.IS_NOT_ALARM){
+							data.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
 						}
 						
@@ -761,8 +1125,7 @@ public class FragmentSignal extends Fragment {
 				/* 삭제 버튼 리스너를 등록 */
 				((ImageButton)v.findViewById(R.id.delete_bt)).setOnClickListener(new Button.OnClickListener() {
 					@Override
-					public void onClick(View v) {							
-						Toast.makeText(getActivity(), ""+position+" 번쨰 아이템을 삭제", 0).show();						
+					public void onClick(View v) {											
 						items.remove(position);
 						notifyDataSetChanged();
 						/* 삭제 헀다는 정보를 서버에 보내야 함 */
@@ -798,6 +1161,20 @@ public class FragmentSignal extends Fragment {
 	public static class FragmentSignalStock extends Fragment {
 		private LayoutInflater inflater;
 		private ExpandableListView mExpListView;
+
+		// 받은 시그널 정보
+		static ArrayList<signal_results_of_stock_item> list_all;
+		static ArrayList<signal_results_of_stock_item> list_total;
+		static ArrayList<signal_results_of_stock_item> list_indiv;
+		static ArrayList<signal_results_of_stock_item> list_alarm;
+		
+		
+		static MyExpAdapter adapter_all;
+		static MyExpAdapter adapter_total;
+		static MyExpAdapter adapter_indiv;
+		static MyExpAdapter adapter_alarm;
+		static MyExpAdapter current_adapter;
+
 		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -807,11 +1184,11 @@ public class FragmentSignal extends Fragment {
 			
 			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
 			
-			final ArrayList<SignalSortByStock> list = new ArrayList<SignalSortByStock>();
+			//final ArrayList<SignalSortByStock> list = new ArrayList<SignalSortByStock>();
 
 			/* 임시로 데이터 만들기 */
 			
-			
+			/*
 			for(int i=0; i<3; ++i) {
 				SignalSortByStock data_t = new SignalSortByStock();
 				data_t.total_cnt = 33;
@@ -825,12 +1202,26 @@ public class FragmentSignal extends Fragment {
 				data_t.list.add(new SignalOfStock());
 				list.add(data_t);
 			}
+			*/
+			
+			// 널이면 초기화를 진행.
+			if(list_all == null) {
+				list_all = new ArrayList<signal_results_of_stock_item>();
+				list_total = new ArrayList<signal_results_of_stock_item>();
+				list_indiv = new ArrayList<signal_results_of_stock_item>();
+				list_alarm = new ArrayList<signal_results_of_stock_item>();
+			}
+			
+			adapter_all = new MyExpAdapter(getActivity(), list_all);
+			adapter_total = new MyExpAdapter(getActivity(), list_total);
+			adapter_indiv = new MyExpAdapter(getActivity(), list_indiv);
+			adapter_alarm = new MyExpAdapter(getActivity(), list_alarm);
 
+			//첫화면은 all adapter를 등록
+			mExpListView.setAdapter(adapter_all);
+			current_adapter = adapter_all;
 			
 			
-			mExpListView.setAdapter(new MyExpAdapter(getActivity(), list));
-			
-			/* Test 용 임시 listener */
 			mExpListView.setOnChildClickListener(new OnChildClickListener() {
 				@Override
 				public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
@@ -850,11 +1241,11 @@ public class FragmentSignal extends Fragment {
 					Intent intent = new Intent(getActivity(), ActivitySignalDetail.class);
 					
 					//인텐트에 클릭된 신호의 주식이름 정보를 전달
-					SignalOfStock data = list.get(groupPosition).list.get(childPosition);
-					intent.putExtra("signal_name", data.signal_name);
+					String signal_name = (String)((TextView)v.findViewById(R.id.signal)).getText();
+					intent.putExtra("signal_name", signal_name);
 					startActivity(intent);					
 					
-					return false;
+					return true;
 				}
 			});
 			
@@ -878,7 +1269,8 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						Toast.makeText(getActivity(), "all_btn clicked", 0).show();
+						mExpListView.setAdapter(adapter_all);
+						current_adapter = adapter_all;
 						break;
 					case R.id.total_btn :
 						/*
@@ -886,14 +1278,17 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						Toast.makeText(getActivity(), "total_btn clicked", 0).show();
+						mExpListView.setAdapter(adapter_total);
+						current_adapter = adapter_total;
 						break;
 					case R.id.indiv_btn :
 						/*
 						received_signal = MyDataBase.getReceivedSignalList_indiv();
 						my_adapter.notifyDataSetChanged();
 						*/
-						Toast.makeText(getActivity(), "indiv_btn clicked", 0).show();
+						
+						mExpListView.setAdapter(adapter_indiv);
+						current_adapter = adapter_indiv;
 						break;
 					case R.id.alarm_btn :
 						/*
@@ -901,7 +1296,8 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						Toast.makeText(getActivity(), "alarm_btn clicked", 0).show();
+						mExpListView.setAdapter(adapter_alarm);
+						current_adapter = adapter_alarm;
 						break;
 					default :
 						//do nothing
@@ -914,18 +1310,100 @@ public class FragmentSignal extends Fragment {
 			return root;			
 		}
 		
+		@Override
+		public void onResume() {
+			// 각 리스트를 전부 업데이트
+			MyDataBase.updateSignal_by_stock_list(0,		 // group 0 means all		
+					new Response.Listener<signal_results_of_stock_items>() {
+						@Override
+						public void onResponse(signal_results_of_stock_items response) {
+							list_all.clear();
+							list_all.addAll(response.signal_results_of_stock_items);
+							if(current_adapter == adapter_all) {
+								adapter_all.notifyDataSetChanged();				
+							}
+							// Call onRefreshComplete when the list has been refreshed.
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", "error!" + error.getMessage());
+						}
+					});
+			
+			MyDataBase.updateSignal_by_stock_list(1,		 // group 1 means total	
+					new Response.Listener<signal_results_of_stock_items>() {
+						@Override
+						public void onResponse(signal_results_of_stock_items response) {
+							list_total.clear();
+							list_total.addAll(response.signal_results_of_stock_items);
+							if(current_adapter == adapter_total) {
+								adapter_total.notifyDataSetChanged();				
+							}
+							// Call onRefreshComplete when the list has been refreshed.
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", "error!" + error.getMessage());
+						}
+					});
+			
+			MyDataBase.updateSignal_by_stock_list(2,		 // group 2 means indiv		
+					new Response.Listener<signal_results_of_stock_items>() {
+						@Override
+						public void onResponse(signal_results_of_stock_items response) {
+							list_indiv.clear();
+							list_indiv.addAll(response.signal_results_of_stock_items);
+							if(current_adapter == adapter_indiv) {
+								adapter_indiv.notifyDataSetChanged();				
+							}
+							// Call onRefreshComplete when the list has been refreshed.
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", "error!" + error.getMessage());
+						}
+					});
+			
+			MyDataBase.updateSignal_by_stock_list(3,		 // group 3 means alarm		
+					new Response.Listener<signal_results_of_stock_items>() {
+						@Override
+						public void onResponse(signal_results_of_stock_items response) {
+							list_alarm.clear();
+							list_alarm.addAll(response.signal_results_of_stock_items);
+							if(current_adapter == adapter_alarm) {
+								adapter_alarm.notifyDataSetChanged();				
+							}
+							// Call onRefreshComplete when the list has been refreshed.
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", "error!" + error.getMessage());
+						}
+					});
+			
+			super.onResume();
+		}
+		
 		class MyExpAdapter extends BaseExpandableListAdapter {
 			//private int GROUP_CNT = 3;
 			//private int CHILD_CNT = 5;
 			private int CHILD_CNT_MAX = 5;
 			
 			Context context;
-			ArrayList<SignalSortByStock> list;
+			ArrayList<signal_results_of_stock_item> list;
 			
 			/* 뷰홀더 코드 */
 			//private ViewHoler viewHolder = null;
 			
-			public MyExpAdapter(Context context, ArrayList<SignalSortByStock> list) { //부모그룹이랑 차일드 그룹을 받아야 함.
+			public MyExpAdapter(Context context, ArrayList<signal_results_of_stock_item> list) { //부모그룹이랑 차일드 그룹을 받아야 함.
 				super();
 				this.context = context;
 				this.list=list;
@@ -965,13 +1443,14 @@ public class FragmentSignal extends Fragment {
 		        }else{
 		            viewHolder = (GroupViewHolder)v.getTag();
 		        }								
-				SignalSortByStock groupData = list.get(groupPosition);
-				viewHolder.stock_name.setText(groupData.stock_name);
-				viewHolder.total_cnt.setText(""+groupData.total_cnt);
-				viewHolder.indiv_cnt.setText(""+groupData.indiv_cnt);
-				viewHolder.price.setText(groupData.price);
-				viewHolder.price_diff.setText(groupData.price_diff);
-				viewHolder.price_diff_percent.setText(groupData.price_diff_percent);
+				signal_results_of_stock_item groupData = list.get(groupPosition);
+				viewHolder.stock_name.setText(groupData.stock_item_name);
+				viewHolder.total_cnt.setText(""+groupData.number_of_signals_to_all_stock_items);
+				viewHolder.indiv_cnt.setText(""+groupData.number_of_signals_to_specific_stock_item);
+				NumberFormat nf = NumberFormat.getNumberInstance();
+				viewHolder.price.setText(nf.format(groupData.price));
+				viewHolder.price_diff.setText(nf.format(groupData.price_gap_of_previous_closing_price));
+				viewHolder.price_diff_percent.setText("( " + groupData.price_rate_of_previous_closing_price + "% )");
 				
 	            /* button에 listener를 등록
 	             * v == null 일때 뷰 홀더를 설정하는 부분에서 코드를 넣을 수도 있다.
@@ -987,8 +1466,8 @@ public class FragmentSignal extends Fragment {
 						Intent intent = new Intent(getActivity(), ActivityStockDetail.class);					
 						
 						//인텐트에 클릭된 신호의 주식이름 정보를 전달
-						SignalSortByStock groupdata = list.get(groupPosition);			
-						intent.putExtra("stock_name", groupdata.stock_name);						
+						signal_results_of_stock_item groupdata = list.get(groupPosition);			
+						intent.putExtra("stock_name", groupdata.stock_item_name);						
 						
 						startActivity(intent);
 					}
@@ -998,11 +1477,11 @@ public class FragmentSignal extends Fragment {
 				
 				
 				/* 전일 종가 대비 변동량 색 변경 */
-				if(Integer.parseInt(groupData.price_diff) < 0) {
+				if(groupData.price_gap_of_previous_closing_price < 0) {
 					viewHolder.price_diff.setTextColor(getResources().getColor(R.color.blue));
 					viewHolder.price_diff_percent.setTextColor(getResources().getColor(R.color.blue));
 				}
-				else if(Integer.parseInt(groupData.price_diff) > 0) {
+				else if(groupData.price_gap_of_previous_closing_price > 0) {
 					viewHolder.price_diff.setTextColor(getResources().getColor(R.color.red));
 					viewHolder.price_diff_percent.setTextColor(getResources().getColor(R.color.red));
 				}
@@ -1012,24 +1491,18 @@ public class FragmentSignal extends Fragment {
 				}
 				
 				/* 숫자가 0보다 클때만 보이게 */
-				if(groupData.total_cnt > 0 ) {
+				if(groupData.number_of_signals_to_all_stock_items > 0 ) {
 					viewHolder.total_cnt.setVisibility(View.VISIBLE);
 				}
 				else {
 					viewHolder.total_cnt.setVisibility(View.GONE);
 				}
-				if(groupData.indiv_cnt > 0 ) {
+				if(groupData.number_of_signals_to_specific_stock_item > 0 ) {
 					viewHolder.indiv_cnt.setVisibility(View.VISIBLE);
 				}
 				else {
 					viewHolder.indiv_cnt.setVisibility(View.GONE);
 				}
-				
-				
-				/* test 용 */
-				if(groupPosition == 2) {
-					v.findViewById(R.id.total_cnt).setVisibility(View.GONE);
-				}						
 
 				return v;
 			}
@@ -1050,8 +1523,8 @@ public class FragmentSignal extends Fragment {
 			
 			@Override
 			public int getChildrenCount(int groupPosition) {
-				if(list.get(groupPosition).list.size() < CHILD_CNT_MAX) {
-					return list.get(groupPosition).list.size();
+				if(list.get(groupPosition).signal_results.size() < CHILD_CNT_MAX) {
+					return list.get(groupPosition).signal_results.size();
 				}
 				else {
 					return CHILD_CNT_MAX;
@@ -1081,12 +1554,11 @@ public class FragmentSignal extends Fragment {
 		            
 					ImageButton bt = (ImageButton)v.findViewById(R.id.alarm_bt);
 					bt.setFocusable(false);
-					/* 버튼 리스너 등록할 것 */
 		        }else{
 		            childViewHolder = (ChildViewHolder)v.getTag();
 		        }
 				
-				SignalOfStock data = list.get(groupPosition).list.get(childPosition);
+				signal_result data = list.get(groupPosition).signal_results.get(childPosition);
 				
 				
 				//리스너 등록은 if ( v== null) 에서 하는게 아니라 밖에서 함.
@@ -1094,13 +1566,13 @@ public class FragmentSignal extends Fragment {
 					@Override
 					public void onClick(View v) {
 						/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
-						SignalOfStock data = list.get(groupPosition).list.get(childPosition);
-						if(data.is_alarm == Flag.IS_ALARM){
-							data.is_alarm = Flag.IS_NOT_ALARM;
+						signal_result data = list.get(groupPosition).signal_results.get(childPosition);
+						if(data.alarm == Flag.IS_ALARM){
+							data.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
 						}
-						else if(data.is_alarm == Flag.IS_NOT_ALARM){
-							data.is_alarm = Flag.IS_ALARM;
+						else if(data.alarm == Flag.IS_NOT_ALARM){
+							data.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
 						}
 						
@@ -1108,28 +1580,30 @@ public class FragmentSignal extends Fragment {
 					}						
 				});	
 				
-				childViewHolder.signal_name.setText(data.signal_name);
+				childViewHolder.signal_name.setText(data.user_signal_condition_name);
 				/* 이미지 교체 작업 코드 작성할 것*/			
 				
 				
 				
 				//이미지 밑에 색을 변경
-				if(data.cond_type == SignalOfStock.EASY) {
+
+				if(data.level == Flag.EASY) {
 					childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
 				}
-				else if(data.cond_type == SignalOfStock.HARD) {
+				else if(data.level == Flag.HARD) {
 					childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));
 				}
-				else if(data.cond_type == SignalOfStock.CUSTOM) {
+				else if(data.level == Flag.CUSTOM) {
 					childViewHolder.cond_type.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
 				}
+
 				
 				//전체/개별 태그를 설정
-				if(data.signal_type == SignalOfStock.TOTAL) {
+				if(data.applicable_range == Flag.TOTAL) {
 					childViewHolder.signal_type.setText("전체");
 					childViewHolder.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_total));
 				}
-				else if(data.signal_type == SignalOfStock.INDIV) {
+				else if(data.applicable_range == Flag.INDIV) {
 					childViewHolder.signal_type.setText("개별");
 					childViewHolder.signal_type.setBackgroundColor(getResources().getColor(R.color.signal_type_indiv));
 				}		
@@ -1138,19 +1612,13 @@ public class FragmentSignal extends Fragment {
 				childViewHolder.date.setText(data.date);
 				
 				
-				//알람 설정
-				if(data.is_alarm == SignalOfStock.IS_ALARM) {
-					//알람 일때 설정코드
-				}
-				else if(data.is_alarm == SignalOfStock.IS_NOT_ALARM) {
-					//알람이 아닐때
-				}
+
 				
 				//change alarm_bt image
-				if(data.is_alarm == Flag.IS_ALARM){
+				if(data.alarm == Flag.IS_ALARM){
 					childViewHolder.alarm_bt.setImageResource(R.drawable.push_alarm_clicked);
 				}
-				else if(data.is_alarm == Flag.IS_NOT_ALARM){
+				else if(data.alarm == Flag.IS_NOT_ALARM){
 					childViewHolder.alarm_bt.setImageResource(R.drawable.push_alarm);
 				}
 
@@ -1190,9 +1658,20 @@ public class FragmentSignal extends Fragment {
 	public static class FragmentSignalSignal extends Fragment {
 		private LayoutInflater inflater;
 		private ExpandableListView mExpListView;
-		private int GROUP_CNT = 3;
-		private int CHILD_CNT = 5;
-		ArrayList<SignalSortBySignal> list;
+
+		// 받은 시그널 정보
+		static ArrayList<signal_results_signal_condition> list_all;
+		static ArrayList<signal_results_signal_condition> list_total;
+		static ArrayList<signal_results_signal_condition> list_indiv;
+		static ArrayList<signal_results_signal_condition> list_alarm;
+		
+		
+		static MyExpAdapter adapter_all;
+		static MyExpAdapter adapter_total;
+		static MyExpAdapter adapter_indiv;
+		static MyExpAdapter adapter_alarm;
+		static MyExpAdapter current_adapter;
+
 		
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -1200,18 +1679,23 @@ public class FragmentSignal extends Fragment {
 			View root = inflater.inflate(R.layout.simple_expandablelistview, container, false);
 			mExpListView = (ExpandableListView)root.findViewById(R.id.explist);
 			
-			/* test */
-			list = new ArrayList<SignalSortBySignal>();
-			for(int i=0; i<3; ++i) {
-				SignalSortBySignal tt = new SignalSortBySignal();
-				tt.list.add(new SignalOfSignal());
-				tt.list.add(new SignalOfSignal());
-				tt.list.add(new SignalOfSignal());
-				list.add(tt);
+			// 널이면 초기화를 진행.
+			if(list_all == null) {
+				list_all = new ArrayList<signal_results_signal_condition>();
+				list_total = new ArrayList<signal_results_signal_condition>();
+				list_indiv = new ArrayList<signal_results_signal_condition>();
+				list_alarm = new ArrayList<signal_results_signal_condition>();
 			}
-
 			
-			mExpListView.setAdapter(new MyExpAdapter(getActivity(), list));
+			adapter_all = new MyExpAdapter(getActivity(), list_all);
+			adapter_total = new MyExpAdapter(getActivity(), list_total);
+			adapter_indiv = new MyExpAdapter(getActivity(), list_indiv);
+			adapter_alarm = new MyExpAdapter(getActivity(), list_alarm);
+
+			//첫화면은 all adapter를 등록
+			mExpListView.setAdapter(adapter_all);
+			current_adapter = adapter_all;
+			
 			
 			
 			/* Test 용 임시 listener */
@@ -1231,11 +1715,15 @@ public class FragmentSignal extends Fragment {
 														"signal_type Baseline = " + signal_type.getBaseline() + "\n", Toast.LENGTH_LONG).show();
 					*/
 					
+
+					//인텐트에 클릭된 신호의 주식이름 정보를 전달
+
+					
 					Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
 					
 					//인텐트에 클릭된 신호의 주식이름 정보를 전달
-					SignalOfSignal data = list.get(groupPosition).list.get(childPosition);
-					intent.putExtra("stock_name", data.stock_name);
+					String stock_name = (String)((TextView)v.findViewById(R.id.stock_name)).getText();
+					intent.putExtra("stock_name", stock_name);
 					startActivity(intent);					
 					
 					return false;
@@ -1263,7 +1751,8 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						Toast.makeText(getActivity(), "all_btn clicked", 0).show();
+						mExpListView.setAdapter(adapter_all);
+						current_adapter = adapter_all;
 						break;
 					case R.id.total_btn :
 						/*
@@ -1271,14 +1760,19 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						Toast.makeText(getActivity(), "total_btn clicked", 0).show();
+						
+						mExpListView.setAdapter(adapter_total);
+						current_adapter = adapter_total;
 						break;
 					case R.id.indiv_btn :
 						/*
 						received_signal = MyDataBase.getReceivedSignalList_indiv();
 						my_adapter.notifyDataSetChanged();
 						*/
-						Toast.makeText(getActivity(), "indiv_btn clicked", 0).show();
+						
+						
+						mExpListView.setAdapter(adapter_indiv);
+						current_adapter = adapter_indiv;
 						break;
 					case R.id.alarm_btn :
 						/*
@@ -1286,7 +1780,9 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						Toast.makeText(getActivity(), "alarm_btn clicked", 0).show();
+						
+						mExpListView.setAdapter(adapter_alarm);
+						current_adapter = adapter_alarm;
 						break;
 					default :
 						//do nothing
@@ -1300,18 +1796,103 @@ public class FragmentSignal extends Fragment {
 			return root;			
 		}
 		
+		
+		
+		@Override
+		public void onResume() {
+			// 각 리스트를 전부 업데이트
+			MyDataBase.updateSignal_by_cond_list(0,		 // group 0 means all		
+					new Response.Listener<signal_results_signal_conditions>() {
+						@Override
+						public void onResponse(signal_results_signal_conditions response) {
+							list_all.clear();
+							list_all.addAll(response.signal_results_signal_conditions);
+							if(current_adapter == adapter_all) {
+								adapter_all.notifyDataSetChanged();				
+							}
+							// Call onRefreshComplete when the list has been refreshed.
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", "error!" + error.getMessage());
+						}
+					});
+			
+			MyDataBase.updateSignal_by_cond_list(1,		 // group 1 means total	
+					new Response.Listener<signal_results_signal_conditions>() {
+						@Override
+						public void onResponse(signal_results_signal_conditions response) {
+							list_total.clear();
+							list_total.addAll(response.signal_results_signal_conditions);
+							if(current_adapter == adapter_total) {
+								adapter_total.notifyDataSetChanged();				
+							}
+							// Call onRefreshComplete when the list has been refreshed.
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", "error!" + error.getMessage());
+						}
+					});
+			
+			MyDataBase.updateSignal_by_cond_list(2,		 // group 2 means indiv		
+					new Response.Listener<signal_results_signal_conditions>() {
+						@Override
+						public void onResponse(signal_results_signal_conditions response) {
+							list_indiv.clear();
+							list_indiv.addAll(response.signal_results_signal_conditions);
+							if(current_adapter == adapter_indiv) {
+								adapter_indiv.notifyDataSetChanged();				
+							}
+							// Call onRefreshComplete when the list has been refreshed.
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", "error!" + error.getMessage());
+						}
+					});
+			
+			MyDataBase.updateSignal_by_cond_list(3,		 // group 3 means alarm		
+					new Response.Listener<signal_results_signal_conditions>() {
+						@Override
+						public void onResponse(signal_results_signal_conditions response) {
+							list_alarm.clear();
+							list_alarm.addAll(response.signal_results_signal_conditions);
+							if(current_adapter == adapter_alarm) {
+								adapter_alarm.notifyDataSetChanged();				
+							}
+							// Call onRefreshComplete when the list has been refreshed.
+						}
+					}, 
+					new Response.ErrorListener() {
+						@Override
+						public void onErrorResponse(VolleyError error) {
+							Log.e("product", "error!" + error.getMessage());
+						}
+					});
+			
+			super.onResume();
+		}
+
+		
 		class MyExpAdapter extends BaseExpandableListAdapter {
 			//private int GROUP_CNT = 3;
 			//private int CHILD_CNT = 5;
 			private int CHILD_CNT_MAX = 5;
 			
 			Context context;
-			ArrayList<SignalSortBySignal> list;
+			ArrayList<signal_results_signal_condition> list;
 			
 			/* 뷰홀더 코드 */
 			//private ViewHoler viewHolder = null;
 			
-			public MyExpAdapter(Context context, ArrayList<SignalSortBySignal> list) { //부모그룹이랑 차일드 그룹을 받아야 함.
+			public MyExpAdapter(Context context, ArrayList<signal_results_signal_condition> list) { //부모그룹이랑 차일드 그룹을 받아야 함.
 				super();
 				this.context = context;
 				this.list=list;
@@ -1337,7 +1918,7 @@ public class FragmentSignal extends Fragment {
 				View v = convertView;
 				GroupViewHolder viewHolder;
 				
-				final SignalSortBySignal groupData = list.get(groupPosition);
+				final signal_results_signal_condition groupData = list.get(groupPosition);
 				
 				
 				if(v == null){
@@ -1352,7 +1933,7 @@ public class FragmentSignal extends Fragment {
 							Intent intent = new Intent(getActivity(), ActivitySignalDetail.class);
 							
 							//인텐트에 클릭된 신호의 주식이름 정보를 전달		
-							intent.putExtra("signal_name", groupData.signal_name);
+							intent.putExtra("signal_name", groupData.user_signal_condition_name);
 							startActivity(intent);
 						}
 					});
@@ -1375,12 +1956,12 @@ public class FragmentSignal extends Fragment {
 					@Override
 					public void onClick(View v) {
 						/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
-						if(groupData.is_alarm == Flag.IS_ALARM){
-							groupData.is_alarm = Flag.IS_NOT_ALARM;
+						if(groupData.alarm == Flag.IS_ALARM){
+							groupData.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
 						}
-						else if(groupData.is_alarm == Flag.IS_NOT_ALARM){
-							groupData.is_alarm = Flag.IS_ALARM;
+						else if(groupData.alarm == Flag.IS_NOT_ALARM){
+							groupData.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
 						}
 						
@@ -1395,37 +1976,40 @@ public class FragmentSignal extends Fragment {
 				/*이미지 변경 코드 작성할 것 */
 				
 				//이미지 밑에 색을 변경
-				if(groupData.cond_type == SignalSortBySignal.EASY) {
+				// 색변경은 나중에
+
+				if(groupData.level == Flag.EASY) {
 					viewHolder.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_easy));
 				}
-				else if(groupData.cond_type == SignalSortBySignal.HARD) {
+				else if(groupData.level == Flag.HARD) {
 					viewHolder.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_hard));
 				}
-				else if(groupData.cond_type == SignalSortBySignal.CUSTOM) {
+				else if(groupData.level == Flag.CUSTOM) {
 					viewHolder.type_color.setBackgroundColor(getResources().getColor(R.color.condition_type_custom));
 				}
+
 				
 				
 				//시그널 명 설정
-				viewHolder.signal.setText(groupData.signal_name);
+				viewHolder.signal.setText(groupData.user_signal_condition_name);
 				
 				//카운트 설정
-				if(groupData.signal_type == SignalSortBySignal.TOTAL) {
-					viewHolder.signal_cnt.setText(""+groupData.total_cnt);
+				if(groupData.applicable_range == Flag.TOTAL) {
+					viewHolder.signal_cnt.setText(""+groupData.number_of_signals);
 					viewHolder.signal_cnt.setBackgroundResource(R.drawable.total_cnt_oval);
 				}
-				else if(groupData.signal_type == SignalSortBySignal.INDIV) {
-					viewHolder.signal_cnt.setText(""+groupData.indiv_cnt);
+				else if(groupData.applicable_range == Flag.INDIV) {
+					viewHolder.signal_cnt.setText(""+groupData.number_of_signals);
 					viewHolder.signal_cnt.setBackgroundResource(R.drawable.indiv_cnt_oval);
 				}
 				
 				/*알람 뷰를 변경하는 코드를 작성할 것*/
 				
 				//change alarm_bt image
-				if(groupData.is_alarm == Flag.IS_ALARM){
+				if(groupData.alarm == Flag.IS_ALARM){
 					viewHolder.alarm.setImageResource(R.drawable.push_alarm_clicked);
 				}
-				else if(groupData.is_alarm == Flag.IS_NOT_ALARM){
+				else if(groupData.alarm == Flag.IS_NOT_ALARM){
 					viewHolder.alarm.setImageResource(R.drawable.push_alarm);
 				}
 
@@ -1447,8 +2031,8 @@ public class FragmentSignal extends Fragment {
 			
 			@Override
 			public int getChildrenCount(int groupPosition) {
-				if(list.get(groupPosition).list.size() < CHILD_CNT_MAX) {
-					return list.get(groupPosition).list.size();
+				if(list.get(groupPosition).signal_results.size() < CHILD_CNT_MAX) {
+					return list.get(groupPosition).signal_results.size();
 				}
 				else {
 					return CHILD_CNT_MAX;
@@ -1482,7 +2066,7 @@ public class FragmentSignal extends Fragment {
 		            childViewHolder = (ChildViewHolder)v.getTag();
 		        }
 				
-				final SignalOfSignal data = list.get(groupPosition).list.get(childPosition);
+				final signal_result data = list.get(groupPosition).signal_results.get(childPosition);
 				
 				
 				//리스너 등록은 if ( v== null) 에서 하는게 아니라 밖에서 함.
@@ -1490,12 +2074,12 @@ public class FragmentSignal extends Fragment {
 					@Override
 					public void onClick(View v) {
 						/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
-						if(data.is_alarm == Flag.IS_ALARM){
-							data.is_alarm = Flag.IS_NOT_ALARM;
+						if(data.alarm == Flag.IS_ALARM){
+							data.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
 						}
-						else if(data.is_alarm == Flag.IS_NOT_ALARM){
-							data.is_alarm = Flag.IS_ALARM;
+						else if(data.alarm == Flag.IS_NOT_ALARM){
+							data.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
 						}
 						
@@ -1505,7 +2089,7 @@ public class FragmentSignal extends Fragment {
 				
 				
 				//주식명을 변경
-				childViewHolder.stock_name.setText(data.stock_name);
+				childViewHolder.stock_name.setText(data.stock_item_name);
 				
 				//주식 가격을 변경
 				childViewHolder.price.setText(data.price);
@@ -1514,10 +2098,10 @@ public class FragmentSignal extends Fragment {
 				childViewHolder.date.setText(data.date);
 				
 				//change alarm_bt image
-				if(data.is_alarm == Flag.IS_ALARM){
+				if(data.alarm == Flag.IS_ALARM){
 					childViewHolder.alarm_bt.setImageResource(R.drawable.push_alarm_clicked);
 				}
-				else if(data.is_alarm == Flag.IS_NOT_ALARM){
+				else if(data.alarm == Flag.IS_NOT_ALARM){
 					childViewHolder.alarm_bt.setImageResource(R.drawable.push_alarm);
 				}
 				
