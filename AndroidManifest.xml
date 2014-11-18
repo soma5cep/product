@@ -125,7 +125,7 @@
             android:name="com.example.product.OptionDetail"
             android:label="조건상세" 
             android:screenOrientation="portrait"
-            android:theme="@style/MyTheme.Holo.Light"
+            android:theme="@style/Theme.AppCompat.Light">
             >
         </activity>
         

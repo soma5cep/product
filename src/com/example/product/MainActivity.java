@@ -1,7 +1,11 @@
 package com.example.product;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +23,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -85,7 +94,8 @@ public class MainActivity extends FragmentActivity {
             }
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
-        }		
+        }
+        
 	}
 	
 	// You need to do the Play Services APK check here too.
@@ -221,6 +231,78 @@ public class MainActivity extends FragmentActivity {
 	 */
 	private void sendRegistrationIdToBackend() {
 	    // Your implementation here.
+		String my_url = MyDataBase.URL+"users";
+		/*
+		StringRequest myReq = new StringRequest(Method.POST,
+				my_url,
+			    new Response.Listener<String>() 
+			    {
+			        @Override
+			        public void onResponse(String response) {
+			            // response
+			            Log.d(TAG, response);
+			        }
+			    }, 
+			    new Response.ErrorListener() 
+			    {
+			         @Override
+			         public void onErrorResponse(VolleyError error) {
+			             // error
+			             Log.d(TAG, "error!  " + error.getMessage());
+			       }
+			    }) 
+		{
+			protected Map<String, String> getParams() throws com.android.volley.AuthFailureError {
+				Map<String, String> params = new HashMap<String, String>();
+				//params.put("device_id", MyDataBase.device_id);
+				//params.put("registration_id", regid);
+				params.put("device_id", "1234");
+				params.put("registration_id", "9999");
+				return params;
+			}
+		    @Override
+		    public Map<String, String> getHeaders() throws com.android.volley.AuthFailureError {
+		        HashMap<String, String> headers = new HashMap<String, String>();
+		        headers.put("Content-Type", "application/json");
+		        headers.put("User-agent", "My useragent");
+		        return headers;
+		    }
+		};
+		*/
+		Map<String, String> jsonParams = new HashMap<String, String>();
+		jsonParams.put("device_id", MyDataBase.device_id);
+		jsonParams.put("registration_id", regid);
+		 
+		JsonObjectRequest myReq = new JsonObjectRequest(
+		        Request.Method.POST,
+		        my_url,
+		        new JSONObject(jsonParams),
+		 
+		        new Response.Listener<JSONObject>() {
+		            @Override
+		            public void onResponse(JSONObject response) {
+			            // response
+			            Log.d(TAG, "success" + response.toString());
+		            }
+		        },
+		        new Response.ErrorListener() {
+		            @Override
+		            public void onErrorResponse(VolleyError error) {
+			             // error
+			             Log.d(TAG, "error!  " + error.getMessage());
+		            }
+		        }) {
+		 
+		    @Override
+		    public Map<String, String> getHeaders() throws AuthFailureError {
+		        HashMap<String, String> headers = new HashMap<String, String>();
+		        headers.put("Content-Type", "application/json; charset=utf-8");
+		        headers.put("User-agent", "My useragent");
+		        return headers;
+		    }
+		};
+	
+		MyDataBase.queue.add(myReq);		
 	}
 	
 	/**

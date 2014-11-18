@@ -80,7 +80,7 @@ public class ActivityCondition extends FragmentActivity {
 							public void onResponse(available_predefined_conditions response) {
 								pred_cond_list.addAll(response.available_predefined_conditions);
 								// 데이터 베이스에 있는 자료도 업데이트
-								MyDataBase.pred_cond_list = pred_cond_list;
+								MyDataBase.pred_cond_list = response.available_predefined_conditions;
 								if(pred_cond_adapter != null) {
 									pred_cond_adapter.notifyDataSetChanged();				
 								}
@@ -412,6 +412,29 @@ public class ActivityCondition extends FragmentActivity {
 		
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
+			
+			/*for test *?
+			 * 
+			 */
+
+			if(pred_cond_list != null) {
+			predefined_condition_type data = new predefined_condition_type();
+			data.id = 1;
+			data.description = "testDescription 입니다.";
+			data.name = "소프트웨어마에스트로";
+			data.number_of_users_add_me = 100;
+			data.number_of_users_like_me = 887;
+			data.parameter_types = new ArrayList<predefined_condition_parameter_type>();
+			ArrayList<predefined_condition_parameter_type> param = data.parameter_types;
+			predefined_condition_parameter_type t = new predefined_condition_parameter_type();
+			t.order = 1;
+			t.name = "인자조건";
+			t.desc = "인자조건의 description 입니다.";
+			param.add(t);
+			pred_cond_list.add(data);
+			}
+
+			
 
 
 			setListAdapter(pred_cond_adapter = new MyArrayAdapter_PRED_COND(getActivity(), R.layout.activity_condition_item, pred_cond_list));
