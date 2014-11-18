@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="condition_type_easy">#255505</color>
+    <color name="condition_type_easy_light">#CFE4C8</color>   
     <color name="condition_type_hard">#550514</color>
+    <color name="condition_type_hard_light">#E4C8C8</color>
     <color name="condition_type_custom">#040404</color>
     <color name="signal_type_total">#FD8399</color>
     <color name="signal_type_indiv">#AACF87</color>

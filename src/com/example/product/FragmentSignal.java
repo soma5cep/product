@@ -33,9 +33,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.example.product.j.SearchDetail;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;

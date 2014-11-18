@@ -28,7 +28,7 @@ import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.example.product.j.OptionDetail;
+import com.google.gson.Gson;
 import com.viewpagerindicator.TabPageIndicator;
 
 public class ActivityCondition extends FragmentActivity {
@@ -430,7 +430,7 @@ public class ActivityCondition extends FragmentActivity {
 			Intent intent = new Intent(getActivity(), ActivityStockDetail.class);
 			startActivity(intent);
 			*/
-			Toast.makeText(getActivity(), position+" is clicked", 0).show();
+			//Toast.makeText(getActivity(), position+" is clicked", 0).show();
 			
 
 			Intent intent = new Intent(getActivity(), OptionDetail.class);
@@ -438,9 +438,28 @@ public class ActivityCondition extends FragmentActivity {
 			//인텐트에 클릭된 신호의 조건이름 정보를 전달
 			
 			predefined_condition_type data = pred_cond_list.get(position);
-			intent.putExtra("cond_name", data.name);
-			startActivity(intent);
+			
+			
+			Gson gson = new Gson();
+			String data_string = gson.toJson(data);
+			
+			intent.putExtra("type", "easy");
+			intent.putExtra("predefined_condition_type", data_string);
+			startActivityForResult(intent, 0);
 			//Toast.makeText(getActivity(), position+" is clicked", 0).show();		
+		}
+		
+		//전달만 한다.
+		@Override
+		public void onActivityResult (int requestCode, int resultCode, Intent data) {
+			//do something
+			
+			if(requestCode == 0) {
+				if(resultCode == RESULT_OK) {
+					getActivity().setResult(resultCode, data);
+					getActivity().finish();
+				}
+			}
 		}
 	}
 	
@@ -602,7 +621,11 @@ public class ActivityCondition extends FragmentActivity {
 				startActivity(intent);
 				*/
 				
-				Toast.makeText(getActivity(), position+" is clicked", 0).show();
+				//Toast.makeText(getActivity(), position+" is clicked", 0).show();
+				
+
+
+				//Toast.makeText(getActivity(), position+" is clicked", 0).show();		
 				
 
 				Intent intent = new Intent(getActivity(), OptionDetail.class);
@@ -624,8 +647,27 @@ public class ActivityCondition extends FragmentActivity {
 				else {
 					data = cond_list_jaemu.get(position);
 				}
-				intent.putExtra("cond_name", data.name);
-				startActivity(intent);
+				
+				Gson gson = new Gson();
+				String data_string = gson.toJson(data);
+				
+				intent.putExtra("type", "hard");
+				intent.putExtra("condition_type", data_string);
+				startActivityForResult(intent, 0);
+				
+			}
+			
+			//전달만 한다.
+			@Override
+			public void onActivityResult (int requestCode, int resultCode, Intent data) {
+				//do something
+				
+				if(requestCode == 0) {
+					if(resultCode == RESULT_OK) {
+						getActivity().setResult(resultCode, data);
+						getActivity().finish();
+					}
+				}
 			}
 		}
 	}

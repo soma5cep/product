@@ -42,11 +42,11 @@ public class MyDataBase {
 	static ArrayList<predefined_condition_type> pred_cond_list;
 	static ArrayList<condition_type> cond_list;
 	
-	/*
+	
 	//전체 종목 이름과 코드 정보 < 검색용 >
 	static ArrayList<stock_item> stock_item_list;
 	
-	*/
+	
 	//내종목
 	
 	
@@ -403,12 +403,22 @@ public class MyDataBase {
 	
 	
 	// 내종목
-	public static void getMy_Stock(
+	public static void getMy_Stock(int group, 
 			Response.Listener<signal_results_of_stock_items> resp_listener, 
 			Response.ErrorListener resp_error_listener) {		
 
 		String my_url = URL;	
 		my_url += users +"signal?option=my_stocks";
+		
+		String second_filter = "";
+		if(group == 0) { //all
+			second_filter = "total";
+		}
+		else if(group == 3) { // alarm
+			second_filter = "alarm";
+		}
+		
+		my_url += "&second_filter="+second_filter;
 
 		GsonRequest<signal_results_of_stock_items> myReq = new GsonRequest<signal_results_of_stock_items>(
 				my_url,
@@ -419,6 +429,32 @@ public class MyDataBase {
 				);
 		queue.add(myReq);
 	}
+	
+	// 주식 종목 목록 얻기
+	public static void getStock_list(
+			Response.Listener<stock_items> resp_listener, 
+			Response.ErrorListener resp_error_listener) {		
+
+		String my_url = URL + "stocks";	
+
+		GsonRequest<stock_items> myReq = new GsonRequest<stock_items>(
+				my_url,
+				stock_items.class,
+				null,
+				resp_listener,
+				resp_error_listener
+				);
+		queue.add(myReq);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	
@@ -1002,7 +1038,7 @@ class condition_parameter_type {
 	String candidate_values;
 }
 
-
+//종목 상세
 class stock_detail {
 	String stock_item_name;
 	int price;
@@ -1015,6 +1051,11 @@ class stock_detail {
 	ArrayList<user_signal_condition> user_signal_conditions;
 }
 
+class stock_items {
+	ArrayList<stock_item> stock_items;
+}
+
+//주식 종목 정보(목록 리스팅 용)
 class stock_item {
 	int id;
 	String name;

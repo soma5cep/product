@@ -3,29 +3,24 @@ package com.example.product;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.example.product.FragmentSignal.FragmentSignalStock.MyExpAdapter;
-import com.example.product.FragmentSignal.FragmentSignalStock.MyExpAdapter.ChildViewHolder;
-import com.example.product.FragmentSignal.FragmentSignalStock.MyExpAdapter.GroupViewHolder;
-
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ExpandableListView.OnChildClickListener;
+
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 
 public class ActivityMyStock extends FragmentActivity{
 	static ArrayList<signal_results_of_stock_item> list_all;
@@ -164,7 +159,7 @@ public class ActivityMyStock extends FragmentActivity{
 	@Override
 	public void onResume() {
 		// 각 리스트를 전부 업데이트
-		MyDataBase.updateSignal_by_stock_list(0,		 // group 0 means all		
+		MyDataBase.getMy_Stock(0,		 // group 0 means all		
 				new Response.Listener<signal_results_of_stock_items>() {
 					@Override
 					public void onResponse(signal_results_of_stock_items response) {
@@ -183,7 +178,7 @@ public class ActivityMyStock extends FragmentActivity{
 					}
 				});
 
-		MyDataBase.updateSignal_by_stock_list(3,		 // group 3 means alarm		
+		MyDataBase.getMy_Stock(3,		 // group 3 means alarm		
 				new Response.Listener<signal_results_of_stock_items>() {
 					@Override
 					public void onResponse(signal_results_of_stock_items response) {
