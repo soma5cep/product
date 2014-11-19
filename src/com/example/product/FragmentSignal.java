@@ -2,6 +2,10 @@ package com.example.product;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.Intent;
@@ -34,8 +38,13 @@ import android.widget.TextView;
 
 
 
+
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnLastItemVisibleListener;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
@@ -821,10 +830,13 @@ public class FragmentSignal extends Fragment {
 						if(data.alarm == Flag.IS_ALARM){
 							data.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
+							MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
+			
 						}
 						else if(data.alarm == Flag.IS_NOT_ALARM){
 							data.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
+							MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
 						}
 						
 						// 서버에 알리는 코드를 작성
@@ -1110,10 +1122,12 @@ public class FragmentSignal extends Fragment {
 						if(data.alarm == Flag.IS_ALARM){
 							data.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
+							MyDataBase.putAlarmChange(data.id, data.alarm);
 						}
 						else if(data.alarm == Flag.IS_NOT_ALARM){
 							data.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
+							MyDataBase.putAlarmChange(data.id, data.alarm);
 						}
 						
 						// 서버에 알리는 코드를 작성
@@ -1125,7 +1139,9 @@ public class FragmentSignal extends Fragment {
 				/* 삭제 버튼 리스너를 등록 */
 				((ImageButton)v.findViewById(R.id.delete_bt)).setOnClickListener(new Button.OnClickListener() {
 					@Override
-					public void onClick(View v) {											
+					public void onClick(View v) {
+						user_signal_condition data = items.get(position);
+						MyDataBase.deleteCondition(data.id);
 						items.remove(position);
 						notifyDataSetChanged();
 						/* 삭제 헀다는 정보를 서버에 보내야 함 */
@@ -1570,10 +1586,12 @@ public class FragmentSignal extends Fragment {
 						if(data.alarm == Flag.IS_ALARM){
 							data.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
+							MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
 						}
 						else if(data.alarm == Flag.IS_NOT_ALARM){
 							data.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
+							MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
 						}
 						
 						// 서버에 알리는 코드를 작성
@@ -1959,10 +1977,12 @@ public class FragmentSignal extends Fragment {
 						if(groupData.alarm == Flag.IS_ALARM){
 							groupData.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
+							MyDataBase.putAlarmChange(groupData.user_signal_condition_id, groupData.alarm);
 						}
 						else if(groupData.alarm == Flag.IS_NOT_ALARM){
 							groupData.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
+							MyDataBase.putAlarmChange(groupData.user_signal_condition_id, groupData.alarm);
 						}
 						
 						// 서버에 알리는 코드를 작성
@@ -2077,10 +2097,12 @@ public class FragmentSignal extends Fragment {
 						if(data.alarm == Flag.IS_ALARM){
 							data.alarm = Flag.IS_NOT_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm);
+							MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
 						}
 						else if(data.alarm == Flag.IS_NOT_ALARM){
 							data.alarm = Flag.IS_ALARM;
 							((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
+							MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
 						}
 						
 						// 서버에 알리는 코드를 작성

@@ -49,16 +49,18 @@ public class FragmentTab1 extends Fragment {
 					new Response.Listener<stock_items>() {
 						@Override
 						public void onResponse(stock_items response) {
-							MyDataBase.stock_item_list = response.stock_items;
-							ArrayList<stock_item> list = response.stock_items;
-							eventName.clear();
-							eventNum.clear();
-							for(int i=0; i<list.size(); ++i) {
-								eventName.add(list.get(i).name);
-								eventNum.add(list.get(i).short_code);
-							}							
-							if(adapter != null) {
-								adapter.notifyDataSetChanged();				
+							if(response != null && response.stock_items != null) {							
+								MyDataBase.stock_item_list = response.stock_items;
+								ArrayList<stock_item> list = response.stock_items;
+								eventName.clear();
+								eventNum.clear();
+								for(int i=0; i<list.size(); ++i) {
+									eventName.add(list.get(i).name);
+									eventNum.add(list.get(i).short_code);
+								}							
+								if(adapter != null) {
+									adapter.notifyDataSetChanged();				
+								}
 							}
 						}
 					}, 

@@ -44,7 +44,7 @@ public class MainActivity extends FragmentActivity {
      * Substitute you own sender ID here. This is the project number you got
      * from the API Console, as described in "Getting Started."
      */
-    String SENDER_ID = "962667824701";
+    String SENDER_ID = "110823689412";
 
     /**
      * Tag used on log messages.
@@ -95,6 +95,9 @@ public class MainActivity extends FragmentActivity {
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
+        
+        //test용으로
+        sendRegistrationIdToBackend();
         
 	}
 	

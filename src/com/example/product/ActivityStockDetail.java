@@ -764,10 +764,12 @@ public class ActivityStockDetail extends FragmentActivity{
 					if(data.alarm == Flag.IS_ALARM){
 						data.alarm = Flag.IS_NOT_ALARM;
 						((ImageView)v).setImageResource(R.drawable.push_alarm);
+						MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
 					}
 					else if(data.alarm == Flag.IS_NOT_ALARM){
 						data.alarm = Flag.IS_ALARM;
 						((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
+						MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
 					}
 					
 					// 서버에 알리는 코드를 작성

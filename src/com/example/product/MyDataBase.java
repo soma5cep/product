@@ -2,13 +2,23 @@ package com.example.product;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 
@@ -446,6 +456,84 @@ public class MyDataBase {
 				);
 		queue.add(myReq);
 	}
+	
+
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+// POST, PUT, DELETE 는 response처리를 일단 로그만 작성하므로, 같은 response listener
+// 를 쓰기로 하자.
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////
+	
+	// 디바이스 등록
+	// MainActivity 에 sendRegistrationIdToBackend() 에 있다.
+	
+	//알람 ON/OFF 설정 변경 보내기
+	public static void putAlarmChange(int condition_id, int alarm) 
+	{
+		String my_url = URL + users + "conditions/" + condition_id;	
+		
+		Map<String, String> jsonParams = new HashMap<String, String>();
+		jsonParams.put("alarm", "" + alarm);
+		JsonObjectRequest myReq = new JsonObjectRequest(
+		        Request.Method.PUT,
+		        my_url,
+		        new JSONObject(jsonParams),
+		 
+		        new Response.Listener<JSONObject>() {
+		            @Override
+		            public void onResponse(JSONObject response) {
+			            // response
+			            Log.d("debug", "success" + response.toString());
+		            }
+		        },
+		        new Response.ErrorListener() {
+		            @Override
+		            public void onErrorResponse(VolleyError error) {
+			             // error
+			             Log.d("debug", "error!  " + error.getMessage());
+		            }
+		        }) {
+		 
+		    @Override
+		    public Map<String, String> getHeaders() throws AuthFailureError {
+		        HashMap<String, String> headers = new HashMap<String, String>();
+		        headers.put("Content-Type", "application/json; charset=utf-8");
+		        headers.put("User-agent", "My useragent");
+		        return headers;
+		    }
+		};
+		queue.add(myReq);				
+	}
+	
+	public static void deleteCondition(int condition_id) 
+	{
+		String my_url = URL + users + "conditions/" + condition_id;	
+		StringRequest dr = new StringRequest(Request.Method.DELETE, my_url, 
+			    new Response.Listener<String>() 
+			    {
+			        @Override
+			        public void onResponse(String response) {
+			            // response
+			            // response
+			            Log.d("debug", "success" + response.toString());
+			        }
+			    }, 
+			    new Response.ErrorListener() 
+			    {
+			         @Override
+			         public void onErrorResponse(VolleyError error) {
+			             // error.
+			             Log.d("debug", "error!  " + error.getMessage());            
+			       }
+			    }
+			);
+			queue.add(dr);
+	}
+	
+	
 	
 	
 	

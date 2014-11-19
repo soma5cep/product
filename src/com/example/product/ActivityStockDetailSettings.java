@@ -79,6 +79,7 @@ public class ActivityStockDetailSettings extends Activity{
 						data.alarm = Flag.IS_ALARM;
 						((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
 					}
+					MyDataBase.putAlarmChange(data.id, data.alarm);
 					
 					// 서버에 알리는 코드를 작성
 				}						
@@ -91,7 +92,10 @@ public class ActivityStockDetailSettings extends Activity{
 			delete_bt.setOnClickListener(new Button.OnClickListener() {
 				@Override
 				public void onClick(View v) {							
-					Toast.makeText(ActivityStockDetailSettings.this, ""+position+" 번째 아이템을 삭제", 0).show();						
+					//Toast.makeText(ActivityStockDetailSettings.this, ""+position+" 번째 아이템을 삭제", 0).show();						
+					user_signal_condition data = list_total.get(position);
+					MyDataBase.deleteCondition(data.id);
+					
 					list_total.remove(position);
 					myNotifyDataSetChanged_total();
 					// 삭제 헀다는 정보를 서버에 보내야 함 
@@ -160,6 +164,7 @@ public class ActivityStockDetailSettings extends Activity{
 					}
 					
 					// 서버에 알리는 코드를 작성
+					MyDataBase.putAlarmChange(data.id, data.alarm);
 				}						
 			});	
 
@@ -170,7 +175,11 @@ public class ActivityStockDetailSettings extends Activity{
 			delete_bt.setOnClickListener(new Button.OnClickListener() {
 				@Override
 				public void onClick(View v) {							
-					Toast.makeText(ActivityStockDetailSettings.this, ""+position+" 번째 아이템을 삭제", 0).show();						
+					//Toast.makeText(ActivityStockDetailSettings.this, ""+position+" 번째 아이템을 삭제", 0).show();						
+					
+					user_signal_condition data = list_indiv.get(position);
+					MyDataBase.deleteCondition(data.id);
+					
 					list_indiv.remove(position);
 					myNotifyDataSetChanged_indiv();
 					// 삭제 헀다는 정보를 서버에 보내야 함 

@@ -559,14 +559,15 @@ public class ActivitySignalDetail extends FragmentActivity {
 					/* 알람 버튼이 눌리면 이미지를 바꾸고, 서버에 알람버튼을 눌렀다고 알림 */
 					if(data.alarm == Flag.IS_ALARM){
 						data.alarm = Flag.IS_NOT_ALARM;
-						((ImageView)v).setImageResource(R.drawable.push_alarm);
+						((ImageView)v).setImageResource(R.drawable.push_alarm);					
 					}
 					else if(data.alarm == Flag.IS_NOT_ALARM){
 						data.alarm = Flag.IS_ALARM;
 						((ImageView)v).setImageResource(R.drawable.push_alarm_clicked);
-					}
+					}		
 					
 					// 서버에 알리는 코드를 작성
+					MyDataBase.putAlarmChange(data.user_signal_condition_id, data.alarm);
 				}						
 			});	
 			
