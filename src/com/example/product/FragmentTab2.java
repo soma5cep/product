@@ -170,7 +170,7 @@ public class FragmentTab2 extends Fragment{
 					String data_string = intent.getStringExtra("predefined_condition_type");
 							
 					Gson gson = new Gson();
-					predefined_condition_type   pred_cond_data = gson.fromJson(data_string, predefined_condition_type.class);
+					predefined_condition_type pred_cond_data = gson.fromJson(data_string, predefined_condition_type.class);
 					
 					pred_cond_list.add(pred_cond_data);
 					

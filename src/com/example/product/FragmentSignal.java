@@ -1237,6 +1237,8 @@ public class FragmentSignal extends Fragment {
 			mExpListView.setAdapter(adapter_all);
 			current_adapter = adapter_all;
 			
+
+			
 			
 			mExpListView.setOnChildClickListener(new OnChildClickListener() {
 				@Override
@@ -1284,9 +1286,35 @@ public class FragmentSignal extends Fragment {
 						received_signal = MyDataBase.getReceivedSignalList_all();
 						my_adapter.notifyDataSetChanged();
 						*/
-						
-						mExpListView.setAdapter(adapter_all);
-						current_adapter = adapter_all;
+						if(list_all.isEmpty()) {
+							MyDataBase.updateSignal_by_stock_list(0,		 // group 0 means all		
+									new Response.Listener<signal_results_of_stock_items>() {
+										@Override
+										public void onResponse(signal_results_of_stock_items response) {
+											//list_all.clear();
+											list_all.addAll(response.signal_results_of_stock_items);
+											mExpListView.setAdapter(adapter_all);
+											current_adapter = adapter_all;
+	//										
+	//										if(current_adapter == adapter_all) {
+	//											adapter_all.notifyDataSetChanged();				
+	//										}
+	//										
+	//										adapter_all.notifyDataSetChanged();	
+											// Call onRefreshComplete when the list has been refreshed.
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+										}
+									});
+						}
+						else {				
+							mExpListView.setAdapter(adapter_all);
+							current_adapter = adapter_all;
+						}
 						break;
 					case R.id.total_btn :
 						/*
@@ -1294,17 +1322,74 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						mExpListView.setAdapter(adapter_total);
-						current_adapter = adapter_total;
+						if(list_total.isEmpty()) {
+							MyDataBase.updateSignal_by_stock_list(1,		 // group 1 means total	
+									new Response.Listener<signal_results_of_stock_items>() {
+										@Override
+										public void onResponse(signal_results_of_stock_items response) {
+	//										list_total.clear();
+											list_total.addAll(response.signal_results_of_stock_items);
+											mExpListView.setAdapter(adapter_total);
+											current_adapter = adapter_total;
+											
+	//										
+	//										if(current_adapter == adapter_total) {
+	//											adapter_total.notifyDataSetChanged();				
+	//										}
+	//										
+	//										adapter_total.notifyDataSetChanged();		
+											// Call onRefreshComplete when the list has been refreshed.
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+										}
+									});
+						}
+						else {
+							mExpListView.setAdapter(adapter_total);
+							current_adapter = adapter_total;
+						}
 						break;
 					case R.id.indiv_btn :
 						/*
 						received_signal = MyDataBase.getReceivedSignalList_indiv();
 						my_adapter.notifyDataSetChanged();
 						*/
-						
-						mExpListView.setAdapter(adapter_indiv);
-						current_adapter = adapter_indiv;
+						if(list_indiv.isEmpty()) {							
+							MyDataBase.updateSignal_by_stock_list(2,		 // group 2 means indiv		
+									new Response.Listener<signal_results_of_stock_items>() {
+										@Override
+										public void onResponse(signal_results_of_stock_items response) {
+											//list_indiv.clear();
+											list_indiv.addAll(response.signal_results_of_stock_items);
+											
+											mExpListView.setAdapter(adapter_indiv);
+											current_adapter = adapter_indiv;
+											
+	//										
+	//										if(current_adapter == adapter_indiv) {
+	//											adapter_indiv.notifyDataSetChanged();				
+	//										}
+	//										
+											
+											//adapter_indiv.notifyDataSetChanged();	
+											// Call onRefreshComplete when the list has been refreshed.
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+										}
+									});
+						}
+						else {
+							mExpListView.setAdapter(adapter_indiv);
+							current_adapter = adapter_indiv;
+						}
 						break;
 					case R.id.alarm_btn :
 						/*
@@ -1312,8 +1397,37 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						mExpListView.setAdapter(adapter_alarm);
-						current_adapter = adapter_alarm;
+						if(list_alarm.isEmpty()) {
+							MyDataBase.updateSignal_by_stock_list(3,		 // group 3 means alarm		
+									new Response.Listener<signal_results_of_stock_items>() {
+										@Override
+										public void onResponse(signal_results_of_stock_items response) {
+	//										list_alarm.clear();
+											list_alarm.addAll(response.signal_results_of_stock_items);
+											mExpListView.setAdapter(adapter_alarm);
+											current_adapter = adapter_alarm;
+	//										
+	//										if(current_adapter == adapter_alarm) {
+	//											adapter_alarm.notifyDataSetChanged();				
+	//										}
+	//										
+											
+	//										adapter_alarm.notifyDataSetChanged();	
+											// Call onRefreshComplete when the list has been refreshed.
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+										}
+									});				
+						}
+						else {
+						
+							mExpListView.setAdapter(adapter_alarm);
+							current_adapter = adapter_alarm;
+						}
 						break;
 					default :
 						//do nothing
@@ -1326,8 +1440,12 @@ public class FragmentSignal extends Fragment {
 			return root;			
 		}
 		
+		
+		/*
 		@Override
 		public void onResume() {
+			
+			
 			// 각 리스트를 전부 업데이트
 			MyDataBase.updateSignal_by_stock_list(0,		 // group 0 means all		
 					new Response.Listener<signal_results_of_stock_items>() {
@@ -1335,9 +1453,12 @@ public class FragmentSignal extends Fragment {
 						public void onResponse(signal_results_of_stock_items response) {
 							list_all.clear();
 							list_all.addAll(response.signal_results_of_stock_items);
-							if(current_adapter == adapter_all) {
-								adapter_all.notifyDataSetChanged();				
-							}
+//							
+//							if(current_adapter == adapter_all) {
+//								adapter_all.notifyDataSetChanged();				
+//							}
+//							
+							adapter_all.notifyDataSetChanged();	
 							// Call onRefreshComplete when the list has been refreshed.
 						}
 					}, 
@@ -1354,9 +1475,12 @@ public class FragmentSignal extends Fragment {
 						public void onResponse(signal_results_of_stock_items response) {
 							list_total.clear();
 							list_total.addAll(response.signal_results_of_stock_items);
-							if(current_adapter == adapter_total) {
-								adapter_total.notifyDataSetChanged();				
-							}
+//							
+//							if(current_adapter == adapter_total) {
+//								adapter_total.notifyDataSetChanged();				
+//							}
+//							
+							adapter_total.notifyDataSetChanged();		
 							// Call onRefreshComplete when the list has been refreshed.
 						}
 					}, 
@@ -1373,9 +1497,14 @@ public class FragmentSignal extends Fragment {
 						public void onResponse(signal_results_of_stock_items response) {
 							list_indiv.clear();
 							list_indiv.addAll(response.signal_results_of_stock_items);
-							if(current_adapter == adapter_indiv) {
-								adapter_indiv.notifyDataSetChanged();				
-							}
+							
+//							
+//							if(current_adapter == adapter_indiv) {
+//								adapter_indiv.notifyDataSetChanged();				
+//							}
+//							
+							
+							adapter_indiv.notifyDataSetChanged();	
 							// Call onRefreshComplete when the list has been refreshed.
 						}
 					}, 
@@ -1392,9 +1521,13 @@ public class FragmentSignal extends Fragment {
 						public void onResponse(signal_results_of_stock_items response) {
 							list_alarm.clear();
 							list_alarm.addAll(response.signal_results_of_stock_items);
-							if(current_adapter == adapter_alarm) {
-								adapter_alarm.notifyDataSetChanged();				
-							}
+//							
+//							if(current_adapter == adapter_alarm) {
+//								adapter_alarm.notifyDataSetChanged();				
+//							}
+//							
+							
+							adapter_alarm.notifyDataSetChanged();	
 							// Call onRefreshComplete when the list has been refreshed.
 						}
 					}, 
@@ -1407,6 +1540,7 @@ public class FragmentSignal extends Fragment {
 			
 			super.onResume();
 		}
+		*/
 		
 		class MyExpAdapter extends BaseExpandableListAdapter {
 			//private int GROUP_CNT = 3;
@@ -1769,18 +1903,64 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
-						mExpListView.setAdapter(adapter_all);
-						current_adapter = adapter_all;
+						if(list_all.isEmpty()) {
+							MyDataBase.updateSignal_by_cond_list(0,		 // group 0 means all		
+									new Response.Listener<signal_results_signal_conditions>() {
+										@Override
+										public void onResponse(signal_results_signal_conditions response) {
+											//list_all.clear();
+											list_all.addAll(response.signal_results_signal_conditions);
+											mExpListView.setAdapter(adapter_all);
+											current_adapter = adapter_all;
+//											if(current_adapter == adapter_all) {
+//												adapter_all.notifyDataSetChanged();				
+//											}
+											// Call onRefreshComplete when the list has been refreshed.
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+										}
+									});
+						}
+						else {							
+							mExpListView.setAdapter(adapter_all);
+							current_adapter = adapter_all;
+						}
 						break;
 					case R.id.total_btn :
 						/*
 						received_signal = MyDataBase.getReceivedSignalList_total();
 						my_adapter.notifyDataSetChanged();
 						*/
-						
-						
-						mExpListView.setAdapter(adapter_total);
-						current_adapter = adapter_total;
+						if(list_total.isEmpty()) {
+							MyDataBase.updateSignal_by_cond_list(1,		 // group 1 means total	
+									new Response.Listener<signal_results_signal_conditions>() {
+										@Override
+										public void onResponse(signal_results_signal_conditions response) {
+											//list_total.clear();
+											list_total.addAll(response.signal_results_signal_conditions);
+											mExpListView.setAdapter(adapter_total);
+											current_adapter = adapter_total;
+	//										if(current_adapter == adapter_total) {
+	//											adapter_total.notifyDataSetChanged();				
+	//										}
+											// Call onRefreshComplete when the list has been refreshed.
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+										}
+									});
+						}
+						else {			
+							mExpListView.setAdapter(adapter_total);
+							current_adapter = adapter_total;
+						}
 						break;
 					case R.id.indiv_btn :
 						/*
@@ -1788,9 +1968,34 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
+						if(list_indiv.isEmpty()) {
+						MyDataBase.updateSignal_by_cond_list(2,		 // group 2 means indiv		
+								new Response.Listener<signal_results_signal_conditions>() {
+									@Override
+									public void onResponse(signal_results_signal_conditions response) {
+//										list_indiv.clear();
+										list_indiv.addAll(response.signal_results_signal_conditions);
+										mExpListView.setAdapter(adapter_indiv);
+										current_adapter = adapter_indiv;
+//										if(current_adapter == adapter_indiv) {
+//											adapter_indiv.notifyDataSetChanged();				
+//										}
+										// Call onRefreshComplete when the list has been refreshed.
+									}
+								}, 
+								new Response.ErrorListener() {
+									@Override
+									public void onErrorResponse(VolleyError error) {
+										Log.e("product", "error!" + error.getMessage());
+									}
+								});
+						}
+						else {
 						
-						mExpListView.setAdapter(adapter_indiv);
-						current_adapter = adapter_indiv;
+							
+							mExpListView.setAdapter(adapter_indiv);
+							current_adapter = adapter_indiv;
+						}
 						break;
 					case R.id.alarm_btn :
 						/*
@@ -1798,9 +2003,34 @@ public class FragmentSignal extends Fragment {
 						my_adapter.notifyDataSetChanged();
 						*/
 						
+						if(list_alarm.isEmpty()) {
+							MyDataBase.updateSignal_by_cond_list(3,		 // group 3 means alarm		
+									new Response.Listener<signal_results_signal_conditions>() {
+										@Override
+										public void onResponse(signal_results_signal_conditions response) {
+		//									list_alarm.clear();
+											list_alarm.addAll(response.signal_results_signal_conditions);
+											mExpListView.setAdapter(adapter_alarm);
+											current_adapter = adapter_alarm;
+	//										if(current_adapter == adapter_alarm) {
+	//											adapter_alarm.notifyDataSetChanged();				
+	//										}
+											// Call onRefreshComplete when the list has been refreshed.
+										}
+									}, 
+									new Response.ErrorListener() {
+										@Override
+										public void onErrorResponse(VolleyError error) {
+											Log.e("product", "error!" + error.getMessage());
+										}
+									});
+						}
+						else {
 						
-						mExpListView.setAdapter(adapter_alarm);
-						current_adapter = adapter_alarm;
+						
+							mExpListView.setAdapter(adapter_alarm);
+							current_adapter = adapter_alarm;
+						}
 						break;
 					default :
 						//do nothing
@@ -1815,7 +2045,7 @@ public class FragmentSignal extends Fragment {
 		}
 		
 		
-		
+		/*
 		@Override
 		public void onResume() {
 			// 각 리스트를 전부 업데이트
@@ -1897,6 +2127,7 @@ public class FragmentSignal extends Fragment {
 			
 			super.onResume();
 		}
+		*/
 
 		
 		class MyExpAdapter extends BaseExpandableListAdapter {

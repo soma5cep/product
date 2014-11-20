@@ -86,7 +86,7 @@ public class MyDataBase {
 					Response.ErrorListener resp_error_listener) {		
 		
 		String my_url = URL;	
-		my_url += users +"signal?first_filter=";
+		my_url += users +"signals?first_filter=";
         String first_filter = "total";
         my_url += first_filter;
         my_url +="&second_filter=";
@@ -140,7 +140,7 @@ public class MyDataBase {
 			Response.ErrorListener resp_error_listener) {		
 
 		String my_url = URL;	
-		my_url += users +"signal?first_filter=";
+		my_url += users +"signals?first_filter=";
 		String first_filter = "signal";
 		my_url += first_filter;
 		my_url +="&second_filter=";
@@ -182,7 +182,7 @@ public class MyDataBase {
 			Response.ErrorListener resp_error_listener) {		
 
 		String my_url = URL;	
-		my_url += users +"signal?first_filter=";
+		my_url += users +"signals?first_filter=";
 		String first_filter = "stock_item";
 		my_url += first_filter;
 		my_url +="&second_filter=";
@@ -307,7 +307,7 @@ public class MyDataBase {
 					Response.ErrorListener resp_error_listener) {		
 		
 		String my_url = URL;	
-		my_url += users +"signal?first_filter=";
+		my_url += users +"signals?first_filter=";
         String first_filter = "stock_item";
         my_url += first_filter;
         my_url +="&second_filter=";
@@ -362,7 +362,7 @@ public class MyDataBase {
 					Response.ErrorListener resp_error_listener) {		
 		
 		String my_url = URL;	
-		my_url += users +"signal?first_filter=";
+		my_url += users +"signals?first_filter=";
         String first_filter = "stock_item";
         my_url += first_filter;
         my_url +="&second_filter=";
@@ -417,7 +417,7 @@ public class MyDataBase {
 			Response.ErrorListener resp_error_listener) {		
 
 		String my_url = URL;	
-		my_url += users +"signal?option=my_stocks";
+		my_url += users +"signals?option=my_stocks";
 		
 		String second_filter = "";
 		if(group == 0) { //all
