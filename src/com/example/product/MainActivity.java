@@ -96,8 +96,10 @@ public class MainActivity extends FragmentActivity {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
         
+        /*
         //test용으로
         sendRegistrationIdToBackend();
+        */
         
 	}
 	

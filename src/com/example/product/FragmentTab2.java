@@ -16,13 +16,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ExpandableListView;
-import android.widget.Toast;
+
+import com.google.gson.Gson;
 
 public class FragmentTab2 extends Fragment{
 	Context mContext;
 	ExpandableListView lv;
 	ArrayList<Option> option = new ArrayList<Option>();
 	ArrayList<OptionData> data = new ArrayList<OptionData>();
+	ArrayList<predefined_condition_type> pred_cond_list = new ArrayList<predefined_condition_type>();
+	ArrayList<condition_type> cond_list = new ArrayList<condition_type>();
 	
 	
 	private Menu myMenu;
@@ -76,7 +79,10 @@ public class FragmentTab2 extends Fragment{
 					my_adapter.notifyDataSetChanged();
 					*/
 					
-					Toast.makeText(getActivity(), "cancle_btn clicked", 0).show();
+					//Toast.makeText(getActivity(), "cancle_btn clicked", 0).show();
+					
+					
+					getActivity().finish();
 					break;
 				case R.id.admit_btn :
 					/*
@@ -84,7 +90,17 @@ public class FragmentTab2 extends Fragment{
 					my_adapter.notifyDataSetChanged();
 					*/
 					
-					Toast.makeText(getActivity(), "admit_btn clicked", 0).show();
+					//Toast.makeText(getActivity(), "admit_btn clicked", 0).show();
+					Intent intent = new Intent(getActivity(), ActivitySearchResult.class);
+					
+					
+					
+					//데이터 넣기
+					
+					
+					startActivityForResult(intent, 1);
+					
+					
 					break;
 				default :
 					//do nothing
@@ -136,12 +152,63 @@ public class FragmentTab2 extends Fragment{
 	//하지만 호출된 activity가 setresult를 하지 않아도 아래 함수가 호출되므로
 	//Case를 나눠서 오류가 없게끔 한다.
 	@Override
-	public void onActivityResult (int requestCode, int resultCode, Intent data) {
+	public void onActivityResult (int requestCode, int resultCode, Intent intent) {
 		//do something
 		//조건 값을 받아와서 option으로 바꿔서 화면에 표시해준다.
 		if(requestCode == 0) {
 			if(resultCode == Activity.RESULT_CANCELED) {
 				
+			}
+			else if(resultCode == Activity.RESULT_OK) {
+				//Toast.makeText(getActivity(), "RESULT_OK", 0).show();
+				
+				//Intent로 부터 데이터 받아오기
+				//기본조건일때
+				if(intent.getStringExtra("type").equals("easy")) {
+					
+					//type = 0;
+					String data_string = intent.getStringExtra("predefined_condition_type");
+							
+					Gson gson = new Gson();
+					predefined_condition_type   pred_cond_data = gson.fromJson(data_string, predefined_condition_type.class);
+					
+					pred_cond_list.add(pred_cond_data);
+					
+					
+					
+					//////////////////////////////////////
+					////////////////////////////////////////
+					// 들어온 데이터를 Option으로 변환하는 곳
+					///////////////////////////////////////
+					////////////////////////////////////
+					
+						
+				}
+				//고급조건일때
+				else if(intent.getStringExtra("type").equals("hard")) {
+					//type = 1;
+					String data_string = intent.getStringExtra("condition_type");
+					
+					Gson gson = new Gson();
+					condition_type cond_data = gson.fromJson(data_string, condition_type.class);
+					
+					cond_list.add(cond_data);
+					
+					
+					
+					//////////////////////////////////////
+					////////////////////////////////////////
+					// 들어온 데이터를 Option으로 변환하는 곳
+					///////////////////////////////////////
+					////////////////////////////////////
+				}
+				
+				
+			}
+		}
+		if(requestCode == 1) {
+			if(resultCode == Activity.RESULT_OK) {
+				getActivity().finish();
 			}
 		}
 	}

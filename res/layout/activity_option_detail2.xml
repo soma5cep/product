@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="10dp"
+    android:background="#FFFFFF"
     android:orientation="vertical" >
 
     <ScrollView
@@ -20,14 +21,14 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="#FFDDFF"
+                android:background="@color/condition_type_hard_light"
                 android:orientation="vertical" >
 
                 <TextView
                     android:id="@+id/txtOptionName"
                     android:layout_width="match_parent"
                     android:layout_height="36dp"
-                    android:background="#660000"
+                    android:background="@color/condition_type_hard"
                     android:gravity="center"
                     android:paddingLeft="10dp"
                     android:paddingRight="10dp"
@@ -79,7 +80,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
                     android:layout_marginTop="10dp"
-                    android:orientation="vertical" >
+                    android:orientation="vertical">
                 </LinearLayout>
             </LinearLayout>
 
@@ -98,22 +99,22 @@
                     android:layout_marginLeft="22dp" >
 
                     <ImageView
-                        android:id="@+id/imgLikeNum"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
+                        android:id="@+id/imgUseNum"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center_vertical"
-                        android:src="@drawable/grayheart" />
+                        android:src="@drawable/ic_gray_crowd" />
 
                     <TextView
-                        android:id="@+id/txtLikeNum"
-                        android:layout_width="40dp"
+                        android:id="@+id/txtUseNum"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
                         android:layout_weight="2.87"
                         android:text="0"
-                        android:textSize="30dp" />
+                        android:textSize="17dp" />
                 </LinearLayout>
 
                 <ImageView
@@ -123,7 +124,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="18dp"
-                    android:src="@drawable/grayheart"
+                    android:src="@drawable/gray_heart"
                     android:tag="2" />
 
                 <LinearLayout
@@ -131,27 +132,27 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_alignParentTop="true"
-                    android:layout_marginLeft="22dp"
+                    android:layout_marginLeft="5dp"
                     android:layout_toRightOf="@+id/linearLayout2"
                     android:textColor="#555555" >
 
                     <ImageView
-                        android:id="@+id/imgUseNum"
+                        android:id="@+id/imgLikeNum"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="5dp"
                         android:layout_marginRight="5dp"
-                        android:src="@drawable/graygroup" />
+                        android:src="@drawable/grayheart" />
 
                     <TextView
-                        android:id="@+id/txtUseNum"
-                        android:layout_width="40dp"
+                        android:id="@+id/txtLikeNum"
+                        android:layout_width="50dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:text="0"
                         android:textColor="#555555"
-                        android:textSize="30dp" />
+                        android:textSize="17dp" />
                 </LinearLayout>
             </RelativeLayout>
         </LinearLayout>
@@ -160,13 +161,14 @@
     <Button
         android:id="@+id/btnAddOption"
         android:layout_width="match_parent"
-        android:layout_height="38dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_marginBottom="10dp"
-        android:background="#660000"
+        android:background="@color/condition_type_hard"
         android:text="신호로 추가"
         android:textColor="#FFFFFF"
-        android:textStyle="bold" />
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:onClick="onClickMethod"  />
 
 </RelativeLayout>

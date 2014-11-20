@@ -40,8 +40,8 @@
         android:id="@+id/lvSearchByEvent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:dividerHeight="1dp"
-        android:divider="#FFF0F0F0" >
+        android:footerDividersEnabled="true"
+        android:headerDividersEnabled="true" >
     </ListView>
 
 </LinearLayout>

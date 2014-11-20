@@ -46,7 +46,21 @@ public class ActivityCondition extends FragmentActivity {
 	static MyArrayAdapter_COND cond_adapter_sise;
 	static MyArrayAdapter_COND cond_adapter_kisool;
 	static MyArrayAdapter_COND cond_adapter_pattern;
-
+	
+	//전달만 한다.
+	@Override
+	public void onActivityResult (int requestCode, int resultCode, Intent data) {
+		//do something
+		//Toast.makeText(this, "onActivity_result", 0).show();
+		if(requestCode == 0) {
+			if(resultCode == RESULT_OK) {
+				//Toast.makeText(this, "onActivity_result result OK", 0).show();
+				
+				setResult(resultCode, data);
+				finish();
+			}
+		}
+	}
 	
 
 	@Override
@@ -468,10 +482,14 @@ public class ActivityCondition extends FragmentActivity {
 			
 			intent.putExtra("type", "easy");
 			intent.putExtra("predefined_condition_type", data_string);
-			startActivityForResult(intent, 0);
+			getActivity().startActivityForResult(intent, 0);
 			//Toast.makeText(getActivity(), position+" is clicked", 0).show();		
 		}
 		
+		
+		//Activity 단위로 바꿈.
+		//주석처리
+		/*
 		//전달만 한다.
 		@Override
 		public void onActivityResult (int requestCode, int resultCode, Intent data) {
@@ -484,6 +502,7 @@ public class ActivityCondition extends FragmentActivity {
 				}
 			}
 		}
+		*/
 	}
 	
 	
@@ -612,7 +631,33 @@ public class ActivityCondition extends FragmentActivity {
 			public void onActivityCreated(Bundle savedInstanceState) {
 				super.onActivityCreated(savedInstanceState);
 				
+
+				
 				if(myCategory == "재무") {
+					/* 테스트 코드 */
+					if(cond_list_jaemu != null) {
+						condition_type data = new condition_type();
+						data.id = 1;
+						data.description = "testDescription 입니다.";
+						data.name = "소프트웨어마에스트로";
+						data.description_of_parameters = "A봉전 B 어쩌고 C 는 D";
+						data.category = "재무";
+						data.number_of_users_add_me = 220;
+						data.number_of_users_like_me = 111;
+						data.parameter_types = new ArrayList<condition_parameter_type>();
+						ArrayList<condition_parameter_type> param = data.parameter_types;					
+						for(int i=0; i<3; ++i) {
+							condition_parameter_type t = new condition_parameter_type();						
+							t.order = i+1;
+							t.type = "타입"+i;
+							t.initial_value = "기본값"+i;
+							t.candidate_values = "후보값"+i;
+							param.add(t);
+						}
+						cond_list_jaemu.add(data);
+					}
+					
+					
 					setListAdapter(cond_adapter_jaemu = new MyArrayAdapter_COND(getActivity(), R.layout.activity_condition_item, cond_list_jaemu));
 				}
 				else if(myCategory == "시세") {
@@ -676,22 +721,27 @@ public class ActivityCondition extends FragmentActivity {
 				
 				intent.putExtra("type", "hard");
 				intent.putExtra("condition_type", data_string);
-				startActivityForResult(intent, 0);
+				getActivity().startActivityForResult(intent, 0);
 				
 			}
 			
+			// Activity 단위로 바꾸었다.
+			//따라서 주석처리
+			/*
 			//전달만 한다.
 			@Override
 			public void onActivityResult (int requestCode, int resultCode, Intent data) {
 				//do something
-				
+				Toast.makeText(getActivity(), "onActivity_result", 0).show();
 				if(requestCode == 0) {
 					if(resultCode == RESULT_OK) {
+						Toast.makeText(getActivity(), "onActivity_result result OK", 0).show();
 						getActivity().setResult(resultCode, data);
 						getActivity().finish();
 					}
 				}
 			}
+			*/
 		}
 	}
 }

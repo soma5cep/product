@@ -77,7 +77,9 @@ public class SearchDetail extends FragmentActivity {
 					my_adapter.notifyDataSetChanged();
 					*/
 					
-					Toast.makeText(SearchDetail.this, "cancle_btn clicked", 0).show();
+					//Toast.makeText(SearchDetail.this, "cancle_btn clicked", 0).show();
+					
+					finish();
 					break;
 				case R.id.admit_btn :
 					/*
@@ -85,7 +87,44 @@ public class SearchDetail extends FragmentActivity {
 					my_adapter.notifyDataSetChanged();
 					*/
 					
-					Toast.makeText(SearchDetail.this, "admit_btn clicked", 0).show();
+					//Toast.makeText(SearchDetail.this, "admit_btn clicked", 0).show();
+					
+					
+					/*
+					//서버에 신호 추가 요청
+					post_condition_factor factor = new post_condition_factor();
+	
+					factor.applicable_range = 0;
+					factor.stock_item_id = 0;
+					factor.search_conditions = new ArrayList<search_condition>();
+					for(int i=0; i<cond_list.size(); ++i) {
+						condition_type data = cond_list.get(i);
+						search_condition sc = new search_condition();
+						sc.condition_type_id = data.id;
+						sc.search_condition_parameters = new ArrayList<search_condition_parameter>();
+						for(int j=0; j<data.parameter_types.size(); ++j) {
+							condition_parameter_type dd = data.parameter_types.get(j);
+							search_condition_parameter param = new search_condition_parameter();
+							param.order = dd.order;
+							param.type = dd.type; 
+							param.value = dd.initial_value;
+							sc.search_condition_parameters.add(param);
+						}
+						factor.search_conditions.add(sc);
+					}
+					factor.search_predefined_conditions = new ArrayList<search_predefined_condition>();
+					for(int i=0; i<pred_cond_list.size(); ++i) {
+						predefined_condition_type data = pred_cond_list.get(i);
+						search_predefined_condition spc = new search_predefined_condition();
+						spc.predefined_condition_type_id = data.id;
+						factor.search_predefined_conditions.add(spc);
+					}
+					*/
+					
+					
+					
+					
+					
 					break;
 				default :
 					//do nothing
@@ -101,7 +140,7 @@ public class SearchDetail extends FragmentActivity {
 	public void onActivityResult(int requestCode, int resultCode, Intent data){
 		super.onActivityResult(requestCode, requestCode, data);
 		if(requestCode==1 && resultCode==RESULT_OK){
-			searchName.setText(data.getStringExtra("name"));
+			searchName.setText(data.getStringExtra("stock_name"));
 		}
 	}
 }

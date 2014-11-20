@@ -13,7 +13,8 @@ import android.view.inputmethod.InputMethodManager;
 import com.viewpagerindicator.TabPageIndicator;
 
 public class SearchItem2 extends FragmentActivity{
-
+	
+	static Activity activity;
 	private ViewPager mPager;
 	private MyPagerAdapter mPagerAdapter;
 	
@@ -21,6 +22,8 @@ public class SearchItem2 extends FragmentActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.view_pager);
+		
+		activity = this;
 		
 		mPager = (ViewPager)findViewById(R.id.pager);
 		mPagerAdapter = new MyPagerAdapter(getSupportFragmentManager());

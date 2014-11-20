@@ -12,6 +12,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.product.R;
 
@@ -22,7 +23,8 @@ public class SearchByEventCustomAdapter extends BaseAdapter {
 	ArrayList<String> eventName = new ArrayList<String>();
 	ArrayList<String> resultEventNum;
 	ArrayList<String> resultEventName;
-	public SearchByEventCustomAdapter(Activity activity, Context context, ArrayList<String> eventNums, ArrayList<String> eventNames) {
+	public SearchByEventCustomAdapter(Activity activity, Context context, ArrayList<String> eventNums, 
+											ArrayList<String> eventNames) {
 		// TODO Auto-generated constructor stub
 		this.mContext = context;
 		this.aActivity = activity;
@@ -64,15 +66,15 @@ public class SearchByEventCustomAdapter extends BaseAdapter {
 		final TextView txtEventName = (TextView)convertView.findViewById(R.id.txtEventName);
 		txtEventNum.setText(resultEventNum.get(position).toString());
 		txtEventName.setText(resultEventName.get(position).toString());
+		
+		//클릭 리스너는 Adapter에서 말고 밖에서 하기
+		/*
 		convertView.setOnClickListener(new OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				String name = (String)((TextView)v.findViewById(R.id.txtEventName)).getText();
 				int stock_item_id = 0;
-				
-				
-				
 				
 				// if 구문으로 감싼 부분은 테스트 용으로 놔둔 것으로
 				// 나중에 서버 연동이 정상적으로 된다면 지워주자.
@@ -87,15 +89,23 @@ public class SearchByEventCustomAdapter extends BaseAdapter {
 					}
 				}
 				
-				Intent intent = new Intent(aActivity, ActivityStockDetail.class);		
-				intent.putExtra("stock_name", name);
-				intent.putExtra("stock_item_id", stock_item_id);
-				aActivity.startActivity(intent);			
-				//aActivity.setResult(SearchItem.RESULT_OK, intent);
-				// TODO Auto-generated method stub
-				aActivity.finish();
+				if(caller_type == 0) {
+					Intent intent = new Intent(aActivity, ActivityStockDetail.class);		
+					intent.putExtra("stock_name", name);
+					intent.putExtra("stock_item_id", stock_item_id);
+					aActivity.startActivity(intent);			
+					//aActivity.setResult(SearchItem.RESULT_OK, intent);
+					// TODO Auto-generated method stub
+					aActivity.finish();
+				}
+				else if(caller_type == 1) {
+
+					
+				}
+				
 			}
 		});
+		*/
 		return convertView;
 	}
 	
